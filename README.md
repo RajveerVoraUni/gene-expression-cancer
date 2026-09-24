@@ -18,7 +18,7 @@ It is to measure how much predictive gain (if any) we obtain for each step up in
 
 | # | Question |
 |---|----------|
-| Q1 | How does classification performance vary across linear, regularized, tree-ensemble, and neural models in the \(p \gg n\) regime? |
+| Q1 | How does classification performance vary across linear, regularized, tree-ensemble, and neural models in the \(p >> n\) regime? |
 | Q2 | Does added flexibility improve classification, and how does this depend on the number of genes \(p\) and training size \(n\)? |
 | Q3 | How do the number and nature of selected genes change from sparse linear models to nonlinear and neural models? |
 | Q4 | Are selected genes stable under resampling (especially given correlated expression features)? Does Elastic Net select more stably than Lasso? |
@@ -105,7 +105,7 @@ Wall-clock training time, number of parameters, number of selected genes, and ep
 
 ```text
 flexibility-interpretability-rnaseq-classification/
-├── data/    # download scripts & processed matrices
+├── data/
 ├── notebooks/
 │   ├── 01_eda.ipynb
 │   ├── 02_logistic_lasso_en.ipynb
@@ -125,8 +125,8 @@ flexibility-interpretability-rnaseq-classification/
 │   ├── evaluation.py
 │   ├── stability.py
 │   └── utils.py
-├── results/      # tables, figures, selected-gene lists
-├── report/       # final written report
+├── results/
+├── report/
 ├── requirements.txt
 └── README.md
 ```
