@@ -1,0 +1,75 @@
+{
+  "score": 0.9973561362849303,
+  "best_loss": 0.057131659494321904,
+  "params": {
+    "n_estimators": 200,
+    "max_depth": 32,
+    "max_features": "sqrt",
+    "min_samples_leaf": 1
+  },
+  "cv_results": [
+    {
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 16,
+        "max_features": "sqrt",
+        "min_samples_leaf": 1
+      },
+      "mean_f1": 0.9973561362849303,
+      "mean_loss": 0.06059397984430546
+    },
+    {
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 32,
+        "max_features": "log2",
+        "min_samples_leaf": 1
+      },
+      "mean_f1": 0.9973561362849303,
+      "mean_loss": 0.0805514087748523
+    },
+    {
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 32,
+        "max_features": "log2",
+        "min_samples_leaf": 1
+      },
+      "mean_f1": 0.9973561362849303,
+      "mean_loss": 0.0824569051393993
+    },
+    {
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 32,
+        "max_features": "sqrt",
+        "min_samples_leaf": 1
+      },
+      "mean_f1": 0.9973561362849303,
+      "mean_loss": 0.057131659494321904
+    },
+    {
+      "params": {
+        "n_estimators": 200,
+        "max_depth": null,
+        "max_features": "log2",
+        "min_samples_leaf": 2
+      },
+      "mean_f1": 0.9973561362849303,
+      "mean_loss": 0.0911520904505328
+    },
+    {
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 32,
+        "max_features": "log2",
+        "min_samples_leaf": 1
+      },
+      "mean_f1": 0.9973561362849303,
+      "mean_loss": 0.0828204310275917
+    }
+  ],
+  "test_accuracy": 0.9875776397515528,
+  "test_macro_f1": 0.9893139040680025,
+  "test_log_loss": 0.074927385482747
+}

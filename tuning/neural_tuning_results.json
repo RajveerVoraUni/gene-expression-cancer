@@ -1,0 +1,108 @@
+{
+  "PCA_MLP": {
+    "score": 0.9979789473684211,
+    "params": {
+      "hidden1": 128,
+      "hidden2": 64,
+      "lr": 0.003,
+      "epochs": 40
+    },
+    "cv_results": [
+      {
+        "params": {
+          "hidden1": 128,
+          "hidden2": 64,
+          "lr": 0.003,
+          "epochs": 40
+        },
+        "mean_f1": 0.9979789473684211,
+        "mean_loss": 0.004385272716172039
+      },
+      {
+        "params": {
+          "hidden1": 128,
+          "hidden2": 64,
+          "lr": 0.001,
+          "epochs": 45
+        },
+        "mean_f1": 0.9962870259374694,
+        "mean_loss": 0.012081526499241591
+      },
+      {
+        "params": {
+          "hidden1": 64,
+          "hidden2": 32,
+          "lr": 0.005,
+          "epochs": 40
+        },
+        "mean_f1": 0.9974697674418603,
+        "mean_loss": 0.0042692234739661215
+      }
+    ],
+    "best_loss": 0.004385272716172039,
+    "test_accuracy": 1.0,
+    "test_macro_f1": 1.0,
+    "test_log_loss": 0.007813997566699982
+  },
+  "Sparse_NN": {
+    "score": 0.9986573963078399,
+    "params": {
+      "hidden": 64,
+      "lambda_group": 0.02,
+      "lr": 0.005,
+      "epochs": 40
+    },
+    "cv_results": [
+      {
+        "params": {
+          "hidden": 64,
+          "lambda_group": 0.02,
+          "lr": 0.005,
+          "epochs": 40
+        },
+        "mean_f1": 0.9986573963078399,
+        "mean_loss": 0.0022647421283181757,
+        "active_genes": 1000.0
+      },
+      {
+        "params": {
+          "hidden": 64,
+          "lambda_group": 0.04,
+          "lr": 0.005,
+          "epochs": 45
+        },
+        "mean_f1": 0.9982534409112482,
+        "mean_loss": 0.005232089955825359,
+        "active_genes": 1000.0
+      },
+      {
+        "params": {
+          "hidden": 64,
+          "lambda_group": 0.08,
+          "lr": 0.003,
+          "epochs": 45
+        },
+        "mean_f1": 0.9986573963078399,
+        "mean_loss": 0.0047466428717598316,
+        "active_genes": 1000.0
+      },
+      {
+        "params": {
+          "hidden": 32,
+          "lambda_group": 0.04,
+          "lr": 0.005,
+          "epochs": 40
+        },
+        "mean_f1": 0.9986573963078399,
+        "mean_loss": 0.00280589223257266,
+        "active_genes": 1000.0
+      }
+    ],
+    "best_loss": 0.0022647421283181757,
+    "active_genes": 1000.0,
+    "test_accuracy": 0.9937888198757764,
+    "test_macro_f1": 0.994710743801653,
+    "test_log_loss": 0.008199065923690796,
+    "test_active_genes": 1000
+  }
+}
