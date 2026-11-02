@@ -1,0 +1,46 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Raw large dataset (>100MB exceeds GitHub limits)
+TCGA-PANCAN-HiSeq-801x20531/
+data/data_cache.npz
+
+# Keep frozen lightweight split files
+!data/splits_stratified_10repeats.npz
+!data/splits_n_efficiency.npz
+
+# LaTeX build intermediates (keep compiled PDF and TeX source)
+*.aux
+*.log
+*.out
+*.toc
+*.nav
+*.snm
+*.bbl
+*.blg
+*.synctex.gz
+reports/*.aux
+reports/*.log
+reports/*.out
+reports/*.nav
+reports/*.snm
+reports/*.toc
+!reports/final_report.pdf
+!reports/final_report.tex
+!reports/presentation.pdf
+!reports/presentation.tex
+
