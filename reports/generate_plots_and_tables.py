@@ -20,12 +20,7 @@ def generate_visualizations():
     if main_csv.exists():
         df_main = pd.read_csv(main_csv)
 
-        fig = plt.figure(figsize=(13, 9.5))
-        gs = fig.add_gridspec(2, 4, hspace=0.38, wspace=0.35)
-
-        ax1 = fig.add_subplot(gs[0, :2])
-        ax2 = fig.add_subplot(gs[0, 2:])
-        ax3 = fig.add_subplot(gs[1, 1:3])
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
 
         # test macro-f1 score distribution across splits
         sns.boxplot(data=df_main, x="model", y="macro_f1", hue="model", legend=False, ax=ax1, palette="Blues_r")
@@ -43,14 +38,7 @@ def generate_visualizations():
         ax2.tick_params(axis="x", rotation=35)
         ax2.set_ylim(-0.005, 0.115)
 
-        # training runtime comparison
-        sns.boxplot(data=df_main, x="model", y="fit_time_s", hue="model", legend=False, ax=ax3, palette="Greens_r")
-        ax3.set_title("Model Fit Time (Seconds, Log Scale)", fontsize=12, fontweight="bold")
-        ax3.set_ylabel("Training Time (s)", fontsize=11)
-        ax3.set_xlabel("Model", fontsize=11)
-        ax3.set_yscale("log")
-        ax3.tick_params(axis="x", rotation=35)
-
+        plt.tight_layout()
         plot1_path = FIGURES_DIR / "01_model_comparison_boxplots.png"
         fig.savefig(plot1_path, dpi=300, bbox_inches="tight")
         plt.close(fig)

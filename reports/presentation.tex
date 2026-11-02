@@ -432,20 +432,20 @@
 % SLIDE 18: BENCHMARK BOXPLOTS GRAPH SLIDE (2-COLUMN, FULL HEIGHT, NO BOX)
 % ==========================================
 \begin{frame}{Benchmark Performance across 10 Splits}
-  \begin{columns}[c]
-    \begin{column}{0.65\textwidth}
-      \centering
-      \includegraphics[height=0.76\textheight, width=\linewidth, keepaspectratio]{figures/01_model_comparison_boxplots.png}
+  \centering
+  \includegraphics[width=0.92\linewidth, keepaspectratio]{figures/01_model_comparison_boxplots.png}
+  
+  \vspace{0.25cm}
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}\itemsep=3pt
+        \item \textbf{Macro-F1}: All 8 models achieve $> 0.99$ across splits, confirming accuracy saturation.
+      \end{itemize}
     \end{column}
-    \begin{column}{0.33\textwidth}
-      {\small \textbf{\textcolor{primary}{Empirical Highlights}}}\\[0.25cm]
-      {\footnotesize \textcolor{darktext}{
-        \begin{itemize}\itemsep=6pt
-          \item \textbf{Macro-F1}: All models plateau above 0.99.
-          \item \textbf{Log-Loss}: Sharp differentiation ($<0.01$ vs.\ 0.081 for RF).
-          \item \textbf{Fit Time}: Linear models fit in 4 ms; tree/neural take seconds.
-        \end{itemize}
-      }}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}\itemsep=3pt
+        \item \textbf{Log-Loss}: Clear differentiation ($<0.01$ linear/NN vs.\ 0.081 for Random Forest).
+      \end{itemize}
     \end{column}
   \end{columns}
 \end{frame}
@@ -458,11 +458,11 @@
     All 8 models achieve Macro-F1 $> 0.99$. Due to high separation, accuracy cannot rank models.
   \end{centerblock}
   
-  \vspace{0.1cm}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Log-Loss and Fit Time Differences}}
+  \vspace{0.15cm}
+  \begin{centerblock}[0.76\linewidth]{\textbf{Log-Loss and Probability Calibration}}
     \begin{itemize}\itemsep=5pt
-      \item Linear models and neural nets achieve low log-loss ($<0.01$).
-      \item Linear models fit in 4 ms; trees take seconds.
+      \item Linear models and neural nets achieve low log-loss ($<0.01$), yielding sharp probabilities.
+      \item Random Forest has higher log-loss ($0.081$), as vote averaging softens probabilities.
     \end{itemize}
   \end{centerblock}
 \end{frame}
