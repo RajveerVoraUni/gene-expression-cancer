@@ -18,7 +18,7 @@
 }
 \graphicspath{{figures/}}
 
-\title{\textbf{Flexibility versus Interpretability in High-Dimensional\\Multiclass Cancer Classification from RNA-Seq Data}}
+\title{\textbf{Flexibility versus Interpretability in High Dimensional\\Multiclass Cancer Classification from RNA-Seq Data}}
 \author{
     \textbf{Rajveer Vora} \qquad \textbf{Amartya Amritanshu} \qquad \textbf{P.\ Sanjith Reddy} \\[0.6em]
     Indian Statistical Institute, Kolkata \\[0.25em]
@@ -32,52 +32,52 @@
 \maketitle
 
 \begin{abstract}
-In high-dimensional transcriptomic cancer classification ($p \gg n$), strong biological signals across tissue lineages cause standard machine learning models to reach an apparent performance ceiling. Consequently, raw classification accuracy provides limited insight into clinical viability. In this study, we investigate the trade-offs between model flexibility, feature parsimony, biomarker stability, and probability calibration across regularized linear models, tree ensembles, and neural networks on the TCGA Pan-Cancer RNA-Seq dataset. We demonstrate that Elastic Net logistic regression achieves the optimal clinical trade-off: matching the predictive accuracy of complex black-box architectures while isolating a compact, reproducible gene panel. In contrast, tree ensembles suffer from severe feature selection instability caused by transcriptomic collinearity. Furthermore, under extreme sample scarcity, regularized linear models generalize robustly due to strong inductive bias, whereas gradient-boosted trees degrade. Our findings indicate that for clinical transcriptomic assays, sparse regularized linear models dominate complex architectures in interpretability, stability, and sample efficiency.
+In high dimensional gene expression classification, where the number of features far exceeds the number of observations ($p \gg n$), many standard classifiers reach test accuracy above 99\%. Because top-level accuracy quickly saturates, it does not reveal which models are practical, stable, or well calibrated. In this course project, we study the trade-offs between model flexibility, feature sparsity, selection stability, and probability calibration across regularized linear models, tree ensembles, and neural networks using the TCGA Pan-Cancer RNA-Seq dataset ($n = 801, p = 20{,}531$). Using a leak-free evaluation protocol with 10 repeated stratified splits, we benchmark eight models on the top 1,000 variance-filtered genes. We find that while all models achieve Macro-F1 scores between 0.994 and 0.998 with full training data, their behavior differs in other important ways. Elastic Net logistic regression selects an average of 218 genes with good probability calibration (test log loss $0.020$) and high feature selection stability (mean pairwise Jaccard index $0.773$). In contrast, tree ensembles show substantial instability in their feature importances ($J = 0.242$ for Random Forest) due to strong correlation among genes. When training data is reduced to only 6 samples per class ($n = 30$), regularized linear models remain stable ($F_1 \ge 0.995$), whereas gradient boosting drops to $0.976$. Overall, our experiments show that for this dataset, simple regularized linear models offer clear advantages in interpretability and stability over more complex non-linear methods without sacrificing predictive accuracy.
 \end{abstract}
 
 \section{Introduction and Problem Formulation}
 
-High-throughput RNA sequencing (RNA-Seq) enables comprehensive profiling of cellular transcriptomes, providing continuous expression measurements for tens of thousands of genes per biological specimen. In precision oncology, identifying the primary anatomical site of origin for solid tumors is fundamental for clinical decision-making. Histopathological examination and immunohistochemistry (IHC) are standard, yet approximately 3\% to 5\% of all malignant neoplasms present as Cancer of Unknown Primary (CUP)~\cite{weinstein2013cancer}. In metastatic presentations where biopsy material is scarce or poorly differentiated, bulk transcriptomic profiling offers an objective, automated path toward determining primary lineage and guiding targeted therapies.
+High throughput RNA sequencing (RNA-Seq) measures the expression levels of tens of thousands of genes simultaneously, providing a detailed snapshot of cellular activity. In cancer diagnostics, gene expression profiling is often studied to classify tumor types and identify the tissue of origin for difficult or metastatic cases~\cite{weinstein2013cancer}. 
 
-However, machine learning applied to bulk RNA-Seq is characterized by the severe $p \gg n$ curse of dimensionality: while tens of thousands of genes ($p = 20{,}531$) are simultaneously quantified, patient cohorts typically number in the hundreds ($n = 801$). In this underdetermined statistical regime, several profound challenges arise:
+From a statistical learning perspective, RNA-Seq datasets present a classic high dimensional classification problem characterized by $p \gg n$: we observe continuous expression values for $p = 20{,}531$ genes, but have only $n = 801$ patient samples across five cancer types. In this setting, several practical and statistical challenges arise:
 \begin{enumerate}
-    \item \textbf{The Performance Ceiling Effect:} Lineage-specific differentiation programs produce immense expression differentials between distinct anatomical organs (e.g., renal tubular cells versus mammary epithelium). As a result, nearly all contemporary classifiers—whether simple linear models or multi-layer neural networks—readily attain $\ge 98\%$ test accuracy. Evaluating models solely through top-level accuracy yields an uninformative performance ceiling that fails to differentiate clinical utility.
-    \item \textbf{Transcriptomic Collinearity and Gene Co-Regulation:} Genes do not function as independent statistical variables; rather, they operate within concerted biological pathways, co-regulated by shared transcription factors and epigenetic chromatin complexes. Consequently, thousands of genes exhibit pairwise Pearson correlations exceeding $r > 0.85$. Under such extreme collinearity, variable-selection algorithms may select arbitrary individual gene representatives from co-regulated modules, leading to unstable biomarker panels across slightly perturbed patient cohorts.
-    \item \textbf{Clinical Parsimony versus Sequencing Cost:} While research sequencing quantifies all $20{,}000+$ transcripts, deploying a whole-transcriptome assay in frontline clinical diagnostics is economically and operationally prohibitive. Developing targeted assays (such as quantitative RT-PCR or NanoString panels like Oncotype DX or MammaPrint) requires isolating a parsimonious, robust subset of under 250 genes without sacrificing diagnostic reliability.
-    \item \textbf{Risk of Experimental Data Leakage:} High-dimensional feature selection and standard scaling are notoriously vulnerable to data snooping. Applying unsupervised variance filtering or normalization across the entire dataset prior to splitting leaks test distribution information, producing overly optimistic, non-reproducible performance claims.
+    \item \textbf{Accuracy Saturation:} Major cancer types originate from fundamentally different tissue lineages (such as breast, kidney, or lung tissue). Because these tissues have large biological differences, standard classification algorithms—from basic linear models to multi-layer neural networks—readily achieve test accuracy above 98\%. Looking only at classification accuracy makes it difficult to compare models meaningfully.
+    \item \textbf{Gene Correlation and Collinearity:} Genes do not act in isolation. Many genes function together within shared regulatory pathways, resulting in high pairwise correlations ($r > 0.85$). When features are highly collinear, variable selection algorithms can arbitrarily select one gene from a correlated cluster and drop the others, causing the selected feature set to change from one sample split to another.
+    \item \textbf{Feature Sparsity:} While sequencing experiments measure over 20,000 genes, measuring that many features is expensive and impractical for everyday testing. Identifying a smaller panel of 100 to 250 informative genes without losing predictive performance is therefore of practical interest.
+    \item \textbf{Risk of Data Leakage:} High dimensional feature selection and standard scaling are vulnerable to subtle leakage. If variance filtering or normalization is performed on the whole dataset before train/test splitting, test information leaks into the training pipeline, leading to overly optimistic results.
 \end{enumerate}
 
-To address these core challenges, this benchmark departs from standard accuracy chasing to systematically examine three fundamental research questions:
+To investigate these issues systematically, our project addresses three main questions:
 \begin{itemize}
-    \item \textbf{Q1 (Flexibility vs. Performance):} Does transitioning from linear classifiers to non-linear tree ensembles and deep neural networks provide measurable predictive gains in the transcriptomic $p \gg n$ regime?
-    \item \textbf{Q2 (Feature Selection Stability):} How consistent and biologically reproducible are the gene signatures identified by sparse linear regularizers compared to tree-based split importances across independent patient resamples?
-    \item \textbf{Q3 (Sample Efficiency):} How do distinct model families degrade when clinical training data is severely starved ($n_{\text{train}} \to 30$)?
+    \item \textbf{Q1 (Flexibility vs. Performance):} Do non-linear tree ensembles and deep neural networks provide measurable predictive improvements over regularized linear models in this high dimensional setting?
+    \item \textbf{Q2 (Feature Selection Stability):} How consistent are the gene subsets identified by sparse linear regularizers compared to tree-based feature importances across independent splits of the data?
+    \item \textbf{Q3 (Sample Efficiency):} How do different model families hold up when training data is severely limited ($n_{\text{train}}$ down to 30)?
 \end{itemize}
 
-\section{Exploratory Data Analysis and Biological Insights}
+\section{Exploratory Data Analysis and Dataset Overview}
 
-This study benchmarks models using the UCI TCGA Pan-Cancer RNA-Seq dataset~\cite{fiorini2016gene,weinstein2013cancer}, containing $n = 801$ primary solid tumor samples with $p = 20{,}531$ continuous Illumina HiSeq gene expression values ($\log_2(\text{RSEM} + 1)$ normalized).
+We benchmark models using the public UCI TCGA Pan-Cancer RNA-Seq dataset~\cite{fiorini2016gene,weinstein2013cancer}. The dataset consists of $n = 801$ primary solid tumor samples with $p = 20{,}531$ continuous gene expression measurements ($\log_2(\text{RSEM} + 1)$ normalized).
 
-\subsection{Tumor Cohorts and Quality Control}
-The dataset encompasses five primary solid tumor types representing major adult malignancies:
+\subsection{Tumor Cohorts and Quality Checks}
+The samples represent five solid tumor types:
 \begin{itemize}
-    \item \textbf{BRCA (Breast Invasive Carcinoma, $n = 300$, 37.5\%):} The largest cohort, characterized by luminal and basal epithelial oncogenic signaling (e.g., estrogen receptor and HER2 pathways).
-    \item \textbf{KIRC (Kidney Renal Clear Cell Carcinoma, $n = 146$, 18.2\%):} Arises from renal proximal tubular epithelium, dominated by VHL mutations and hypoxia-inducible pathway overexpression.
-    \item \textbf{LUAD (Lung Adenocarcinoma, $n = 141$, 17.6\%):} Non-small cell lung malignancy originating in alveolar glandular tissue, marked by surfactant protein expression and RTK/RAS alterations.
-    \item \textbf{PRAD (Prostate Adenocarcinoma, $n = 136$, 17.0\%):} Glandular prostate carcinoma driven by androgen receptor transcriptional networks and prostate-specific kallikreins.
-    \item \textbf{COAD (Colon Adenocarcinoma, $n = 78$, 9.7\%):} Colorectal epithelial cancer dominated by Wnt/$\beta$-catenin signaling and gut-specific cytokeratins.
+    \item \textbf{BRCA (Breast Invasive Carcinoma, $n = 300$, 37.5\%):} The largest group in the dataset.
+    \item \textbf{KIRC (Kidney Renal Clear Cell Carcinoma, $n = 146$, 18.2\%):} Kidney tumors originating from tubular epithelial cells.
+    \item \textbf{LUAD (Lung Adenocarcinoma, $n = 141$, 17.6\%):} The most common form of non-small cell lung cancer.
+    \item \textbf{PRAD (Prostate Adenocarcinoma, $n = 136$, 17.0\%):} Prostate glandular cancer.
+    \item \textbf{COAD (Colon Adenocarcinoma, $n = 78$, 9.7\%):} Colorectal cancer, the smallest class in the cohort.
 \end{itemize}
 
-The resulting class imbalance ratio of approximately $3.8:1$ (Figure~\ref{fig:class-balance}) necessitates the use of stratified train/test sampling and macro-averaged metrics (Macro-F1) alongside multi-class cross-entropy log-loss. 
+The class sizes range from 78 to 300 samples, giving an imbalance ratio of roughly $3.8:1$ (Figure~\ref{fig:class-balance}). Because of this imbalance, we report Macro-averaged F1 score (Macro-F1) alongside accuracy and multi-class cross entropy log loss.
 
-Quality control analysis across sample-level mean expression and zero-fraction (Figure~\ref{fig:sample-qc}) reveals consistent distributions across all five tumor classes: median mean expression ranges narrowly between $6.28$ and $6.54$, and median zero-count fractions range from $0.136$ to $0.155$. This uniformity confirms the absence of technical artifacts, severe batch effects, or anomalous library preparation failures across patient specimens.
+Before training models, we checked the quality of the data across samples. Figure~\ref{fig:sample-qc} shows the sample-level mean expression and the fraction of zero counts across tumor types. The median mean expression is fairly consistent across classes (ranging from 6.28 to 6.54), and the proportion of zeros per sample is also stable (median 0.136 to 0.155). This indicated no extreme outlier specimens or corrupted sample runs.
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}[b]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{01_class_balance.png}
-        \caption{Patient sample distribution across tumor types.}
+        \caption{Sample counts across the five tumor types.}
         \label{fig:class-balance}
     \end{subfigure}
     \hfill
@@ -87,33 +87,33 @@ Quality control analysis across sample-level mean expression and zero-fraction (
         \caption{Sample-level mean expression and zero fraction.}
         \label{fig:sample-qc}
     \end{subfigure}
-    \caption{Dataset composition and sample-level quality control summaries.}
+    \caption{Dataset composition and sample quality check summaries.}
 \end{figure}
 
-\subsection{Dimensionality, Variance Dispersion, and Latent Structure}
-A fundamental characteristic of transcriptomic profiling is that a vast majority of the $20{,}531$ genes represent basic cellular housekeeping transcripts (e.g., ribosomal, mitochondrial, and metabolic structural genes) with near-uniform expression across tissues. As shown in the gene mean-variance dispersion plot (Figure~\ref{fig:mean-var}), variance is heavily concentrated in a small minority of features: only the top $5\%$ to $10\%$ of genes exhibit substantial across-patient variation, providing an empirical basis for unsupervised variance filtering as a preliminary dimensionality reduction step.
+\subsection{Variance Filtering and Latent Structure}
+A well-known property of transcriptomic data is that many genes represent general cellular housekeeping functions with little variation across different tissues. In our exploratory analysis, plotting gene variance against gene mean expression (Figure~\ref{fig:mean-var}) confirms that expression variance is concentrated in a relatively small minority of genes. Most of the 20,531 genes show near-zero variance across samples. This observation justifies filtering out low variance genes during preprocessing to keep model training computationally feasible.
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}[b]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{03_gene_mean_variance.png}
-        \caption{Gene mean vs. variance relationship.}
+        \caption{Gene variance versus mean expression.}
         \label{fig:mean-var}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{05_pca_pc1_pc2.png}
-        \caption{Unsupervised PCA (PC1 vs. PC2).}
+        \caption{Unsupervised PCA projection (PC1 vs. PC2).}
         \label{fig:pca-scatter}
     \end{subfigure}
-    \caption{Feature distribution and latent cluster structure.}
+    \caption{Feature variance distribution and unsupervised cluster separation.}
 \end{figure}
 
-Unsupervised Principal Component Analysis (PCA) performed on standardized expression data confirms that approximately $200$ to $250$ principal components capture over $85\%$ of cumulative variance. More strikingly, a two-dimensional projection onto the first two principal components (PC1 and PC2, Figure~\ref{fig:pca-scatter}) already produces distinct, well-separated clusters corresponding to each tumor type without access to class labels. This unsupervised separation indicates that tissue-of-origin differentiation programs constitute the primary axes of biological variance in the human transcriptome. 
+When we applied Principal Component Analysis (PCA) to the standardized features, the first two principal components (Figure~\ref{fig:pca-scatter}) separated the five tumor types into visible clusters without using class labels. PC1 and PC2 alone capture roughly 30.9\% of the total variance (18.6\% and 12.3\%, respectively). 
 
-A hierarchical clustered heatmap of the 50 most variable genes (Figure~\ref{fig:heatmap}) confirms the existence of sharp, block-diagonal transcriptomic signatures uniquely upregulated within each cancer type. This pronounced linear separability provides a clear mathematical explanation for why standard linear classifiers achieve exceptionally high diagnostic accuracy.
+To inspect feature patterns directly, we generated a clustered heatmap of the 50 most variable genes (Figure~\ref{fig:heatmap}). The heatmap shows distinct blocks of genes that are strongly expressed in specific cancer types. This clear separability explains why standard linear classifiers perform remarkably well on this dataset.
 
 \begin{figure}[H]
     \centering
@@ -124,47 +124,47 @@ A hierarchical clustered heatmap of the 50 most variable genes (Figure~\ref{fig:
 
 \section{Experimental Methodology}
 
-\subsection{Leakage-Free Resampling Protocol}
-Data leakage is a well-documented source of irreproducibility in genomic machine learning. When feature selection, centering, or scaling utilizes statistics computed across the entire cohort, information from test specimens inadvertently contaminates the training phase. 
+\subsection{Evaluation Protocol and Leakage Prevention}
+Data leakage is a common problem in genomic machine learning. If feature prescreening, centering, or scaling uses statistics computed across the entire dataset, information from test samples leaks into the training process, leading to overly optimistic results.
 
-To guarantee strict statistical isolation, we enforce a leak-free evaluation protocol:
+To ensure strict separation, we implemented the following protocol:
 \begin{enumerate}
-    \item \textbf{Frozen Outer Splits:} The dataset is partitioned into $N = 10$ repeated stratified 80/20 train/test splits ($N_{\text{train}} = 640, N_{\text{test}} = 161$) using fixed seeds. The test fold of each split is placed in cold storage and remains strictly untouched during all feature processing and training.
-    \item \textbf{Training-Only Transformations:} Within each split, gene variance ranking, selection of the top $p = 1{,}000$ genes, standard scaling ($\mu_{\text{train}}, \sigma_{\text{train}}$), and PCA projection matrices ($V_k$) are calculated strictly using the $640$ training samples. The learned parameters are then applied deterministically to transform the corresponding test fold.
+    \item \textbf{Repeated Stratified Splits:} We split the dataset into $N = 10$ repeated stratified 80/20 train/test splits ($n_{\text{train}} = 640, n_{\text{test}} = 161$) using fixed random seeds. In each repetition, the test fold was held out until final evaluation.
+    \item \textbf{Training-Only Transformations:} Within each split, feature prescreening (selecting the top $p = 1{,}000$ genes by Median Absolute Deviation), standard scaling ($\mu_{\text{train}}, \sigma_{\text{train}}$), and PCA projection matrices were computed strictly from the 640 training samples. The fitted transformations were then applied to the test fold.
 \end{enumerate}
 
-\subsection{Model Formulation and Theoretical Contrast}
-We evaluate eight models spanning three distinct architectural paradigms, selected to contrast linear, tree-based, and deep neural learning under extreme collinearity:
+\subsection{Models Evaluated}
+We evaluated eight models representing three distinct families (linear models, tree ensembles, and neural networks):
 \begin{enumerate}
-    \item \textbf{Unpenalized Multinomial Logistic Regression (Softmax):} Baseline linear model modeling class probabilities via the softmax link function:
+    \item \textbf{Unpenalized Multinomial Logistic Regression (Softmax):} Standard multi-class logistic regression modeling class probabilities via the softmax function:
     \begin{equation}
         P(Y = c \mid x) = \frac{\exp(w_c^T x + b_c)}{\sum_{j=1}^C \exp(w_j^T x + b_j)}
     \end{equation}
-    optimizing multi-class cross-entropy via L-BFGS with no regularizing constraint.
-    \item \textbf{Ridge Logistic Regression ($L_2$):} Adds an isotropic quadratic penalty $\frac{1}{2}\lambda \|\beta\|_2^2$ to the log-likelihood. While Ridge shrinks all coefficients proportionally toward zero to stabilize matrix inversion in collinear spaces, it retains all $1{,}000$ features, offering zero model parsimony.
-    \item \textbf{Lasso Logistic Regression ($L_1$):} Introduces a non-smooth $L_1$ penalty $\lambda \|\beta\|_1$~\cite{tibshirani1996regression}. Geometrically, the sharp corners of the $L_1$ polytope force small coefficients to exact numerical zeros via the SAGA proximal solver, yielding an ultra-sparse, interpretable gene panel. However, under high transcriptomic collinearity, Lasso arbitrarily selects one gene from a co-regulated cluster and suppresses the remainder.
-    \item \textbf{Elastic Net Logistic Regression ($L_1 + L_2$):} Bridges Lasso and Ridge through a convex combination of penalties~\cite{zou2005regularization}:
+    trained by minimizing cross entropy with the L-BFGS solver without regularization.
+    \item \textbf{Ridge Logistic Regression ($L_2$):} Adds an isotropic $L_2$ penalty $\frac{1}{2}\lambda \|\beta\|_2^2$ to the log-likelihood. Ridge shrinks coefficient estimates toward zero, which stabilizes matrix inversion under collinearity. However, it retains all 1,000 features.
+    \item \textbf{Lasso Logistic Regression ($L_1$):} Introduces an $L_1$ penalty $\lambda \|\beta\|_1$~\cite{tibshirani1996regression}. Because the $L_1$ ball has sharp corners, optimizing with the SAGA solver drives many coefficients to exact numerical zeros, producing a sparse model. Under high correlation, however, Lasso tends to select only one feature from a group of correlated genes.
+    \item \textbf{Elastic Net Logistic Regression ($L_1 + L_2$):} Combines the $L_1$ and $L_2$ penalties~\cite{zou2005regularization}:
     \begin{equation}
         \Omega(\beta) = \lambda \left[ \alpha \|\beta\|_1 + \frac{1 - \alpha}{2} \|\beta\|_2^2 \right]
     \end{equation}
-    where $\alpha \in [0, 1]$ controls the sparsity ratio. The strictly convex quadratic term enforces the \emph{grouping property}: highly correlated genes receive similar weights and are retained together in the active biomarker set, stabilizing selection across patient cohorts.
-    \item \textbf{Random Forest:} Non-linear ensemble of 200 deep decision trees ($d = 32$) trained via bootstrap aggregation (bagging) and randomized feature subsampling ($\sqrt{p}$). While resilient to outliers, greedy axis-aligned recursive partitioning amidst thousands of correlated genes creates high stochastic variance in split choice.
-    \item \textbf{XGBoost (Histogram Gradient Boosting):} Scalable gradient boosting algorithm~\cite{chen2016xgboost} sequentially fitting shallow decision trees to second-order Taylor expansions of the multi-class log-loss. Employs histogram binning, column subsampling ($0.3$), and $L_2$ leaf regularization to mitigate overfitting.
-    \item \textbf{PCA-MLP (Dense Low-Rank Neural Network):} Maps standardized input genes onto orthogonal principal components capturing 95\% cumulative variance ($\approx 434$ PCs), followed by a multi-layer perceptron ($434 \to 128 \to 64 \to 5$) with Batch Normalization, ReLU activations, and Dropout ($p = 0.3$).
-    \item \textbf{Sparse Group-Lasso Neural Network:} Multi-layer perceptron trained directly on the $p = 1{,}000$ gene space incorporating an input-layer Group Lasso penalty $\lambda_{\text{group}} \sum_{j=1}^p \|W^{(1)}_{:, j}\|_2$, pruned via proximal gradient descent to induce structured input-channel sparsity.
+    where we set $\alpha = 0.5$. The $L_2$ term provides a grouping effect: correlated features tend to receive similar coefficients and remain in the active set together, which improves selection stability across data splits.
+    \item \textbf{Random Forest:} An ensemble of 200 decision trees (maximum depth 32) trained with bootstrap aggregation and randomized feature subsets ($\sqrt{p} \approx 31$). Although robust to outliers, individual tree splits can vary substantially when many features have similar predictive power.
+    \item \textbf{XGBoost (Histogram Gradient Boosting):} Gradient boosted trees~\cite{chen2016xgboost} sequentially minimizing multi-class log loss. We configured it with histogram binning, learning rate 0.05, and column subsampling (0.3) to help prevent overfitting.
+    \item \textbf{PCA-MLP (Dense Neural Network):} A multi-layer perceptron trained on the principal components that capture 95\% of cumulative variance ($\approx 434$ PCs), using two hidden layers ($434 \to 128 \to 64 \to 5$), Batch Normalization, ReLU activations, and Dropout ($p = 0.3$).
+    \item \textbf{Sparse Group-Lasso Neural Network:} A neural network trained directly on the 1,000 genes with a Group Lasso penalty on the input layer weights, $\lambda_{\text{group}} \sum_{j=1}^p \|W^{(1)}_{:, j}\|_2$, pruning uninformative input genes.
 \end{enumerate}
 
-\subsection{Hyperparameter Optimization and Protocol}
-To maintain rigorous separation and prevent optimistic hyperparameter tuning leakage, all model hyperparameters—including regularization strengths $C$, mixing ratios $\alpha$, tree depths, boosting learning rates, and neural dropout rates—were established via 5-fold stratified inner cross-validation conducted strictly on the training partition. Sweeps prioritized macro-averaged F1 score, cross-entropy calibration, and numerical convergence stability, balancing model capacity against over-parameterization before evaluating the frozen configurations on the 10 repeated outer test folds.
+\subsection{Hyperparameter Optimization}
+To avoid tuning leakage, model hyperparameters—including regularization parameters $C$, tree depths, boosting learning rates, and neural dropout rates—were selected using 5-fold stratified cross validation within each training set. Once selected, these configurations were evaluated on the 10 outer test folds.
 
 \section{Experimental Results and Discussion}
 
-\subsection{Cross-Validated Performance Across Models}
-Table~\ref{tab:main_model_comparison} details the paired cross-validated performance metrics across the 10 repeated stratified splits. Distributions of Macro-F1 score, cross-entropy log-loss, and fit time are visualized in Figure~\ref{fig:boxplots}.
+\subsection{Overall Model Comparison}
+Table~\ref{tab:main_model_comparison} reports the mean and standard deviation of accuracy, Macro-F1, multi-class log loss, active feature count, and fitting time across the 10 repeated splits. Figure~\ref{fig:boxplots} illustrates the metric distributions.
 
 \begin{table}[H]
 \centering
-\caption{Cross-validated performance, feature sparsity, and computational cost across 10 repeated stratified splits ($p=1000$).}
+\caption{Cross validated performance, feature sparsity, and computation time across 10 repeated stratified splits ($p=1000$).}
 \label{tab:main_model_comparison}
 \small
 \resizebox{\textwidth}{!}{%
@@ -188,37 +188,39 @@ XGBoost & Tree Ensemble & $0.998 \pm 0.003$ & $0.998 \pm 0.004$ & $0.016 \pm 0.0
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{01_model_comparison_boxplots.png}
-    \caption{Distributions of Macro-F1 score (top-left), multi-class log-loss (top-right), and fit time (bottom-center) across 10 repeated splits.}
+    \caption{Distributions of Macro-F1 score (top-left), multi-class log loss (top-right), and fit time (bottom-center) across 10 repeated splits.}
     \label{fig:boxplots}
 \end{figure}
 
-As expected under strong biological lineage differentiation, all eight models attain top-tier classification accuracy, clustering tightly between $99.4\%$ and $99.8\%$. However, crucial distinctions emerge in probability calibration and computational efficiency:
+All eight models achieve high classification accuracy, ranging tightly between $99.4\%$ and $99.8\%$. This confirms our observation from the exploratory analysis: the five cancer classes are clearly separable, so accuracy alone does not provide much differentiation between models.
+
+However, clearer differences appear when looking at probability calibration and runtime:
 \begin{itemize}
-    \item \textbf{Probability Calibration and Cross-Entropy Log-Loss:} Multi-class log-loss evaluates the confidence and calibration of predicted probabilities rather than just the argmax discrete class call. While Softmax, Ridge, PCA-MLP, and Elastic Net produce sharp, well-calibrated posterior probabilities ($\text{loss} \le 0.020$), Random Forest exhibits markedly inferior calibration ($\text{loss} = 0.081 \pm 0.011$). This occurs because bagged decision tree ensembles estimate class probabilities via discrete leaf vote fractions, producing uncalibrated, step-wise probability estimates near boundary regions. In clinical oncology, uncalibrated risk predictions pose significant hazards when oncologists rely on confidence thresholds to trigger reflex IHC testing.
-    \item \textbf{Computational Efficiency:} Unpenalized Softmax and $L_2$ Ridge train in milliseconds ($0.004\text{s}$), representing negligible computational overhead. Lasso and Elastic Net require several seconds ($3.32\text{s}$ and $4.44\text{s}$) due to coordinate descent/SAGA iterations over non-smooth $L_1$ boundaries. Neural networks accelerated via Apple Silicon Metal Performance Shaders (`mps') train efficiently in approximately $1.3\text{s}$ to $1.7\text{s}$, while XGBoost requires $2.27\text{s}$.
+    \item \textbf{Probability Calibration (Log Loss):} Multi-class log loss penalizes overconfident wrong predictions and rewards well calibrated probabilities. Linear models (Ridge, Softmax, Elastic Net) and neural networks achieve low log loss values ($\le 0.020$). In contrast, Random Forest shows noticeably higher log loss ($0.081 \pm 0.011$). Because Random Forest estimates probabilities by averaging discrete votes across 200 trees, its probability estimates tend to be stepped and less smooth. XGBoost achieves much better calibration ($0.016$) than Random Forest because it directly optimizes cross entropy during boosting.
+    \item \textbf{Computational Runtime:} Unpenalized Softmax and Ridge train in approximately 4 milliseconds ($0.004\text{s}$). Lasso and Elastic Net require several seconds ($3.32\text{s}$ and $4.44\text{s}$) because the SAGA solver iteratively handles the non-smooth $L_1$ penalty. Neural networks train in $1.3\text{s}$ to $1.7\text{s}$ on hardware acceleration, and XGBoost takes $2.27\text{s}$.
 \end{itemize}
 
-\subsection{The Clinical Pareto Frontier: Parsimony vs. Calibration}
-Figure~\ref{fig:pareto} maps the empirical Pareto trade-off between model parsimony (active feature count on a log scale) and probability calibration (test cross-entropy log-loss).
+\subsection{Trade-off Between Complexity and Calibration (Pareto Analysis)}
+Figure~\ref{fig:pareto} shows the trade-off between model parsimony (number of active features on a log scale) and probability calibration (test log loss).
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{05_pareto_frontier.png}
-    \caption{The Pareto Frontier: Active feature count (sparsity) vs. test log-loss vs. training runtime.}
+    \caption{Active feature count versus test log loss across models (point size reflects runtime).}
     \label{fig:pareto}
 \end{figure}
 
-The Pareto analysis yields fundamental insights for diagnostic assay design:
+From this plot, we observe three distinct operating points:
 \begin{itemize}
-    \item \textbf{Ultra-Sparse Compression (Lasso):} Lasso compresses the transcriptome by an astonishing \textbf{99.57\%}—retaining an average of only \textbf{89 active genes} out of the original $20{,}531$ features while preserving $99.50\% \pm 0.49\%$ test accuracy. In clinical assay translation, reducing a diagnostic signature to under 100 genes allows manufacturing inexpensive, high-throughput microfluidic PCR panels.
-    \item \textbf{The Optimal Compromise (Elastic Net):} Elastic Net occupies the undisputed sweet spot along the Pareto frontier. By retaining $218$ genes, it achieves near-perfect predictive accuracy ($99.81\% \pm 0.30\%$) and sharp probability calibration ($0.020$ log-loss), while completely avoiding the unpenalized requirement of measuring all $1{,}000$ features.
-    \item \textbf{Dense Over-Parameterization:} Dense linear models, deep neural networks, and tree ensembles achieve virtually identical accuracy to Elastic Net but require evaluating all $1{,}000$ input genes, conferring zero parsimony advantages.
+    \item \textbf{High Sparsity (Lasso):} Lasso selects an average of only \textbf{89 active genes} out of the 1,000 candidates while maintaining $99.50\% \pm 0.49\%$ test accuracy. However, its test log loss ($0.030$) is slightly higher than that of dense models.
+    \item \textbf{Balanced Trade-off (Elastic Net):} Elastic Net retains an average of $218$ genes, achieving $99.81\% \pm 0.30\%$ accuracy and a lower log loss of $0.020$. Compared to dense models, it uses fewer than a quarter of the features with essentially no loss in predictive performance.
+    \item \textbf{Dense Models:} Dense linear models, tree ensembles, and standard neural networks achieve low log loss ($0.004$ to $0.016$) but require evaluating all 1,000 features (or 434 principal components in PCA-MLP).
 \end{itemize}
 
-\subsection{Feature Selection Stability and Biomarker Reproducibility}
-In biomedical applications, a model's clinical utility depends heavily on whether its selected biomarkers are biologically reproducible across varying patient cohorts. When training folds shift, does the model identify the same genes, or does it swap features arbitrarily?
+\subsection{Feature Selection Stability}
+In applications where models are used to identify biological markers, it is important that the selected features are consistent across different samples. If a model selects completely different features from one split to another, the identified gene panel cannot be considered reliable.
 
-We quantify selection stability across the 10 resampling splits using the mean pairwise Jaccard index ($J = \frac{|S_i \cap S_j|}{|S_i \cup S_j|}$) and Dice coefficient (Table~\ref{tab:feature_stability} and Figure~\ref{fig:stability}).
+We measured selection stability across the 10 data splits using the mean pairwise Jaccard index ($J = \frac{|S_i \cap S_j|}{|S_i \cup S_j|}$) and Dice coefficient (Table~\ref{tab:feature_stability} and Figure~\ref{fig:stability}). For tree models, we evaluated stability on the top 50 features ranked by importance score.
 
 \begin{table}[H]
 \centering
@@ -245,62 +247,70 @@ RandomForest & $50.0 \pm 0.0$ & $0.242 \pm 0.052$ & $0.387 \pm 0.069$ \\
     \label{fig:stability}
 \end{figure}
 
-The stability metrics reveal the most striking empirical discovery of this study:
+The stability results show a clear contrast between linear and tree models:
 \begin{itemize}
-    \item \textbf{Regularized Linear Models Exhibit Superior Stability:} Elastic Net achieves the highest selection stability among sparse models ($J = 0.773 \pm 0.041$, Dice $D = 0.872$), followed closely by Lasso ($J = 0.740 \pm 0.051$). Elastic Net's quadratic penalty groups co-expressed gene clusters, preventing the stochastic feature swapping that occasionally affects pure $L_1$ optimization.
-    \item \textbf{Tree Ensembles Suffer Severe Collinear Instability:} Despite achieving $\ge 99.4\%$ accuracy, the top-50 feature importances identified by Random Forest overlap by a meager \textbf{24.2\%} across independent patient resamples ($J = 0.242 \pm 0.052$). XGBoost performs only moderately better ($J = 0.467 \pm 0.044$). 
+    \item \textbf{Linear Regularizers Are More Stable:} Elastic Net achieved the highest selection stability ($J = 0.773 \pm 0.041$), followed closely by Lasso ($J = 0.740 \pm 0.051$). Elastic Net's $L_2$ penalty helps keep correlated genes together, which provides slightly better stability than pure $L_1$ selection.
+    \item \textbf{Tree Ensembles Show High Split Instability:} Despite achieving over 99.4\% accuracy, the top 50 features selected by Random Forest had a mean pairwise Jaccard overlap of only \textbf{24.2\%} ($J = 0.242 \pm 0.052$). XGBoost was somewhat better but still modest ($J = 0.467 \pm 0.044$). 
     
-    This instability is a direct consequence of greedy recursive partitioning amidst high transcriptomic collinearity: when dozens of genes within a pathway share pairwise correlation $r > 0.85$, decision trees randomly select whichever gene happens to provide an infinitesimal empirical variance reduction in that specific fold. Consequently, tree-derived feature importances are completely unreliable for clinical biomarker discovery.
+    This instability happens because many genes in the dataset are strongly correlated ($r > 0.85$). At each decision node, multiple collinear genes provide nearly identical impurity reductions. The algorithm picks one gene essentially at random, while slightly different splits in the training fold lead to different choices. While this does not harm prediction accuracy, it means that feature importance rankings from tree models on this dataset are not stable across different data splits.
 \end{itemize}
 
-A core set of robust diagnostic biomarker genes were selected by Lasso across \textbf{100\% of repeated splits} (10/10 folds):
+We also identified individual genes that were selected by Lasso and Elastic Net in every one of the 10 splits:
 \begin{itemize}
-    \item \textbf{Universal Lasso Panel:} \texttt{gene\_9544}, \texttt{gene\_8348}, \texttt{gene\_12848}, \texttt{gene\_7560}, \texttt{gene\_12078}.
-    \item \textbf{Universal Elastic Net Panel:} \texttt{gene\_12568}, \texttt{gene\_14089}, \texttt{gene\_8891}, \texttt{gene\_13202}, \texttt{gene\_18}.
+    \item \textbf{Consistently Selected by Lasso (10/10 folds):} \texttt{gene\_9544}, \texttt{gene\_8348}, \texttt{gene\_12848}, \linebreak\texttt{gene\_7560}, \texttt{gene\_12078}.
+    \item \textbf{Consistently Selected by Elastic Net (10/10 folds):} \texttt{gene\_12568}, \texttt{gene\_14089}, \texttt{gene\_8891}, \linebreak\texttt{gene\_13202}, \texttt{gene\_18}.
 \end{itemize}
-These invariant genes represent foundational biological drivers of lineage divergence and form prime candidates for targeted assay development.
+Because the dataset uses anonymized gene identifiers, we cannot confirm the biological roles of these specific genes without additional mapping. Statistically, however, they represent features that were consistently retained by the regularizer across different patient partitions.
 
-\subsection{Sample Efficiency Stress-Testing (\texorpdfstring{$n$}{n}-Stress)}
-To break the 99\% ceiling effect and stress-test model behavior under severe clinical sample constraints, we evaluated performance across downsampled training sizes:
+\subsection{Sample Efficiency Stress Test}
+To see how models behave when training data is scarce, we evaluated performance across five training sample sizes:
 \begin{equation}
     n_{\text{train}} \in \{30, 60, 120, 250, 640\}
 \end{equation}
-evaluated on a fixed outer test set ($N_{\text{test}} = 161$). At $n_{\text{train}} = 30$, each model is provided with only 6 patient samples per cancer type across $1{,}000$ continuous dimensions.
+tested on the fixed outer test set of $N_{\text{test}} = 161$ samples. At $n_{\text{train}} = 30$, each model had only 6 training samples per cancer class across 1,000 dimensions.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{02_n_efficiency_curves.png}
-    \caption{Sample efficiency stress test: Macro-F1 performance as a function of training sample size $n_{\text{train}}$.}
+    \caption{Sample efficiency comparison: Macro-F1 performance as a function of training sample size $n_{\text{train}}$.}
     \label{fig:n-stress}
 \end{figure}
 
-As shown in Figure~\ref{fig:n-stress}, distinct model families exhibit starkly divergent breakdown thresholds:
+Figure~\ref{fig:n-stress} shows how performance changes as sample size decreases:
 \begin{itemize}
-    \item \textbf{Vulnerability of Gradient Boosting:} XGBoost degrades substantially at $n_{\text{train}} = 30$, dropping to \textbf{$0.976 \pm 0.018$ Macro-F1} with an extreme split minimum of $0.954$. Non-linear boosting requires sufficient sample support to establish reliable split thresholds; when samples are scarce, greedy trees fit idiosyncratic noise in training splits.
-    \item \textbf{Resilience of Convex Linear Regularizers:} In stark contrast, strongly regularized linear models (Ridge, Softmax, and Elastic Net) retain \textbf{$0.995 \pm 0.004$ Macro-F1} at $n_{\text{train}} = 30$. Linear hyperplanes constrained by strong convex shrinkage possess an exceptionally strong inductive bias that prevents complex overfitting in ultra-low sample regimes ($n \ll p$).
+    \item \textbf{Performance of Gradient Boosting with Few Samples:} XGBoost showed noticeable degradation at $n_{\text{train}} = 30$, dropping to \textbf{$0.976 \pm 0.018$ Macro-F1}, with a minimum fold score of $0.954$. Random Forest also dropped slightly to $0.985$. When sample sizes are small, greedy recursive tree splits are more likely to overfit noise in the training set.
+    \item \textbf{Resilience of Regularized Linear Models:} In contrast, regularized linear models (Ridge, Softmax, and Elastic Net) maintained \textbf{$0.995 \pm 0.004$ Macro-F1} even at $n_{\text{train}} = 30$. The linear inductive bias combined with regularization prevented severe overfitting when data was limited.
 \end{itemize}
 
 \section{Answers to Research Questions}
 
 \paragraph{Q1. Performance in the $p \gg n$ Regime:} 
-Transitioning from regularized linear models to complex non-linear architectures (gradient-boosted trees and deep neural networks) provides no statistically significant improvement in classification accuracy or Macro-F1 ($99.8\%$ vs. $99.8\%$). In bulk RNA-Seq classification across major tissue lineages, the underlying class boundaries are predominantly linear. Adding non-linear flexibility introduces substantial architectural complexity and training overhead without measurable diagnostic benefit.
+Moving from regularized linear models to non-linear tree ensembles or neural networks did not produce any meaningful improvement in classification accuracy or Macro-F1 on this dataset ($0.998$ vs. $0.998$). Because the five tumor types are largely linearly separable in expression space, linear decision boundaries are sufficient for classification. Adding non-linear capacity increased model complexity without providing noticeable predictive gains.
 
 \paragraph{Q2. Feature Selection Stability vs. Flexibility:} 
-Higher architectural flexibility comes at the direct expense of biomarker stability. While tree ensembles match linear models in classification accuracy, their feature importance rankings are unstable ($J \le 0.467$ for XGBoost, $J \le 0.242$ for Random Forest) due to collinear feature substitution. In contrast, Elastic Net logistic regression leverages convex $L_1 + L_2$ shrinkage to group correlated pathways, yielding highly stable biomarker panels ($J = 0.773$) suitable for translational assay design.
+Model flexibility came at the expense of feature selection stability. While tree ensembles achieved high accuracy, their feature importances varied considerably across splits ($J = 0.242$ for Random Forest, $J = 0.467$ for XGBoost) due to gene collinearity. In contrast, sparse linear models achieved much higher stability ($J = 0.773$ for Elastic Net, $J = 0.740$ for Lasso), with Elastic Net providing the most consistent feature sets.
 
-\paragraph{Q3. Sample Efficiency and Clinical Viability:} 
-Under severe clinical sample scarcity ($n=30$, 6 samples per class), flexible gradient boosting degrades rapidly due to tree overfitting, whereas convex regularized linear models maintain exceptional generalization ($F_1 \ge 0.995$). Regularized linear models dominate complex architectures in sample-starved clinical diagnostic settings.
+\paragraph{Q3. Behavior under Sample Scarcity:} 
+When training data was reduced to $n = 30$ (6 samples per class), regularized linear models remained reliable ($F_1 \ge 0.995$), while gradient boosted trees degraded to $F_1 = 0.976$. Regularized linear models benefited from a strong inductive bias that avoided overfitting when training data was scarce.
 
-\section{Conclusion and Clinical Recommendations}
+\section{Conclusion and Limitations}
 
-This study rigorously benchmarked the trade-off between flexibility, interpretability, and stability in high-dimensional multiclass cancer classification from RNA-Seq data. Through a leak-free evaluation protocol across 10 repeated stratified splits and sample efficiency stress-testing, we demonstrated that \textbf{Elastic Net logistic regression} represents the optimal clinical diagnostic paradigm:
+In this course project, we benchmarked eight classification models across three model families on the TCGA Pan-Cancer RNA-Seq dataset. Our main findings are:
 \begin{enumerate}
-    \item Matches the top-tier accuracy ($99.8\%$) and calibration of complex deep networks.
-    \item Isolates a compact, interpretable panel of $218$ genes (over 98.9\% transcriptome compression).
-    \item Delivers the highest biomarker selection stability ($J = 0.773$), ensuring translational reproducibility.
-    \item Maintains robust generalization ($99.5\%$ Macro-F1) even when training samples are starved to $n=30$.
+    \item Regularized linear models performed as well as or better than more complex non-linear models in accuracy, calibration, and training runtime.
+    \item Elastic Net logistic regression provided a good balance of feature sparsity (218 genes), probability calibration (log loss $0.020$), and selection stability across data splits ($J = 0.773$).
+    \item Decision tree ensembles showed high feature selection instability under collinearity, making their feature importance rankings less dependable as consistent biomarker sets.
+    \item Linear regularizers handled small sample training ($n = 30$) more robustly than gradient boosting.
 \end{enumerate}
-For clinical transcriptomic assay development, researchers should prioritize regularized linear models with grouped sparsity over complex black-box architectures.
+
+\paragraph{Limitations:}
+Several limitations should be noted:
+\begin{itemize}
+    \item We evaluated models on a single dataset of 801 samples across five distinct adult solid tumor types. We cannot conclude that these findings would carry over directly to more subtle classification tasks, such as distinguishing fine tumor subtypes or predicting clinical outcomes.
+    \item The dataset features are anonymized gene labels, which prevented us from verifying whether the selected genes correspond to known cancer pathways.
+    \item True clinical validation would require external test cohorts from different sequencing platforms and institutions, which was outside the scope of our project.
+\end{itemize}
+Within the scope of our benchmark, however, the results show that when data is linearly separable and features are correlated, simple regularized linear models provide practical advantages in interpretability, stability, and computational simplicity.
 
 \begin{thebibliography}{9}
 \bibitem{fiorini2016gene}
