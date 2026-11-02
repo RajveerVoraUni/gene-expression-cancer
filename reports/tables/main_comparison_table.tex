@@ -1,0 +1,21 @@
+\begin{table}[ht]
+\centering
+\caption{Cross-Validated Performance, Sparsity, and Computational Cost Across 10 Repeated Stratified Splits ($p=1000$).}
+\label{tab:main_model_comparison}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llccccc}
+\toprule
+\textbf{Model} & \textbf{Family} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Log-Loss} & \textbf{Active Genes} & \textbf{Fit Time (s)} \\
+\midrule
+ElasticNet & Linear & $0.998 \pm 0.003$ & $0.998 \pm 0.003$ & $0.020 \pm 0.006$ & 218 & $3.32 \pm 0.17$ \\
+Lasso & Linear & $0.995 \pm 0.005$ & $0.996 \pm 0.004$ & $0.030 \pm 0.008$ & 89 & $4.44 \pm 0.30$ \\
+Ridge & Linear & $0.998 \pm 0.003$ & $0.998 \pm 0.003$ & $0.005 \pm 0.005$ & 1000 & $0.00 \pm 0.00$ \\
+Softmax & Linear & $0.998 \pm 0.003$ & $0.998 \pm 0.003$ & $0.005 \pm 0.005$ & 1000 & $0.00 \pm 0.00$ \\
+PCA_MLP & Neural Network (Dense) & $0.998 \pm 0.004$ & $0.997 \pm 0.004$ & $0.004 \pm 0.006$ & 434 & $1.68 \pm 0.77$ \\
+Sparse_NN & Neural Network (Sparse Group-Lasso) & $0.998 \pm 0.004$ & $0.998 \pm 0.004$ & $0.008 \pm 0.016$ & 1000 & $1.31 \pm 0.09$ \\
+RandomForest & Tree Ensemble & $0.994 \pm 0.005$ & $0.995 \pm 0.005$ & $0.081 \pm 0.011$ & 1000 & $0.13 \pm 0.01$ \\
+XGBoost & Tree Ensemble & $0.998 \pm 0.003$ & $0.998 \pm 0.004$ & $0.016 \pm 0.008$ & 1000 & $2.27 \pm 0.08$ \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

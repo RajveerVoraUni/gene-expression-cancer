@@ -1,0 +1,18 @@
+\begin{table}[ht]
+\centering
+\caption{Feature Selection Stability and Signature Size Across 10 Repeated Resampling Splits.}
+\label{tab:feature_stability}
+\resizebox{0.85\linewidth}{!}{%
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model} & \textbf{Mean Signature Size ($k$)} & \textbf{Pairwise Jaccard} & \textbf{Pairwise Dice} \\
+\midrule
+Lasso & 88.9 \pm 3.2 & $0.740 \pm 0.051$ & $0.849 \pm 0.033$ \\
+ElasticNet & 217.5 \pm 6.5 & $0.773 \pm 0.041$ & $0.872 \pm 0.026$ \\
+RandomForest & 50.0 \pm 0.0 & $0.242 \pm 0.052$ & $0.387 \pm 0.069$ \\
+XGBoost & 50.0 \pm 0.0 & $0.467 \pm 0.044$ & $0.635 \pm 0.041$ \\
+Sparse_NN & 1000.0 \pm 0.0 & $0.954 \pm 0.004$ & $0.976 \pm 0.002$ \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
