@@ -914,45 +914,15 @@
 % ============================================================
 {
 \setbeamertemplate{footline}{}
+\setbeamercolor{background canvas}{bg=navy}
 \begin{frame}[plain]
-
-  \begin{tikzpicture}[remember picture, overlay]
-    % Bottom navy strip
-    \fill[navy] (current page.south west)
-      rectangle ([yshift=0.28\paperheight] current page.south east);
-    \fill[teal] ([yshift=0.275\paperheight] current page.south west)
-      rectangle ([yshift=0.282\paperheight] current page.south east);
-  \end{tikzpicture}
-
-  % Upper: summary statement
-  \vspace*{0.60cm}
-  \begin{center}
-    {\condheading\bfseries\fontsize{18}{22}\selectfont\textcolor{navy}{%
-      In $p \gg n$ RNA-Seq classification,\\
-      regularized linear models are not a compromise —\\
-      they are the principled choice.}}\par\vspace{0.35cm}
-
-    {\color{linegrey}\hrule height 0.5pt width 0.55\linewidth}\par\vspace{0.30cm}
-
-    {\small\textcolor{mutedgrey}{%
-      High accuracy, sharp calibration, 78\% feature reduction,\\
-      and the most reproducible biomarker sets.}}
-  \end{center}
-
-  % Lower: authors (on navy strip)
-  \vspace*{0.25cm}
-  \begin{center}
-    {\small\bfseries\textcolor{white}{Rajveer Vora\quad\textbar\quad
-    Amartya Amritanshu\quad\textbar\quad P.\ Sanjith Reddy}}\par\vspace{0.05cm}
-    {\scriptsize\textcolor{white!60!navy}{Indian Statistical Institute, Kolkata\enspace
-    \textbar\enspace November 2026}}
-  \end{center}
-
-  \vspace*{0.12cm}
-  \begin{center}
-    {\condheading\bfseries\fontsize{22}{26}\selectfont\textcolor{white}{Thank You}}\par\vspace{0.04cm}
-    {\footnotesize\textcolor{white!60!navy}{Questions \& Discussion}}
-  \end{center}
+  \vspace*{-0.50cm}
+  \vfill
+  \centering
+  {\fontsize{36}{44}\selectfont\bfseries\textcolor{white}{Thank You}}\par
+  \vspace{0.35cm}
+  {\normalsize\textcolor{teal}{Questions \& Discussion}}\par
+  \vfill
 \end{frame}
 }
 
