@@ -82,7 +82,11 @@ The samples represent five solid tumor types:
     \item \textbf{COAD (Colon Adenocarcinoma, $n = 78$, 9.7\%):} Colorectal cancer, the smallest class in the cohort.
 \end{itemize}
 
-The class sizes range from 78 to 300 samples, giving an imbalance ratio of roughly $3.8:1$ (Figure~\ref{fig:class-balance}). Because of this imbalance, we report Macro-averaged F1 score (Macro-F1) alongside accuracy and multi-class cross entropy log loss.
+The class sizes range from 78 to 300 samples, giving an imbalance ratio of roughly $3.8:1$ (Figure~\ref{fig:class-balance}). Because of this imbalance, overall classification accuracy can be dominated by majority classes. We therefore evaluate models using the Macro-averaged F1 score ($\text{Macro-F1}$), defined as the unweighted arithmetic mean of class-specific $F_1$ scores across all $C = 5$ classes:
+\begin{equation}
+    F_{1, c} = \frac{2 \cdot \text{Precision}_c \cdot \text{Recall}_c}{\text{Precision}_c + \text{Recall}_c} = \frac{2 TP_c}{2 TP_c + FP_c + FN_c}, \qquad \text{Macro-F1} = \frac{1}{C} \sum_{c=1}^C F_{1, c}
+\end{equation}
+where $TP_c$, $FP_c$, and $FN_c$ denote true positives, false positives, and false negatives for class $c$, respectively.
 
 Before training models, we checked the quality of the data across samples. Figure~\ref{fig:sample-qc} shows the sample-level mean expression and the fraction of zero counts across tumor types. The median mean expression is fairly consistent across classes (ranging from 6.28 to 6.54), and the proportion of zeros per sample is also stable (median 0.136 to 0.155). This indicated no extreme outlier specimens or corrupted sample runs.
 
@@ -271,7 +275,11 @@ From this plot, we observe three distinct operating points:
 \subsection{Feature Selection Stability}
 In applications where models are used to identify biological markers, it is important that the selected features are consistent across different samples. If a model selects completely different features from one split to another, the identified gene panel cannot be considered reliable.
 
-We measured selection stability across the 10 data splits using the mean pairwise Jaccard index ($J = \frac{|S_i \cap S_j|}{|S_i \cup S_j|}$) and Dice coefficient (Table~\ref{tab:feature_stability} and Figure~\ref{fig:stability}). For tree models, we evaluated stability on the top 50 features ranked by importance score.
+Let $S_i$ and $S_j$ denote the sets of active genes selected on splits $i$ and $j$ ($1 \le i < j \le M$, with $M = 10$ splits, yielding $\binom{M}{2} = 45$ unique split pairs). We evaluate selection consistency using the pairwise Jaccard index $J(S_i, S_j)$ and Sørensen--Dice index $D(S_i, S_j)$:
+\begin{equation}
+    J(S_i, S_j) = \frac{|S_i \cap S_j|}{|S_i \cup S_j|}, \qquad D(S_i, S_j) = \frac{2 |S_i \cap S_j|}{|S_i| + |S_j|}
+\end{equation}
+The overall feature selection stability across the resampling experiment is evaluated as the average over all 45 pairs: $\bar{J} = \frac{1}{45} \sum_{i < j} J(S_i, S_j)$ and $\bar{D} = \frac{1}{45} \sum_{i < j} D(S_i, S_j)$ (Table~\ref{tab:feature_stability} and Figure~\ref{fig:stability}). For tree models, stability was evaluated on the top 50 features ranked by importance score.
 
 \begin{table}[H]
 \centering
