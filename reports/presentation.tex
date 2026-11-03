@@ -17,6 +17,7 @@
 % COLOUR PALETTE
 % ============================================================
 \definecolor{navy}{HTML}{183B63}
+\definecolor{covernavy}{HTML}{0A1B3D}
 \definecolor{teal}{HTML}{299D91}
 \definecolor{coral}{HTML}{C96B70}
 \definecolor{lightgrey}{HTML}{F2F4F7}
@@ -150,23 +151,23 @@
 % ─── SLIDE 1: COVER ──────────────────────────────────────
 % ============================================================
 {
-\setbeamertemplate{footline}{}
-\begin{frame}[plain]
-  \vspace*{0.6cm}
-  {\footnotesize\bfseries\textcolor{teal}{INDIAN STATISTICAL INSTITUTE, KOLKATA}}
-  \hfill
-  {\footnotesize\textcolor{mutedgrey}{Regression Techniques \textbar\ November 2026}}\par
-  \vspace{0.30cm}
-  {\color{navy}\hrule height 1.8pt}\par
-  \vspace{0.60cm}
+\setbeamercolor{background canvas}{bg=covernavy}
+\begin{frame}[plain,c]
+  \centering
+  \vspace*{0.25cm}
 
-  {\fontsize{24}{29}\selectfont\bfseries\textcolor{navy}{Flexibility vs.\ Interpretability in}}\par\vspace{0.10cm}
-  {\fontsize{24}{29}\selectfont\bfseries\textcolor{navy}{High-Dimensional Cancer Classification}}\par\vspace{0.60cm}
+  {\fontsize{24}{30}\selectfont\bfseries\textcolor{white}{Flexibility vs.\ Interpretability\\[4pt]in High-Dimensional\\[4pt]Cancer Classification}}\par
+  \vspace{0.45cm}
 
-  {\color{linegrey}\hrule height 0.6pt}\par
-  \vspace{0.40cm}
+  {\fontsize{13}{16}\selectfont\textcolor{teal}{Regularized Regression, Tree Ensembles, and Neural Networks}}\par
+  \vspace{1.05cm}
 
-  {\small\textbf{\textcolor{charcoal}{Rajveer Vora \quad\textbar\quad Amartya Amritanshu \quad\textbar\quad P.\ Sanjith Reddy}}}
+  {\fontsize{11.5}{15}\selectfont\bfseries\textcolor{white}{Rajveer Vora \qquad Amartya Amritanshu \qquad P.\ Sanjith Reddy}}\par
+  \vspace{0.45cm}
+
+  {\footnotesize\textcolor{white!65!covernavy}{Regression Techniques Course Project $\cdot$ Indian Statistical Institute}}\par
+  \vspace{0.14cm}
+  {\footnotesize\textcolor{white!65!covernavy}{November 2026}}
 \end{frame}
 }
 
