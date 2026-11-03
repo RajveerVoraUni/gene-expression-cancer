@@ -181,12 +181,30 @@ To ensure strict separation, we implemented the following protocol:
     \item \textbf{Training-Only Transformations:} Within each split, feature prescreening (selecting the top $p = 1{,}000$ genes by Median Absolute Deviation), standard scaling ($\mu_{\text{train}}, \sigma_{\text{train}}$), and PCA projection matrices were computed strictly from the 640 training samples. The fitted transformations were then applied to the test fold.
 \end{enumerate}
 
-\subsection{Rationale for Variance Filtering to Top 1,000 Genes}
-Rather than training directly on all $p = 20{,}531$ transcripts, we filter to the top $p = 1{,}000$ genes by variance within each training fold for three key reasons:
+\subsection{Median Absolute Deviation (MAD) as an Unsupervised Screening Measure}
+In high-throughput RNA-Seq transcriptomics, measuring $p = 20{,}531$ genes simultaneously introduces a vast number of uninformative features. Rather than training models directly on all 20,531 raw transcripts, we perform preliminary feature screening to the top $p = 1{,}000$ genes within each training fold using the Median Absolute Deviation (MAD).
+
+\subsubsection{Mathematical Definition}
+For patient sample $i \in \{1, \dots, n_{\text{train}}\}$ and gene $j \in \{1, \dots, p\}$, let $z_{ij} = \log_2(x_{ij} + 1)$ denote the log-transformed expression value. The Median Absolute Deviation of gene $j$ across all training observations is defined as:
+\begin{equation}
+    \text{MAD}_j = \text{median}_i \;\Bigl| z_{ij} - \text{median}_{i'}(z_{i'j}) \Bigr|
+    \label{eq:mad}
+\end{equation}
+This statistic quantifies how much a gene's expression level varies across patients, using the sample median rather than the sample mean as the measure of central tendency.
+
+\subsubsection{Statistical Rationale: Why MAD Over Sample Variance?}
+Standard variance filtering typically relies on the sample variance $s_j^2 = \frac{1}{n-1}\sum_{i=1}^n (z_{ij} - \bar{z}_j)^2$. However, in RNA-Seq data, MAD provides critical theoretical and empirical advantages:
+\begin{itemize}\itemsep=2pt
+    \item \textbf{Robustness to Extreme Outliers (50\% Breakdown Point):} The sample variance is quadratic in the deviations $(z_{ij} - \bar{z}_j)^2$ and possesses a 0\% breakdown point: a single anomalous sequencing spike, PCR amplification artifact, or severe technical outlier can arbitrarily inflate $s_j^2$, causing a biologically inactive gene to falsely appear highly variable. In contrast, MAD possesses the highest possible breakdown point for a scale estimator ($50\%$), ensuring that feature ranking reflects consistent expression variation across the cohort rather than isolated measurement artifacts.
+    \item \textbf{Elimination of Invariant and Housekeeping Transcripts:} A large fraction of the transcriptome consists of housekeeping genes (expressed at near-constant basal levels across all tissues) or silent transcripts with zero counts across the vast majority of patients. Such genes exhibit $\text{MAD}_j \approx 0$ and carry virtually no diagnostic utility for tumor classification. Filtering out near-zero MAD features eliminates static dimensions without discarding informative signals.
+    \item \textbf{Strictly Unsupervised Screening (Zero Label Leakage):} Crucially, MAD is a purely unsupervised dispersion measure. Its computation relies solely on the feature matrix $\mathbf{Z}_{\text{train}}$ and never accesses the class labels $y$. Consequently, ranking genes by MAD is fundamentally distinct from supervised feature selection (such as ANOVA $F$-tests or Lasso selection). Restricting this unsupervised ranking strictly to the training fold guarantees that candidate pool reduction does not introduce label leakage into the evaluation protocol.
+\end{itemize}
+
+\subsubsection{Rationale for Retaining Top 1,000 Genes (\texorpdfstring{$p$}{p}-Grid Ablation)}
+Reducing the feature dimension from 20,531 to the top 1,000 MAD genes balances computational feasibility with model expressiveness:
 \begin{itemize}\itemsep=1.5pt
-    \item \textbf{Filtering Non-Informative Noise (Unsupervised Screening):} A substantial portion of the $20{,}000+$ transcripts consists of housekeeping genes expressed uniformly across tissues or low-count noise. Ranking genes by Median Absolute Deviation (MAD) across patient samples removes static features without accessing cancer labels $y$, keeping feature screening strictly unsupervised and leak-free.
-    \item \textbf{Computational Feasibility:} Fitting eight model families—including iterative SAGA solvers for 5-class sparse linear models, 200-tree ensembles, and neural networks—across 10 repeated splits and downsampled sizes is computationally demanding. Training on all $p = 20{,}531$ genes requires estimating over $5 \times 20{,}531 \approx 102{,}655$ parameters per linear model split.
-    \item \textbf{Empirical Verification ($p$-Grid Ablation):} Testing across candidate feature dimensions ($p \in \{100, 250,$ $500, 1000, 2000\}$) showed that classification performance plateaued around $p = 500\text{--}1{,}000$ ($\text{Macro-F1} > 0.99$). Moving from 1,000 to 2,000 genes doubled training time without improving accuracy or log loss. Thus, 1,000 genes provides a rich candidate pool for downstream feature selection without excessive computational overhead.
+    \item \textbf{Computational Tractability:} Fitting eight distinct model architectures—including iterative SAGA solvers for 5-class sparse linear models, 200-tree ensembles, and neural networks—across 10 repeated splits and multiple sample-efficiency regimes with 20,531 raw genes requires estimating over $5 \times 20{,}531 \approx 102{,}655$ parameters per linear model split, creating an immense computational burden.
+    \item \textbf{Empirical Verification via $p$-Grid Search:} To ensure that screening to 1,000 genes does not discard discriminative information, we conducted a systematic $p$-grid ablation across candidate dimensions $p \in \{100, 250, 500, 1000, 2000\}$. The results demonstrated that test Macro-F1 rapidly saturated around $p = 500\text{--}1{,}000$ ($>0.99$), while expanding the feature pool to 2,000 genes doubled training wall-clock time with zero gain in Macro-F1 or log loss. Thus, 1,000 genes provides an ample, representative feature space for downstream regularized selection.
 \end{itemize}
 
 \subsection{Models Evaluated}
