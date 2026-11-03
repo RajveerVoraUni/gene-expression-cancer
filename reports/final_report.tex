@@ -153,6 +153,14 @@ To ensure strict separation, we implemented the following protocol:
     \item \textbf{Training-Only Transformations:} Within each split, feature prescreening (selecting the top $p = 1{,}000$ genes by Median Absolute Deviation), standard scaling ($\mu_{\text{train}}, \sigma_{\text{train}}$), and PCA projection matrices were computed strictly from the 640 training samples. The fitted transformations were then applied to the test fold.
 \end{enumerate}
 
+\subsection{Rationale for Variance Filtering to Top 1,000 Genes}
+Rather than training directly on all $p = 20{,}531$ transcripts, we filter to the top $p = 1{,}000$ genes by variance within each training fold for three key reasons:
+\begin{itemize}\itemsep=1.5pt
+    \item \textbf{Filtering Non-Informative Noise (Unsupervised Screening):} A substantial portion of the $20{,}000+$ transcripts consists of housekeeping genes expressed uniformly across tissues or low-count noise. Ranking genes by Median Absolute Deviation (MAD) across patient samples removes static features without accessing cancer labels $y$, keeping feature screening strictly unsupervised and leak-free.
+    \item \textbf{Computational Feasibility:} Fitting eight model families—including iterative SAGA solvers for 5-class sparse linear models, 200-tree ensembles, and neural networks—across 10 repeated splits and downsampled sizes is computationally demanding. Training on all $p = 20{,}531$ genes requires estimating over $5 \times 20{,}531 \approx 102{,}655$ parameters per linear model split.
+    \item \textbf{Empirical Verification ($p$-Grid Ablation):} Testing across candidate feature dimensions ($p \in \{100, 250,$ $500, 1000, 2000\}$) showed that classification performance plateaued around $p = 500\text{--}1{,}000$ ($\text{Macro-F1} > 0.99$). Moving from 1,000 to 2,000 genes doubled training time without improving accuracy or log loss. Thus, 1,000 genes provides a rich candidate pool for downstream feature selection without excessive computational overhead.
+\end{itemize}
+
 \subsection{Models Evaluated}
 We evaluated eight models representing three distinct families (linear models, tree ensembles, and neural networks):
 \begin{enumerate}
