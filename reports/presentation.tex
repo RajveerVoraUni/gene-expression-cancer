@@ -554,13 +554,13 @@ In-fold $Z$-standardization}
     & \textbf{Genes}
     & \textbf{Jaccard} \\
   \midrule
-  Softmax    & $0.998$ & $0.005$ & $1000$ & $1.00$ \\
-  Ridge      & $0.998$ & $0.005$ & $1000$ & $1.00$ \\
-  Lasso      & $0.995$ & $0.030$ & $\mathbf{89}$   & $0.44$ \\
+  Softmax    & $0.998$ & $0.005$ & $1000$ & --- \\
+  Ridge      & $0.998$ & $0.005$ & $1000$ & --- \\
+  Lasso      & $0.995$ & $0.030$ & $\mathbf{89}$   & $0.74$ \\
   \rowcolor{tealbg}
-  \textbf{Elastic Net} & $\mathbf{0.998}$ & $\mathbf{0.020}$ & $\mathbf{218}$ & $\mathbf{0.57}$ \\
-  Random Forest & $0.994$ & $0.081$ & $1000$ & $0.16$ \\
-  XGBoost       & $0.995$ & $0.028$ & $1000$ & $0.29$ \\
+  \textbf{Elastic Net} & $\mathbf{0.998}$ & $\mathbf{0.020}$ & $\mathbf{218}$ & $\mathbf{0.77}$ \\
+  Random Forest & $0.994$ & $0.081$ & $1000$ & $0.24$ \\
+  XGBoost       & $0.995$ & $0.028$ & $1000$ & $0.47$ \\
   PCA-MLP       & $0.998$ & $0.004$ & 434 & --- \\
   Sparse NN     & $0.997$ & $0.063$ & $1000$ & --- \\
   \bottomrule
@@ -612,10 +612,10 @@ In-fold $Z$-standardization}
 
   \begin{column}{0.44\textwidth}
     \begin{itemize}\itemsep=2pt\footnotesize
-      \item \textbf{Elastic Net:} Jaccard $0.57$ (Dice $0.73$) — leads sparse models.
-      \item \textbf{Lasso:} Jaccard $0.44$ — collinear omission hurts stability.
-      \item \textbf{XGBoost:} Jaccard $0.29$ — greedy splits fluctuate.
-      \item \textbf{Random Forest:} Jaccard $\mathbf{0.16}$ — lowest consistency.
+      \item \textbf{Elastic Net:} Jaccard $0.77$ (Dice $0.87$) — leads sparse models.
+      \item \textbf{Lasso:} Jaccard $0.74$ — collinear omission hurts stability.
+      \item \textbf{XGBoost:} Jaccard $0.47$ — greedy splits fluctuate.
+      \item \textbf{Random Forest:} Jaccard $\mathbf{0.24}$ — lowest consistency.
     \end{itemize}
 
     \vspace{0.04cm}
@@ -686,7 +686,7 @@ In-fold $Z$-standardization}
     \end{column}
     \begin{column}{0.90\linewidth}
       {\footnotesize\bfseries\textcolor{navy}{Collinearity destabilises Lasso and trees.}}\par
-      {\scriptsize\textcolor{charcoal}{Lasso drops genes arbitrarily; tree stability drops to $0.16$. Elastic Net grouping ensures stability ($0.57$).}}
+      {\scriptsize\textcolor{charcoal}{Lasso drops genes arbitrarily; tree stability drops to $0.24$. Elastic Net grouping ensures stability ($0.77$).}}
     \end{column}
   \end{columns}
 \end{beamercolorbox}
