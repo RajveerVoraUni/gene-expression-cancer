@@ -131,9 +131,15 @@ To inspect feature patterns directly, we generated a clustered heatmap of the 50
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{06_top_variable_feature_heatmap.png}
-    \caption{Clustered heatmap of standardized expression for the 50 most variable genes, grouped by tumor type.}
-    \label{fig:heatmap}
+    \begin{minipage}[c]{0.57\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{06_top_variable_feature_heatmap.png}
+    \end{minipage}\hfill
+    \begin{minipage}[c]{0.40\textwidth}
+        \captionsetup{font=footnotesize}
+        \caption{A clustered heatmap of the 50 genes with the highest variance across the patient samples. Each gene was standardized so that the colours represent relative expression levels. The columns represent patients, grouped by cancer type, and the dendrogram shows similarities between their expression profiles. We observe structured expression patterns across the cancer groups, suggesting that the dataset contains class-specific information. This motivates our use of feature selection and classification models.}
+        \label{fig:heatmap}
+    \end{minipage}
 \end{figure}
 
 \section{Experimental Methodology}
