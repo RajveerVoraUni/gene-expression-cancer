@@ -330,16 +330,23 @@ tested on the fixed outer test set of $N_{\text{test}} = 161$ samples. At $n_{\t
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{02_n_efficiency_curves.png}
-    \caption{Sample efficiency comparison: Macro-F1 performance as a function of training sample size $n_{\text{train}}$.}
-    \label{fig:n-stress}
+    \begin{minipage}[c]{0.58\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{02_n_efficiency_curves.png}
+    \end{minipage}\hfill
+    \begin{minipage}[c]{0.39\textwidth}
+        \captionsetup{font=footnotesize}
+        \caption{Macro-F1 performance as a function of training sample size $n_{\text{train}}$, with the y-axis starting from $0.96$ to highlight divergence under sample scarcity.}
+        \label{fig:n-stress}
+        \vspace{5pt}
+        \footnotesize
+        \textbf{Key Interpretation Notes:}
+        \begin{itemize}\itemsep=3pt \leftmargin=10pt
+            \item \textbf{Resilience of Linear Models:} Regularized linear models (Ridge, Softmax, Elastic Net) remain stable ($\text{Macro-F1} \ge 0.995$) even at $n_{\text{train}} = 30$ (only 6 samples/class), benefiting from strong linear inductive bias.
+            \item \textbf{Degradation in Tree Ensembles:} Gradient boosted trees (XGBoost) degrade noticeably to $0.976 \pm 0.018$ (minimum fold score $0.954$). Greedy recursive tree splits overfit noise when observations are severely limited.
+        \end{itemize}
+    \end{minipage}
 \end{figure}
-
-Figure~\ref{fig:n-stress} shows how performance changes as sample size decreases:
-\begin{itemize}
-    \item \textbf{Performance of Gradient Boosting with Few Samples:} XGBoost showed noticeable degradation at $n_{\text{train}} = 30$, dropping to \textbf{$0.976 \pm 0.018$ Macro-F1}, with a minimum fold score of $0.954$. Random Forest also dropped slightly to $0.985$. When sample sizes are small, greedy recursive tree splits are more likely to overfit noise in the training set.
-    \item \textbf{Resilience of Regularized Linear Models:} In contrast, regularized linear models (Ridge, Softmax, and Elastic Net) maintained \textbf{$0.995 \pm 0.004$ Macro-F1} even at $n_{\text{train}} = 30$. The linear inductive bias combined with regularization prevented severe overfitting when data was limited.
-\end{itemize}
 
 \section{Answers to Research Questions}
 

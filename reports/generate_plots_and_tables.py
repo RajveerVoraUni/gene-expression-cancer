@@ -113,8 +113,8 @@ def generate_visualizations():
         ax.set_title("Sample Efficiency Stress Test: Macro-F1 vs. Training Sample Size", fontsize=13, fontweight="bold")
         ax.set_xlabel("Number of Training Samples ($n_{train}$)", fontsize=11)
         ax.set_ylabel("Test Macro-F1 Score", fontsize=11)
-        ax.set_ylim(0.945, 1.005)
-        ax.set_yticks(np.arange(0.95, 1.005, 0.01))
+        ax.set_ylim(0.960, 1.003)
+        ax.set_yticks(np.arange(0.96, 1.005, 0.01))
         ax.axhline(1.0, color="gray", linestyle="--", alpha=0.5)
         ax.legend(bbox_to_anchor=(1.02, 1), loc="upper left", borderaxespad=0.)
 
