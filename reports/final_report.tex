@@ -175,7 +175,30 @@ We evaluated eight models representing three distinct families (linear models, t
 \end{enumerate}
 
 \subsection{Hyperparameter Optimization}
-To avoid tuning leakage, model hyperparameters—including regularization parameters $C$, tree depths, boosting learning rates, and neural dropout rates—were selected using 5-fold stratified cross validation within each training set. Once selected, these configurations were evaluated on the 10 outer test folds.
+To prevent data snooping and tuning leakage, all model hyperparameters were tuned using 5-fold stratified cross validation strictly on the training partition ($n_{\text{train}} = 640$). Candidate configurations were evaluated by minimizing validation multi-class log loss while tracking Macro-F1. Table~\ref{tab:hyperparameters} outlines the candidate search ranges and final selected configurations used across all benchmark experiments.
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameter tuning search space and final selected configurations ($n_{\text{train}} = 640$).}
+\label{tab:hyperparameters}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+\textbf{Model} & \textbf{Tuned Parameter / Search Space} & \textbf{Selected Configuration} \\
+\midrule
+Softmax & Unpenalized baseline ($C = 10^5$, L-BFGS) & $C = 10^5$, L-BFGS solver, $\text{max\_iter} = 500$ \\
+Ridge & $C \in \{10^{-3}, 10^{-2}, 10^{-1}, 1, 10, 100\}$ & $C = 1.0$ ($\lambda = 1.0$), L-BFGS, $\text{max\_iter} = 500$ \\
+Lasso & $C \in \{0.02, 0.05, 0.1, 0.2, 0.5, 1.0\}$ (SAGA) & $C = 0.2$ ($\lambda = 5.0$, $k \approx 89$ genes), SAGA, $\text{tol} = 10^{-3}$ \\
+Elastic Net & $C \in [0.05, 1.0]$, $\alpha \in \{0.1, 0.3, 0.5, 0.7, 0.9\}$ & $C = 0.2$, $\ell_1$-ratio $\alpha = 0.5$ ($k \approx 218$ genes), SAGA \\
+Random Forest & $B \in \{100, 200, 300\}$, depth $\in \{16, 32, \text{None}\}$, $m \in \{\sqrt{p}, \log_2 p\}$ & $B = 200$, $\text{max\_depth} = 32$, $\text{max\_features} = \sqrt{p} \approx 31$, $\text{leaf} = 1$ \\
+XGBoost & Depth $\in \{4, 5, 6\}$, $\eta \in \{0.03, 0.05, 0.1\}$, subsample $\in [0.7, 0.8]$ & $B = 200$, depth $= 6$, $\eta = 0.03$, subsample $= 0.8$, colsample $= 0.3$, $\lambda = 5.0$ \\
+PCA-MLP & Hidden layers, $\eta \in \{10^{-3}, 3\times 10^{-3}, 5\times 10^{-3}\}$, dropout & $434 \to 128 \to 64 \to 5$, $\text{Dropout}(0.3)$, Adam ($\eta = 0.003$), 40 epochs \\
+Sparse NN & $\lambda_{\text{group}} \in [0.01, 0.08]$, hidden $\in \{32, 64\}$, $\eta \in [0.003, 0.005]$ & $1000 \to 64 \to 5$, $\lambda_{\text{group}} = 0.02$, $\text{Dropout}(0.2)$, Adam ($\eta = 0.003$), 40 epochs \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
 
 \section{Experimental Results and Discussion}
 
