@@ -68,11 +68,11 @@
 \setbeamertemplate{itemize subitem}{\textcolor{mutedgrey}{\raisebox{0.15ex}{\footnotesize$\circ$}}}
 
 % ============================================================
-% FRAMETITLE
+% FRAMETITLE (With subtle right-aligned page numbers)
 % ============================================================
 \setbeamertemplate{frametitle}{%
   \vspace{0.60cm}%
-  {\condheading\bfseries\Large\textcolor{navy}{\insertframetitle}}\par%
+  {\condheading\bfseries\Large\textcolor{navy}{\insertframetitle}\hfill{\normalsize\mdseries\textcolor{mutedgrey}{\insertframenumber\,/\,\inserttotalframenumber}}}\par%
   \if\relax\detokenize\expandafter{\insertframesubtitle}\relax\else%
     \vspace{0.04cm}%
     {\small\textcolor{mutedgrey}{\insertframesubtitle}}\par%
@@ -83,20 +83,9 @@
 }
 
 % ============================================================
-% FOOTER
+% FOOTER (Removed as requested)
 % ============================================================
-\setbeamertemplate{footline}{%
-  \ifnum\thepage>1%
-    {\color{linegrey}\hrule height 0.4pt width\paperwidth}%
-    \begin{beamercolorbox}[wd=\paperwidth,ht=3.2ex,dp=1.8ex,leftskip=10mm,rightskip=10mm]{footline}%
-      {\tiny\textcolor{mutedgrey}{Cancer RNA-Seq: Flexibility vs.\ Interpretability in $p \gg n$}}%
-      \hfill%
-      {\tiny\textcolor{mutedgrey}{Indian Statistical Institute}}%
-      \hspace{6mm}%
-      {\tiny\textcolor{navy}{\insertframenumber\,/\,\inserttotalframenumber}}%
-    \end{beamercolorbox}%
-  \fi%
-}
+\setbeamertemplate{footline}{}
 
 % ============================================================
 % HELPERS
@@ -672,7 +661,8 @@
 % ─── SLIDE 14: BOXPLOTS ───────────────────────────────────
 % ============================================================
 \begin{frame}
-\frametitle{All Models Achieve High Accuracy — Log-Loss Tells the Real Story {\small\mdseries\textcolor{mutedgrey}{(Performance distributions across 10 repeated train/test splits)}}}
+\frametitle{All Models Achieve High Accuracy — Log-Loss Tells the Real Story}
+\framesubtitle{Performance distributions across 10 repeated train/test splits}
 
 \vspace{-0.10cm}
 \begin{columns}[T]
