@@ -763,52 +763,83 @@
 \sectiondivider{05}{Interpretation and\\Conclusions}
 
 % ============================================================
-% ─── SLIDE 20: RESEARCH FINDINGS ──────────────────────────
+% ─── SLIDE 20: RESEARCH FINDINGS ──────────────────
 % ============================================================
 \begin{frame}
 \frametitle{Three Main Findings}
+\framesubtitle{Answering the three primary research questions of this study}
 
-\vspace{-0.10cm}
-\begin{beamercolorbox}[wd=\linewidth, sep=3pt, rounded=false]{finding1}
-  \begin{columns}[c]
-    \begin{column}{0.07\linewidth}
-      \centering{\condheading\bfseries\large\textcolor{teal}{Q1}}
-    \end{column}
-    \begin{column}{0.90\linewidth}
-      {\footnotesize\bfseries\textcolor{navy}{Flexibility provides no advantage in RNA-Seq.}}\par
-      {\scriptsize\textcolor{charcoal}{Linear separability holds. Complex models yield no F1 gain and worse calibration.}}
-    \end{column}
-  \end{columns}
-\end{beamercolorbox}
-\setbeamercolor{finding1}{bg=lightgrey}
+\vspace{0.05cm}
 
-\vspace{0.04cm}
-\begin{beamercolorbox}[wd=\linewidth, sep=3pt, rounded=false]{finding2}
-  \begin{columns}[c]
-    \begin{column}{0.07\linewidth}
-      \centering{\condheading\bfseries\large\textcolor{coral}{Q2}}
-    \end{column}
-    \begin{column}{0.90\linewidth}
-      {\footnotesize\bfseries\textcolor{navy}{Collinearity destabilises Lasso and trees.}}\par
-      {\scriptsize\textcolor{charcoal}{Lasso drops genes arbitrarily; tree stability drops to $0.24$. Elastic Net grouping ensures stability ($0.77$).}}
-    \end{column}
-  \end{columns}
-\end{beamercolorbox}
-\setbeamercolor{finding2}{bg=coralbg}
+% Finding 1
+\begin{tikzpicture}
+  \node[
+    draw=linegrey,
+    fill=lightgrey,
+    line width=0.6pt,
+    rounded corners=4pt,
+    inner sep=6pt,
+    text width=\dimexpr\linewidth-12pt\relax
+  ] {
+    \begin{columns}[c, onlytextwidth]
+      \begin{column}{0.08\linewidth}
+        \centering{\condheading\bfseries\large\textcolor{teal}{Q1}}
+      \end{column}
+      \begin{column}{0.88\linewidth}
+        {\footnotesize\bfseries\textcolor{navy}{Flexibility provides no advantage in RNA-Seq tumour classification.}}\par\vspace{0.02cm}
+        {\scriptsize\textcolor{charcoal}{Linear separability holds in gene space. Complex non-linear models yield zero F1 gain and worse calibration.}}
+      \end{column}
+    \end{columns}
+  };
+\end{tikzpicture}
 
-\vspace{0.04cm}
-\begin{beamercolorbox}[wd=\linewidth, sep=3pt, rounded=false]{finding3}
-  \begin{columns}[c]
-    \begin{column}{0.07\linewidth}
-      \centering{\condheading\bfseries\large\textcolor{navy}{Q3}}
-    \end{column}
-    \begin{column}{0.90\linewidth}
-      {\footnotesize\bfseries\textcolor{navy}{Elastic Net achieves optimal balance.}}\par
-      {\scriptsize\textcolor{charcoal}{Ties best F1 ($0.998$), selects 218 genes (78\% cut), and leads in sparse stability.}}
-    \end{column}
-  \end{columns}
-\end{beamercolorbox}
-\setbeamercolor{finding3}{bg=tealbg}
+\vspace{0.18cm}
+
+% Finding 2
+\begin{tikzpicture}
+  \node[
+    draw=linegrey,
+    fill=lightgrey,
+    line width=0.6pt,
+    rounded corners=4pt,
+    inner sep=6pt,
+    text width=\dimexpr\linewidth-12pt\relax
+  ] {
+    \begin{columns}[c, onlytextwidth]
+      \begin{column}{0.08\linewidth}
+        \centering{\condheading\bfseries\large\textcolor{coral}{Q2}}
+      \end{column}
+      \begin{column}{0.88\linewidth}
+        {\footnotesize\bfseries\textcolor{navy}{High collinearity severely destabilises Lasso and decision trees.}}\par\vspace{0.02cm}
+        {\scriptsize\textcolor{charcoal}{Lasso selects arbitrarily among correlated genes; tree stability drops to $0.24$. Elastic Net grouping recovers stability ($0.77$).}}
+      \end{column}
+    \end{columns}
+  };
+\end{tikzpicture}
+
+\vspace{0.18cm}
+
+% Finding 3
+\begin{tikzpicture}
+  \node[
+    draw=linegrey,
+    fill=lightgrey,
+    line width=0.6pt,
+    rounded corners=4pt,
+    inner sep=6pt,
+    text width=\dimexpr\linewidth-12pt\relax
+  ] {
+    \begin{columns}[c, onlytextwidth]
+      \begin{column}{0.08\linewidth}
+        \centering{\condheading\bfseries\large\textcolor{navy}{Q3}}
+      \end{column}
+      \begin{column}{0.88\linewidth}
+        {\footnotesize\bfseries\textcolor{navy}{Elastic Net achieves the optimal sparsity--stability--calibration trade-off.}}\par\vspace{0.02cm}
+        {\scriptsize\textcolor{charcoal}{Ties top Macro-F1 ($0.998$), eliminates 78\% of candidate genes ($218$ retained), and delivers highest sparse biomarker consistency.}}
+      \end{column}
+    \end{columns}
+  };
+\end{tikzpicture}
 
 \end{frame}
 
