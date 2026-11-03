@@ -69,16 +69,22 @@
 \setbeamertemplate{itemize subitem}{\textcolor{mutedgrey}{\raisebox{0.15ex}{\footnotesize$\circ$}}}
 
 % ============================================================
-% FRAMETITLE (With subtle right-aligned page numbers)
+% FRAMETITLE (Centered headings with subtle right-aligned page numbers)
 % ============================================================
 \setbeamertemplate{frametitle}{%
-  \vspace{0.60cm}%
-  {\condheading\bfseries\Large\textcolor{navy}{\insertframetitle}\hfill{\normalsize\mdseries\textcolor{mutedgrey}{\insertframenumber\,/\,\inserttotalframenumber}}}\par%
+  \vspace{0.55cm}%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=base east, text=mutedgrey, font=\normalsize\mdseries]
+      at ([xshift=-10mm, yshift=-1.08cm]current page.north east)
+      {\insertframenumber\,/\,\inserttotalframenumber};
+  \end{tikzpicture}%
+  \centering
+  {\condheading\bfseries\Large\textcolor{navy}{\insertframetitle}}\par%
   \if\relax\detokenize\expandafter{\insertframesubtitle}\relax\else%
-    \vspace{0.04cm}%
+    \vspace{0.06cm}%
     {\small\textcolor{mutedgrey}{\insertframesubtitle}}\par%
   \fi%
-  \vspace{0.20cm}%
+  \vspace{0.22cm}%
 }
 
 % ============================================================
