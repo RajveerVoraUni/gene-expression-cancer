@@ -392,43 +392,108 @@
 \end{frame}
 
 % ============================================================
-% ─── SLIDE 9: GROUPING PROPERTY + BASELINES ───────────────
+% ─── SLIDE 9: NON-LINEAR BENCHMARK ARCHITECTURES ──────────
 % ============================================================
 \begin{frame}
-\frametitle{Why Elastic Net Handles Collinearity Better}
-\framesubtitle{Theorem and non-linear baselines}
+\frametitle{Non-Linear Benchmark Architectures}
+\framesubtitle{Tree ensembles and neural network baselines}
 
-\vspace{-0.15cm}
-\footnotesize
-\begin{columns}[T]
+\vspace{0.10cm}
+\begin{columns}[T, onlytextwidth]
 
-  \begin{column}{0.48\textwidth}
-    {\small\bfseries\textcolor{navy}{Grouping Bound (Zou \& Hastie)}}
-    \par\vspace{0.02cm}
-    For correlated genes ($r$):
-    {\footnotesize\[
-      \bigl|\hat{w}_i - \hat{w}_j\bigr| \;\le\; \frac{\sqrt{2(1-r)}}{\lambda(1-\alpha)}\,\|\mathbf{y}\|_2
-    \]}
-    \begin{itemize}\itemsep=2pt\footnotesize
-      \item $\hat{w}_i \to \hat{w}_j$ as $r \to 1$.
-      \item Selects groups jointly.
-    \end{itemize}
+  % Left Column: 1. Random Forest & 3. PCA-MLP
+  \begin{column}{0.485\textwidth}
+    \begin{tikzpicture}
+      \node[
+        draw=linegrey,
+        fill=lightgrey,
+        line width=0.6pt,
+        rounded corners=4pt,
+        inner sep=6.5pt,
+        minimum width=\linewidth,
+        text width=\linewidth-13pt,
+        minimum height=2.40cm,
+        anchor=north
+      ] at (0,0) {
+        {\footnotesize\bfseries\textcolor{navy}{1.\ Random Forest}}\par\vspace{0.04cm}
+        \begin{itemize}\itemsep=1.5pt\scriptsize
+          \item Ensemble of bootstrap-trained trees.
+          \item Random feature subsets at each split.
+          \item Captures nonlinearities and feature interactions.
+        \end{itemize}
+      };
+    \end{tikzpicture}
+
+    \vspace{0.16cm}
+    \begin{tikzpicture}
+      \node[
+        draw=linegrey,
+        fill=lightgrey,
+        line width=0.6pt,
+        rounded corners=4pt,
+        inner sep=6.5pt,
+        minimum width=\linewidth,
+        text width=\linewidth-13pt,
+        minimum height=2.40cm,
+        anchor=north
+      ] at (0,0) {
+        {\footnotesize\bfseries\textcolor{navy}{3.\ PCA-MLP}}\par\vspace{0.04cm}
+        \begin{itemize}\itemsep=1.5pt\scriptsize
+          \item PCA reduces the dimensionality of gene expression.
+          \item Multilayer perceptron learns nonlinear mappings.
+          \item Combines dimensionality reduction with neural modelling.
+        \end{itemize}
+      };
+    \end{tikzpicture}
   \end{column}
 
-  \begin{column}{0.48\textwidth}
-    {\small\bfseries\textcolor{navy}{Non-Linear Baselines}}\par\vspace{0.02cm}
-    {\color{linegrey}\hrule height 0.4pt}
-    \begin{itemize}\itemsep=2pt\footnotesize
-      \item \textbf{Random Forest:} 200 trees.
-      \item \textbf{XGBoost:} depth 4.
-      \item \textbf{PCA-MLP:} 434 PCs.
-      \item \textbf{Sparse NN:} group-$L_1$.
-    \end{itemize}
+  % Right Column: 2. XGBoost & 4. Sparse Group-Lasso NN
+  \begin{column}{0.485\textwidth}
+    \begin{tikzpicture}
+      \node[
+        draw=linegrey,
+        fill=lightgrey,
+        line width=0.6pt,
+        rounded corners=4pt,
+        inner sep=6.5pt,
+        minimum width=\linewidth,
+        text width=\linewidth-13pt,
+        minimum height=2.40cm,
+        anchor=north
+      ] at (0,0) {
+        {\footnotesize\bfseries\textcolor{navy}{2.\ XGBoost}}\par\vspace{0.04cm}
+        \begin{itemize}\itemsep=1.5pt\scriptsize
+          \item Gradient-boosted decision trees.
+          \item Sequentially corrects previous prediction errors.
+          \item Captures complex nonlinear decision boundaries.
+        \end{itemize}
+      };
+    \end{tikzpicture}
+
+    \vspace{0.16cm}
+    \begin{tikzpicture}
+      \node[
+        draw=linegrey,
+        fill=lightgrey,
+        line width=0.6pt,
+        rounded corners=4pt,
+        inner sep=6.5pt,
+        minimum width=\linewidth,
+        text width=\linewidth-13pt,
+        minimum height=2.40cm,
+        anchor=north
+      ] at (0,0) {
+        {\footnotesize\bfseries\textcolor{navy}{4.\ Sparse Group-Lasso NN}}\par\vspace{0.04cm}
+        \begin{itemize}\itemsep=1.5pt\scriptsize
+          \item Neural network with group-based sparsity.
+          \item Encourages selective use of input features.
+          \item Combines nonlinear learning with feature regularization.
+        \end{itemize}
+      };
+    \end{tikzpicture}
   \end{column}
 
 \end{columns}
-
-\takeaway{Trees split arbitrarily; Elastic Net groups collinear genes.}
 \end{frame}
 
 % ============================================================
