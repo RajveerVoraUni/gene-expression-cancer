@@ -827,31 +827,85 @@
 % ─── SLIDE 21: LIMITATIONS ────────────────────────────────
 % ============================================================
 \begin{frame}
-\frametitle{Limitations and Open Questions}
+\frametitle{Limitations}
 
-\vspace{-0.10cm}
-\begin{columns}[T]
-  \begin{column}{0.48\textwidth}
-    {\small\bfseries\textcolor{navy}{Study Limitations:}}\par\vspace{0.06cm}
-    \begin{itemize}\itemsep=3pt\footnotesize
-      \item \textbf{Single cohort:} $n=801$; batch effects unmeasured across centres.
-      \item \textbf{Inter-tissue task:} intra-organ subtypes remain unstudied.
-      \item \textbf{Predictive screen:} 218 genes form statistical candidates, not a diagnostic assay.
-    \end{itemize}
+\vspace{0.15cm}
+\begin{columns}[T, onlytextwidth]
+
+  \begin{column}{0.485\textwidth}
+    \begin{tikzpicture}
+      \node[
+        draw=linegrey,
+        fill=lightgrey,
+        line width=0.7pt,
+        rounded corners=4pt,
+        inner sep=7pt,
+        minimum width=\linewidth,
+        text width=\linewidth-14pt,
+        minimum height=2.10cm,
+        anchor=north
+      ] at (0,0) {
+        {\footnotesize\bfseries\textcolor{navy}{1.\ Single-Cohort Evaluation}}\par\vspace{0.06cm}
+        {\scriptsize\textcolor{charcoal}{Analysis uses 801 samples from one dataset; generalizability to independent cohorts is unverified.}}
+      };
+    \end{tikzpicture}
+
+    \vspace{0.18cm}
+    \begin{tikzpicture}
+      \node[
+        draw=linegrey,
+        fill=lightgrey,
+        line width=0.7pt,
+        rounded corners=4pt,
+        inner sep=7pt,
+        minimum width=\linewidth,
+        text width=\linewidth-14pt,
+        minimum height=2.10cm,
+        anchor=north
+      ] at (0,0) {
+        {\footnotesize\bfseries\textcolor{navy}{2.\ High-Dimensional Feature Space}}\par\vspace{0.06cm}
+        {\scriptsize\textcolor{charcoal}{Screening 20{,}531 genes to 1{,}000 potentially excludes relevant biological features.}}
+      };
+    \end{tikzpicture}
   \end{column}
 
-  \begin{column}{0.48\textwidth}
-    {\small\bfseries\textcolor{navy}{Non-Linear Roles:}}\par\vspace{0.06cm}
-    \begin{itemize}\itemsep=2pt\footnotesize
-      \item Subtle intra-tumour molecular subtyping.
-      \item Higher-order epistatic gene interactions.
-      \item Multi-modal data (genomics + pathology).
-    \end{itemize}
+  \begin{column}{0.485\textwidth}
+    \begin{tikzpicture}
+      \node[
+        draw=linegrey,
+        fill=lightgrey,
+        line width=0.7pt,
+        rounded corners=4pt,
+        inner sep=7pt,
+        minimum width=\linewidth,
+        text width=\linewidth-14pt,
+        minimum height=2.10cm,
+        anchor=north
+      ] at (0,0) {
+        {\footnotesize\bfseries\textcolor{navy}{3.\ Limited Biological Interpretability}}\par\vspace{0.06cm}
+        {\scriptsize\textcolor{charcoal}{Anonymized gene identifiers restrict biological interpretation of selected features.}}
+      };
+    \end{tikzpicture}
 
-    \vspace{0.08cm}
-    {\small\bfseries\textcolor{navy}{Takeaway:}}\par\vspace{0.04cm}
-    Default to Elastic Net for high-dimensional transcriptomics.
+    \vspace{0.18cm}
+    \begin{tikzpicture}
+      \node[
+        draw=linegrey,
+        fill=lightgrey,
+        line width=0.7pt,
+        rounded corners=4pt,
+        inner sep=7pt,
+        minimum width=\linewidth,
+        text width=\linewidth-14pt,
+        minimum height=2.10cm,
+        anchor=north
+      ] at (0,0) {
+        {\footnotesize\bfseries\textcolor{navy}{4.\ Broad Cancer Classification}}\par\vspace{0.06cm}
+        {\scriptsize\textcolor{charcoal}{Distinguishes five cancer types without examining molecular subtypes within each type.}}
+      };
+    \end{tikzpicture}
   \end{column}
+
 \end{columns}
 \end{frame}
 
