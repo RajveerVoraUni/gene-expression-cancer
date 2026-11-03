@@ -1,633 +1,742 @@
 \documentclass[aspectratio=169,10pt]{beamer}
 
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{fontspec}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric}
 \usepackage{booktabs}
 \usepackage{graphicx}
-\usepackage{tikz}
-\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
 \usepackage{microtype}
 
-% ==========================================
-% SOPHISTICATED ACADEMIC COLOR SCHEME
-% ==========================================
-\definecolor{primary}{RGB}{15, 23, 42}         % Slate 900 (Deep Oxford Slate)
-\definecolor{accentblue}{RGB}{29, 78, 216}      % Royal Blue 700 (Academic Blue)
-\definecolor{accentteal}{RGB}{13, 148, 136}     % Teal 600 (Empirical Highlights)
-\definecolor{darktext}{RGB}{51, 65, 85}         % Slate 700 (Soft Dark Body Text)
-\definecolor{cardbg}{RGB}{248, 250, 252}        % Slate 50 (Soft Warm Card Background)
-\definecolor{cardborder}{RGB}{226, 232, 240}    % Slate 200 (Hairline Border)
-\definecolor{alertred}{RGB}{220, 38, 38}        % Red 600 (Crisp Academic Red)
-\definecolor{alertbg}{RGB}{254, 242, 242}       % Rose 50 (Subtle Alert Background)
-\definecolor{textmuted}{RGB}{100, 116, 139}     % Slate 500 (Muted Metadata)
+% ==============================================================================
+% EDITORIAL SCIENTIFIC COLOR PALETTE
+% ==============================================================================
+\definecolor{navy}{HTML}{183B63}         % Primary heading & structural colour
+\definecolor{teal}{HTML}{299D91}         % Secondary accent: workflows, takeaways, favourable results
+\definecolor{coral}{HTML}{C96B70}        % Muted coral: warnings, contrasts, limitations
+\definecolor{lightgrey}{HTML}{F2F4F7}    % Subtle neutral background for panels
+\definecolor{charcoal}{HTML}{30343B}     % Dark charcoal body text
+\definecolor{linegrey}{HTML}{E2E8F0}     % Subtle dividing lines & table borders
+\definecolor{mutedgrey}{HTML}{64748B}    % Secondary metadata & captions
 
-% Base Theme Colors
-\setbeamercolor{normal text}{fg=darktext,bg=white}
-\setbeamercolor{structure}{fg=accentblue}
-\setbeamercolor{frametitle}{fg=primary,bg=white}
-\setbeamercolor{cardborder}{bg=cardborder}
+% ==============================================================================
+% TYPOGRAPHY: EDITORIAL HIERARCHY
+% ==============================================================================
+\setsansfont{Helvetica Neue}[
+  BoldFont={Helvetica Neue Bold},
+  ItalicFont={Helvetica Neue Italic}
+]
+\newfontfamily\condheading{Avenir Next Condensed}[
+  BoldFont={Avenir Next Condensed Bold},
+  ItalicFont={Avenir Next Condensed Italic}
+]
+
+% Base beamer settings
+\setbeamercolor{normal text}{fg=charcoal,bg=white}
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{structure}{fg=navy}
 \setbeamertemplate{navigation symbols}{}
 \setbeamersize{text margin left=8mm, text margin right=8mm}
 
-% Itemize Styling
-\setbeamertemplate{itemize items}[circle]
-\setbeamercolor{item}{fg=accentblue}
-\setbeamercolor{subitem}{fg=accentteal}
+% Itemize customization
+\setbeamertemplate{itemize items}{\textcolor{teal}{\raisebox{0.2ex}{\tiny$\blacksquare$}}}
+\setbeamertemplate{itemize subitem}{\textcolor{mutedgrey}{\raisebox{0.2ex}{\tiny$\circ$}}}
 
-% Modern Soft-Card Blocks
-\setbeamertemplate{block begin}{%
-  \vskip\smallskipamount%
-  \begin{beamercolorbox}[rounded=true,shadow=false,wd=\linewidth,sep=6pt]{blockbody}%
-    {\bfseries\textcolor{accentblue}{\insertblocktitle}}\par\vspace{3pt}%
-}
-\setbeamertemplate{block end}{%
-  \end{beamercolorbox}%
-  \vskip\smallskipamount%
-}
-\setbeamercolor{blockbody}{fg=darktext,bg=cardbg}
-
-\setbeamertemplate{block alerted begin}{%
-  \vskip\smallskipamount%
-  \begin{beamercolorbox}[rounded=true,shadow=false,wd=\linewidth,sep=6pt]{alertbody}%
-    {\bfseries\textcolor{alertred}{\insertblocktitle}}\par\vspace{3pt}%
-}
-\setbeamertemplate{block alerted end}{%
-  \end{beamercolorbox}%
-  \vskip\smallskipamount%
-}
-\setbeamercolor{alertbody}{fg=darktext,bg=alertbg}
-
-% Centered Blocks with Configurable Width
-\newenvironment{centerblock}[2][0.75\linewidth]{%
-  \vskip\smallskipamount%
-  \noindent\hfill%
-  \begin{beamercolorbox}[rounded=true,shadow=false,wd=#1,sep=6pt]{blockbody}%
-    {\bfseries\textcolor{accentblue}{#2}}\par\vspace{3pt}%
-}{%
-  \end{beamercolorbox}%
-  \hfill\null\par%
-  \vskip\smallskipamount%
-}
-
-\newenvironment{alertcenterblock}[2][0.75\linewidth]{%
-  \vskip\smallskipamount%
-  \noindent\hfill%
-  \begin{beamercolorbox}[rounded=true,shadow=false,wd=#1,sep=6pt]{alertbody}%
-    {\bfseries\textcolor{alertred}{#2}}\par\vspace{3pt}%
-}{%
-  \end{beamercolorbox}%
-  \hfill\null\par%
-  \vskip\smallskipamount%
-}
-
-% Spacious, Non-Clipping Frametitle with Subtle Border and Right-Aligned Slide Number
+% ==============================================================================
+% FRAMETITLE & SUBTITLE TEMPLATE
+% ==============================================================================
 \setbeamertemplate{frametitle}{%
-  \nointerlineskip%
-  \begin{beamercolorbox}[wd=\paperwidth,ht=4.2ex,dp=1.8ex,leftskip=8mm,rightskip=8mm]{frametitle}%
-    \textcolor{primary}{\large\textbf{\insertframetitle}}%
-    \hfill%
-    \textcolor{textmuted}{\footnotesize\textbf{\insertframenumber{} / \inserttotalframenumber}}%
-  \end{beamercolorbox}%
-  \nointerlineskip%
-  \begin{beamercolorbox}[wd=\paperwidth,ht=0.8pt]{cardborder}\end{beamercolorbox}%
-  \vspace{0.8ex}%
+  \vspace{0.10cm}%
+  {\condheading\bfseries\large\textcolor{navy}{\insertframetitle}}\par%
+  \ifx\insertframesubtitle\empty\else%
+    \vspace{0.02cm}%
+    {\scriptsize\textcolor{mutedgrey}{\insertframesubtitle}}\par%
+  \fi%
+  \vspace{0.06cm}%
+  {\color{linegrey}\hrule height 0.5pt}%
+  \vspace{0.08cm}%
 }
 
-\setbeamercolor{footline}{bg=white}
-
-% Persistent Footer on EVERY content slide
+% ==============================================================================
+% FOOTER TEMPLATE (Unobtrusive & Consistent)
+% ==============================================================================
 \setbeamertemplate{footline}{%
-  \begin{beamercolorbox}[wd=\paperwidth,ht=0.5pt]{cardborder}\end{beamercolorbox}%
-  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.1ex,leftskip=8mm,rightskip=8mm]{footline}%
-    \tiny\textcolor{textmuted}{\textbf{Cancer RNA-Seq Classification:} Flexibility vs.\ Interpretability}%
-    \hfill%
-    \tiny\textcolor{textmuted}{\textbf{Rajveer Vora} \;\textbar{}\; \textbf{Amartya Amritanshu} \;\textbar{}\; \textbf{P.\ Sanjith Reddy}}%
+  \ifnum\thepage>1
+    \begin{beamercolorbox}[wd=\paperwidth,ht=0.5pt]{footrule}
+      \color{linegrey}\hrule height 0.5pt width \paperwidth
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=2.6ex,dp=1.0ex,leftskip=8mm,rightskip=8mm]{footline}%
+      {\tiny\textcolor{mutedgrey}{Cancer RNA-Seq Classification: Flexibility vs.\ Interpretability in $p \gg n$}}%
+      \hfill%
+      {\tiny\textcolor{mutedgrey}{Indian Statistical Institute}}%
+      \hspace{6mm}%
+      {\tiny\bfseries\textcolor{navy}{\insertframenumber{} / \inserttotalframenumber}}%
+    \end{beamercolorbox}%
+  \fi
+}
+
+% ==============================================================================
+% CUSTOM EDITORIAL COMPONENTS
+% ==============================================================================
+
+% Takeaway banner (Restrained emphasis with teal vertical rule)
+\newcommand{\takeaway}[1]{%
+  \vspace{0.06cm}%
+  \par\noindent%
+  \tikz[baseline=0.3ex]{\fill[teal] (0,0) rectangle (0.04,0.65em);}%
+  \hspace{4pt}%
+  {\scriptsize\textbf{\textcolor{teal}{Takeaway:}} \textcolor{charcoal}{#1}}\par%
+}
+
+% Flat grey panel for clean grouping
+\newenvironment{panel}[1][]{%
+  \begin{beamercolorbox}[wd=\linewidth,sep=4pt]{panelbox}%
+    \if\relax\detokenize{#1}\relax\else
+      {\condheading\bfseries\footnotesize\textcolor{navy}{#1}}\par\vspace{2.5pt}%
+    \fi
+}{%
   \end{beamercolorbox}%
+}
+\setbeamercolor{panelbox}{fg=charcoal,bg=lightgrey}
+
+% Section Divider Macro
+\newcommand{\sectiondivider}[3]{%
+  {
+    \setbeamertemplate{footline}{}
+    \begin{frame}[plain]
+      \vspace*{1.8cm}
+      {\footnotesize\bfseries\textcolor{teal}{SECTION #1}}\par\vspace{0.20cm}
+      {\condheading\bfseries\fontsize{24}{28}\selectfont\textcolor{navy}{#2}}\par\vspace{0.25cm}
+      {\color{linegrey}\hrule height 0.8pt width 0.35\textwidth}\par\vspace{0.25cm}
+      {\normalsize\textcolor{mutedgrey}{#3}}
+    \end{frame}
+  }
 }
 
 \begin{document}
 
-% ==========================================
-% SLIDE 1: REDESIGNED COVER PAGE
-% ==========================================
+% ==============================================================================
+% SLIDE 1: TITLE SLIDE (Minimalist Scientific Editorial)
+% ==============================================================================
 {
 \setbeamertemplate{footline}{}
 \begin{frame}[plain]
-  \begin{tikzpicture}[remember picture,overlay]
-    \fill[cardbg] (current page.south west) rectangle (current page.north east);
-  \end{tikzpicture}
+  \vspace*{1.2cm}
+  {\scriptsize\bfseries\textcolor{teal}{INDIAN STATISTICAL INSTITUTE, KOLKATA} \;\textbar{}\; \textcolor{mutedgrey}{COURSE PROJECT: REGRESSION TECHNIQUES}}\par\vspace{0.35cm}
   
-  \vspace{0.4cm}
-  \begin{center}
-    {\scriptsize\bfseries\textcolor{accentblue}{INDIAN STATISTICAL INSTITUTE, KOLKATA}}\\[0.12cm]
-    {\tiny\bfseries\textcolor{textmuted}{COURSE PROJECT: REGRESSION TECHNIQUES}}\\[0.35cm]
-    
-    \begin{tikzpicture}
-      \draw[cardborder, line width=0.6pt] (-5, 0) -- (5, 0);
-      \draw[accentblue, line width=1.4pt] (-1.2, 0) -- (1.2, 0);
-    \end{tikzpicture}\\[0.45cm]
-    
-    {\LARGE\bfseries\textcolor{primary}{Flexibility vs.\ Interpretability in}}\\[0.16cm]
-    {\LARGE\bfseries\textcolor{primary}{High-Dimensional Cancer Classification}}\\[0.30cm]
-    
-    {\small\textcolor{textmuted}{\textit{Regularized Regression, Tree Ensembles, and Neural Networks on RNA-Seq Data ($p \gg n$)}}}\\[0.55cm]
-    
-    \begin{tikzpicture}
-      \node[
-        draw=cardborder,
-        fill=white,
-        rounded corners=4pt,
-        line width=0.7pt,
-        inner sep=7pt,
-        text width=0.88\linewidth,
-        align=center
-      ] {
-        {\normalsize\bfseries\textcolor{primary}{Rajveer Vora \quad \textbar{} \quad Amartya Amritanshu \quad \textbar{} \quad P.\ Sanjith Reddy}}
-      };
-    \end{tikzpicture}\\[0.35cm]
-    {\footnotesize\textcolor{textmuted}{\textbf{November 2026}}}
-  \end{center}
+  {\condheading\bfseries\fontsize{23}{27}\selectfont\textcolor{navy}{Flexibility vs.\ Interpretability in}}\par\vspace{0.08cm}
+  {\condheading\bfseries\fontsize{23}{27}\selectfont\textcolor{navy}{High-Dimensional Cancer Classification}}\par\vspace{0.25cm}
+  
+  {\small\textcolor{mutedgrey}{Regularized Regression, Tree Ensembles, and Neural Networks on RNA-Seq Data ($p \gg n$)}}\par\vspace{0.35cm}
+  
+  {\color{teal}\hrule height 1.2pt width 0.20\textwidth}\par\vspace{0.45cm}
+  
+  {\small\textbf{\textcolor{charcoal}{Rajveer Vora \quad \textbar{} \quad Amartya Amritanshu \quad \textbar{} \quad P.\ Sanjith Reddy}}}\par\vspace{0.12cm}
+  {\footnotesize\textcolor{mutedgrey}{November 2026}}
 \end{frame}
 }
 
-% ==========================================
-% SLIDE 2: THE HIGH-DIMENSIONAL SETTING
-% ==========================================
-\begin{frame}{The High-Dimensional Setting ($p \gg n$)}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Dataset Structure}}
-    \begin{itemize}\itemsep=5pt
-      \item $n = 801$ observations across $K = 5$ cancer types.
-      \item $p = 20,531$ continuous features (gene expression).
-      \item Underdetermined system: $p \gg n$ ($20,531 \gg 801$).
-    \end{itemize}
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Research Question}}
-    Can sparse linear regression compete with non-linear tree ensembles and deep networks in prediction, calibration, and stability?
-  \end{centerblock}
-\end{frame}
+% ==============================================================================
+% SLIDE 2: THE HIGH-DIMENSIONAL SETTING (Three-Column Explanatory)
+% ==============================================================================
+\begin{frame}
+\frametitle{The High-Dimensional Setting: $p \gg n$ Transcriptomics}
+\framesubtitle{Theoretical breakdowns and biological collinearity in bulk RNA-Seq}
 
-% ==========================================
-% SLIDE 3: SINGULAR COVARIANCE
-% ==========================================
-\begin{frame}{Singular Covariance and Estimation Failure}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Sample Covariance Rank Deficiency}}
-    $$\mathbf{S} = \frac{1}{n-1} \mathbf{X}^T \mathbf{X} \in \mathbb{R}^{p \times p}, \quad \text{rank}(\mathbf{S}) \le n - 1 = 800 \ll 20,531$$
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{alertcenterblock}[0.76\linewidth]{\textbf{Statistical Consequences}}
-    \begin{itemize}\itemsep=5pt
-      \item $\mathbf{S}$ has at least $19,730$ zero eigenvalues and cannot be inverted.
-      \item Classical OLS and Fisher LDA fail due to non-invertibility.
-    \end{itemize}
-  \end{alertcenterblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 4: MULTICOLLINEARITY
-% ==========================================
-\begin{frame}{Multicollinearity and Linear Separability}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Severe Collinearity}}
-    Shared regulatory pathways produce highly correlated gene clusters ($r > 0.85$).
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Complete Linear Separability}}
-    \begin{itemize}\itemsep=5pt
-      \item Samples are linearly separable by infinite candidate hyperplanes.
-      \item Regularization is required to select unique, stable boundaries.
-    \end{itemize}
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 5: DATA PREPROCESSING
-% ==========================================
-\begin{frame}{Data Processing: Variance Stabilization}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Distributional Skewness}}
-    Raw RNA-Seq counts span multiple orders of magnitude with heavy right tails.
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Log-Transformation Pipeline}}
-    \begin{itemize}\itemsep=5pt
-      \item Applied $z_{ij} = \log_2(x_{ij} + 1)$ to stabilize variance.
-      \item Symmetrizes feature distributions and dampens count spikes.
-    \end{itemize}
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 6: FEATURE PRESCREENING
-% ==========================================
-\begin{frame}{Feature Prescreening via MAD}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Median Absolute Deviation (MAD)}}
-    $$\text{MAD}_j = \text{median}_i |x_{ij} - \text{median}_{i'}(x_{i'j})|$$
-    Measures feature variability robustly against outlier spikes.
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Prescreening Protocol}}
-    \begin{itemize}\itemsep=5pt
-      \item Prescreen top 1,000 genes by training-fold MAD.
-      \item Standardize features to zero mean and unit variance.
-    \end{itemize}
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 7: PCA GRAPH SLIDE (2-COLUMN, FULL HEIGHT, NO BOX)
-% ==========================================
-\begin{frame}{Principal Component Analysis: 2D Projection}
-  \begin{columns}[c]
-    \begin{column}{0.65\textwidth}
-      \centering
-      \includegraphics[height=0.76\textheight, width=\linewidth, keepaspectratio]{figures/05_pca_pc1_pc2.png}
-    \end{column}
-    \begin{column}{0.33\textwidth}
-      {\small \textbf{\textcolor{primary}{Variance Decomposition}}}\\[0.25cm]
-      {\footnotesize \textcolor{darktext}{
-        \begin{itemize}\itemsep=6pt
-          \item \textbf{PC1 (18.6\%)}: Strong separation of breast and kidney subtypes.
-          \item \textbf{PC2 (12.3\%)}: Isolates lung and colon tumors.
-          \item Captures \textbf{30.9\%} cumulative variance across 801 samples in 2D.
-        \end{itemize}
-      }}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% ==========================================
-% SLIDE 8: EXPLAINING PCA
-% ==========================================
-\begin{frame}{Explaining the PCA Projection}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Spectral Decomposition}}
-    PCA projects normalized features onto eigenvectors of sample covariance:
-    $$\mathbf{Z} = \mathbf{X}\mathbf{V}_k, \quad \mathbf{S}\mathbf{V}_k = \mathbf{V}_k \mathbf{\Lambda}_k$$
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Key Takeaways}}
-    \begin{itemize}\itemsep=5pt
-      \item Dominant orthogonal axes separate tumor clusters naturally.
-      \item Demonstrates linear separability prior to model fitting.
-    \end{itemize}
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 9: EXPERIMENTAL DESIGN
-% ==========================================
-\begin{frame}{Experimental Design and Leakage Prevention}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Repeated Stratified Splits}}
-    10 repeated splits ($80\% / 20\%$, $n_{\text{train}} = 640$, $n_{\text{test}} = 161$).
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{alertcenterblock}[0.76\linewidth]{\textbf{Strict Leakage Prevention}}
-    \begin{itemize}\itemsep=5pt
-      \item Feature screening (MAD) fitted solely on training folds.
-      \item Test folds strictly isolated for blind evaluation.
-    \end{itemize}
-  \end{alertcenterblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 10: BASELINE MULTINOMIAL LOGISTIC
-% ==========================================
-\begin{frame}{Baseline: Multinomial Logistic Regression}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Softmax Formulation}}
-    $$P(Y = k \mid \mathbf{x}) = \frac{\exp(\mathbf{w}_k^T \mathbf{x} + b_k)}{\sum_{l=1}^5 \exp(\mathbf{w}_l^T \mathbf{x} + b_l)}$$
-  \end{centerblock}
-  
-  \begin{centerblock}[0.74\linewidth]{\textbf{Unpenalized Objective}}
-    Minimizes empirical cross-entropy loss:
-    $$\mathcal{L}_{\text{CE}}(\mathbf{W}) = -\frac{1}{n} \sum_{i=1}^n \sum_{k=1}^5 y_{ik} \log P(Y = k \mid \mathbf{x}_i)$$
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 11: MLE BREAKDOWN
-% ==========================================
-\begin{frame}{MLE Breakdown on Separable Data}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Separation Theorem}}
-    \begin{itemize}\itemsep=5pt
-      \item For linearly separable data in $p \gg n$, standard MLE does not exist.
-      \item Weights diverge ($\|\mathbf{w}\|_2 \to \infty$) driving predicted probabilities to 1.
-    \end{itemize}
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{alertcenterblock}[0.76\linewidth]{\textbf{Practical Consequences}}
-    Produces overconfident test predictions and retains all 1,000 features.
-  \end{alertcenterblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 12: RIDGE REGRESSION
-% ==========================================
-\begin{frame}{Ridge Regression ($L_2$ Regularization)}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Objective Function}}
-    $$\min_{\mathbf{W}, \mathbf{b}} \mathcal{L}_{\text{CE}}(\mathbf{W}) + \frac{\lambda}{2} \sum_{k=1}^5 \|\mathbf{w}_k\|_2^2$$
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Statistical Properties}}
-    \begin{itemize}\itemsep=5pt
-      \item Adds $\lambda \mathbf{I}$ to Hessian: strictly positive definite, unique solution.
-      \item Shrinks weights smoothly toward zero; retains all 1,000 features.
-      \item Best probability calibration (test log-loss $= 0.005$).
-    \end{itemize}
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 13: LASSO REGRESSION
-% ==========================================
-\begin{frame}{Lasso Regression ($L_1$ Regularization)}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Objective Function}}
-    $$\min_{\mathbf{W}, \mathbf{b}} \mathcal{L}_{\text{CE}}(\mathbf{W}) + \lambda \sum_{k=1}^5 \|\mathbf{w}_k\|_1$$
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Sparse Feature Selection}}
-    \begin{itemize}\itemsep=5pt
-      \item Geometry: polyhedral $L_1$ ball forces coefficients to zero.
-      \item Reduces active features from 1,000 to \textbf{89 active genes}.
-      \item Arbitrarily selects only 1 feature from collinear groups.
-    \end{itemize}
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 14: ELASTIC NET
-% ==========================================
-\begin{frame}{Elastic Net ($L_1 + L_2$ Regularization)}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Convex Combination Objective}}
-    $$\min_{\mathbf{W}, \mathbf{b}} \mathcal{L}_{\text{CE}}(\mathbf{W}) + \lambda \sum_{k=1}^5 \left[ \alpha \|\mathbf{w}_k\|_1 + \frac{1 - \alpha}{2} \|\mathbf{w}_k\|_2^2 \right]$$
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Penalty Properties ($\alpha = 0.5$)}}
-    \begin{itemize}\itemsep=5pt
-      \item Combines $L_1$ sparsity with $L_2$ stability.
-      \item Selects more than $n$ correlated features.
-    \end{itemize}
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 15: THE GROUPING EFFECT
-% ==========================================
-\begin{frame}{The Grouping Effect of Elastic Net}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Grouping Property Theorem}}
-    For features with correlation $r$, coefficient difference is bounded:
-    $$|\hat{w}_i - \hat{w}_j| \le \frac{\sqrt{2(1 - r)}}{\lambda (1 - \alpha)} \|\mathbf{y}\|_2$$
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Statistical Significance}}
-    \begin{itemize}\itemsep=5pt
-      \item As $r \to 1$, difference $|\hat{w}_i - \hat{w}_j| \to 0$.
-      \item Correlated features enter or leave together.
-    \end{itemize}
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 16: TREE ENSEMBLES & SPLIT INSTABILITY (MERGED)
-% ==========================================
-\begin{frame}{Tree Ensembles and Split Instability}
-  \begin{centerblock}[0.78\linewidth]{\textbf{Tree Ensemble Mechanics}}
-    Bagging (Random Forest, $\sqrt{p} \approx 31$ subsampling) and boosting (XGBoost, log-loss shrinkage) fit non-linear step boundaries.
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{alertcenterblock}[0.78\linewidth]{\textbf{Selection Instability under Collinearity}}
-    Greedy axis-aligned splits choose arbitrarily among collinear features ($r > 0.85$), making feature importance highly unstable across splits.
-  \end{alertcenterblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 17: NEURAL NETWORK BASELINES
-% ==========================================
-\begin{frame}{Neural Network Baselines}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Neural Net with PCA (PCA-MLP)}}
-    Projects 1,000 features to 434 PCs ($434 \to 128 \to 64 \to 5$). Eliminates collinearity before training.
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Sparse Neural Net (Group-Lasso)}}
-    Group-lasso penalty on input layer weights:
-    $$\lambda \sum_{j=1}^{1000} \|\mathbf{W}^{(1)}_{:, j}\|_2$$
-    Shuts off uninformative input genes directly.
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 18: BENCHMARK BOXPLOTS GRAPH SLIDE (2-COLUMN, FULL HEIGHT, NO BOX)
-% ==========================================
-\begin{frame}{Benchmark Performance across 10 Splits}
-  \centering
-  \includegraphics[width=0.92\linewidth, keepaspectratio]{figures/01_model_comparison_boxplots.png}
-  
-  \vspace{0.25cm}
-  \begin{columns}[t]
-    \begin{column}{0.48\textwidth}
+\begin{columns}[T]
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Extreme Dimensionality]
       \begin{itemize}\itemsep=3pt
-        \item \textbf{Macro-F1}: All 8 models achieve $> 0.99$ across splits, confirming accuracy saturation.
+        \item \textbf{$n = 801$} patient samples across $K = 5$ cancer types.
+        \item \textbf{$p = 20,531$} continuous gene expression features.
+        \item Underdetermined system: features outnumber observations $25 : 1$.
       \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Singular Covariance]
       \begin{itemize}\itemsep=3pt
-        \item \textbf{Log-Loss}: Clear differentiation ($<0.01$ linear/NN vs.\ 0.081 for Random Forest).
+        \item Covariance $\mathbf{S} = \frac{1}{n-1}\mathbf{X}^T\mathbf{X} \in \mathbb{R}^{p \times p}$.
+        \item $\text{rank}(\mathbf{S}) \le n - 1 = 800 \ll 20,531$.
+        \item $\ge 19,730$ zero eigenvalues.
+        \item \textbf{OLS and Fisher LDA fail} due to singular non-invertibility.
       \end{itemize}
-    \end{column}
-  \end{columns}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Biological Collinearity]
+      \begin{itemize}\itemsep=3pt
+        \item Genes act in co-regulated pathways and transcriptional modules.
+        \item Thousands of gene pairs have Pearson $|r| > 0.85$.
+        \item Infinite hyperplanes achieve perfect linear training separation.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+\end{columns}
+
+\takeaway{Classical unregularized estimators fail mathematically; the challenge is identifying stable, interpretable biomarkers without overfitting.}
 \end{frame}
 
-% ==========================================
-% SLIDE 19: EXPLAINING THE DISTRIBUTIONS
-% ==========================================
-\begin{frame}{Explaining the Benchmark Distributions}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Accuracy Saturation}}
-    All 8 models achieve Macro-F1 $> 0.99$. Due to high separation, accuracy cannot rank models.
-  \end{centerblock}
-  
-  \vspace{0.15cm}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Log-Loss and Probability Calibration}}
-    \begin{itemize}\itemsep=5pt
-      \item Linear models and neural nets achieve low log-loss ($<0.01$), yielding sharp probabilities.
-      \item Random Forest has higher log-loss ($0.081$), as vote averaging softens probabilities.
-    \end{itemize}
-  \end{centerblock}
+% ==============================================================================
+% SECTION 01: DATASET AND EXPLORATORY ANALYSIS
+% ==============================================================================
+\sectiondivider{01}{Dataset and Exploratory Analysis}{RNA-Seq distributions, variance screening, and inherent linear separability}
+
+% ==============================================================================
+% SLIDE 4: DATA PROCESSING & VARIANCE FILTERING (Three-Column Comparative)
+% ==============================================================================
+\begin{frame}
+\frametitle{Preprocessing and Unsupervised Variance Screening}
+\framesubtitle{Transforming raw read counts and filtering non-informative variation}
+
+\begin{columns}[T]
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Variance Stabilization]
+      \textbf{Distributional Skewness:}
+      \begin{itemize}\itemsep=1.5pt
+        \item Raw counts span $0$ to $10^6$.
+        \item Log-transformation:
+          {\scriptsize $$z_{ij} = \log_2(x_{ij} + 1)$$}
+        \item Symmetrizes distributions and moderates outlier spikes.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Top 1,000 Variance Rationale]
+      \textbf{Three Essential Factors:}
+      \begin{itemize}\itemsep=1.5pt
+        \item \textbf{Noise removal}: Housekeeping genes.
+        \item \textbf{Feasibility}: Fast iterative solving.
+        \item \textbf{Empirical saturation}: $p \in [500, 1000]$ yields $>0.99$ Macro-F1.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Robust Screening Metric]
+      \textbf{Median Absolute Deviation (MAD):}
+      {\scriptsize $$\text{MAD}_j = \text{med}_i |z_{ij} - \text{med}_{i'}(z_{i'j})|$$}
+      \begin{itemize}\itemsep=1.5pt
+        \item Robust against count spikes.
+        \item Computed solely on training folds.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+\end{columns}
+
+\takeaway{Unsupervised MAD screening removes static features without viewing labels, preserving strict test set independence.}
 \end{frame}
 
-% ==========================================
-% SLIDE 20: MODEL COMPARISON TABLE
-% ==========================================
-\begin{frame}{Overall Model Performance Comparison}
-  \centering
-  \vspace{0.1cm}
-  \begin{tabular}{lcccc}
-    \toprule
-    \textbf{Model} & \textbf{F1} & \textbf{Log-Loss} & \textbf{Features} & \textbf{Time (s)} \\
-    \midrule
-    \textbf{Softmax} & 0.998 & 0.005 & 1000 & 0.004 \\
-    \textbf{Ridge} & 0.998 & 0.005 & 1000 & 0.004 \\
-    \textbf{Lasso} & 0.995 & 0.030 & \textbf{89} & 4.44 \\
-    \textbf{Elastic Net} & \textbf{0.998} & 0.020 & \textbf{218} & 3.65 \\
-    \textbf{Random Forest} & 0.994 & 0.081 & 1000 & 0.13 \\
-    \textbf{PCA-MLP} & 0.998 & \textbf{0.004} & 434 & 1.68 \\
-    \bottomrule
-  \end{tabular}
-  
-  \vspace{0.25cm}
-  \begin{centerblock}[0.62\linewidth]{\textbf{Key Finding}}
+% ==============================================================================
+% SLIDE 5: HEATMAP OF HIGH-VARIANCE GENES (Two-Column Figure + Interpretation)
+% ==============================================================================
+\begin{frame}
+\frametitle{Clustered Heatmap: High-Variance Transcriptional Profiles}
+\framesubtitle{Unsupervised clustering reveals strong class-specific expression signatures}
+
+\begin{columns}[c]
+  \begin{column}{0.57\textwidth}
     \centering
-    Elastic Net matches dense models using only 218 features.
-  \end{centerblock}
+    \includegraphics[width=\linewidth,height=0.39\textheight,keepaspectratio]{figures/06_top_variable_feature_heatmap.png}
+  \end{column}
+
+  \begin{column}{0.41\textwidth}
+    {\condheading\bfseries\small\textcolor{navy}{Pattern Observations}}\par\vspace{2pt}
+    \begin{itemize}\itemsep=2pt \scriptsize
+      \item \textbf{Top 50 Variable Genes}: Standardized relative expression across all 801 patients.
+      \item \textbf{Block-Diagonal Structure}: Distinct expression signatures align clearly with cancer cohorts (BRCA, KIRC, COAD, LUAD, PRAD).
+      \item \textbf{Hierarchical Dendrogram}: Patient samples cluster predominantly by tissue origin.
+      \item \textbf{Collinear Blocks}: Correlated gene blocks reflect co-regulated biological pathways.
+    \end{itemize}
+  \end{column}
+\end{columns}
+
+\takeaway{Natural clustering validates that the dataset contains strong class-specific signals, motivating linear classification.}
 \end{frame}
 
-% ==========================================
-% SLIDE 21: PARETO FRONTIER GRAPH SLIDE (2-COLUMN, FULL HEIGHT, NO BOX)
-% ==========================================
-\begin{frame}{Feature Sparsity vs. Log-Loss Trade-off}
-  \begin{columns}[c]
-    \begin{column}{0.65\textwidth}
-      \centering
-      \includegraphics[height=0.76\textheight, width=\linewidth, keepaspectratio]{figures/05_pareto_frontier.png}
-    \end{column}
-    \begin{column}{0.33\textwidth}
-      {\small \textbf{\textcolor{primary}{Sparsity vs.\ Loss}}}\\[0.25cm]
-      {\footnotesize \textcolor{darktext}{
-        \begin{itemize}\itemsep=6pt
-          \item \textbf{Lasso}: Extreme sparsity (89 genes), modest loss penalty ($0.030$).
-          \item \textbf{Elastic Net}: Optimal trade-off with 218 features and $0.020$ loss.
-          \item \textbf{Dense Models}: Use all 1,000 features for $0.004$ loss.
+% ==============================================================================
+% SLIDE 6: PCA 2D PROJECTION (Two-Column Figure + Interpretation)
+% ==============================================================================
+\begin{frame}
+\frametitle{Principal Component Analysis: 2D Unsupervised Projection}
+\framesubtitle{Spectral decomposition confirms natural separability in orthogonal space}
+
+\begin{columns}[c]
+  \begin{column}{0.57\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.39\textheight,keepaspectratio]{figures/05_pca_pc1_pc2.png}
+  \end{column}
+
+  \begin{column}{0.41\textwidth}
+    {\condheading\bfseries\small\textcolor{navy}{Variance Decomposition}}\par\vspace{2pt}
+    \begin{itemize}\itemsep=2pt \scriptsize
+      \item \textbf{PC1 (18.6\% variance)}: Separates breast carcinoma (BRCA) cleanly from kidney renal clear cell (KIRC).
+      \item \textbf{PC2 (12.3\% variance)}: Distinguishes colon adenocarcinoma (COAD) and lung (LUAD).
+      \item \textbf{Cumulative Variance}: \textbf{30.9\%} of total variation captured in just two linear dimensions.
+      \item \textbf{Cluster Separation}: Cohorts form distinct clusters without non-linear transformations.
+    \end{itemize}
+  \end{column}
+\end{columns}
+
+\takeaway{The 5 tumor types are largely linearly separable in an unsupervised 2D projection, bounding the need for complex classifiers.}
+\end{frame}
+
+% ==============================================================================
+% SECTION 02: STATISTICAL METHODOLOGY
+% ==============================================================================
+\sectiondivider{02}{Statistical Methodology}{Regularized multinomial regression, tree ensembles, and neural baselines}
+
+% ==============================================================================
+% SLIDE 8: REGULARIZED LINEAR MODELS (Three-Column Comparative)
+% ==============================================================================
+\begin{frame}
+\frametitle{Regularized Linear Models: Ridge, Lasso, and Elastic Net}
+\framesubtitle{Controlling ill-conditioned multinomial cross-entropy in $p \gg n$}
+
+\begin{columns}[T]
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Ridge ($L_2$ Regularization)]
+      {\scriptsize $$\min_{\mathbf{W}} \mathcal{L}_{\text{CE}} + \frac{\lambda}{2}\sum_k \|\mathbf{w}_k\|_2^2$$}
+      \begin{itemize}\itemsep=1.5pt
+        \item Strictly convex Hessian ($\lambda \mathbf{I}$).
+        \item Smooth weight shrinkage.
+        \item Retains all \textbf{1,000 features}.
+        \item Optimal probability calibration.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Lasso ($L_1$ Regularization)]
+      {\scriptsize $$\min_{\mathbf{W}} \mathcal{L}_{\text{CE}} + \lambda\sum_k \|\mathbf{w}_k\|_1$$}
+      \begin{itemize}\itemsep=1.5pt
+        \item Polyhedral $L_1$ geometry.
+        \item Highly sparse: \textbf{89 active genes}.
+        \item \textcolor{coral}{\textbf{Limitation:}} Arbitrarily selects 1 gene from collinear clusters.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Elastic Net ($L_1 + L_2$)]
+      {\tiny $$\min_{\mathbf{W}} \mathcal{L}_{\text{CE}} + \lambda\sum_k \left[\alpha \|\mathbf{w}_k\|_1 + \tfrac{1-\alpha}{2}\|\mathbf{w}_k\|_2^2\right]$$}
+      \begin{itemize}\itemsep=1.5pt
+        \item Sparsity + stability ($\alpha = 0.5$).
+        \item Selects \textbf{218 active genes}.
+        \item \textcolor{teal}{\textbf{Grouping property:}} Retains co-regulated pathway genes.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+\end{columns}
+
+\takeaway{Regularization prevents weight divergence on separable data; Elastic Net addresses collinear feature selection directly.}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 9: GROUPING THEOREM & NON-LINEAR BASELINES (Two-Column Comparative)
+% ==============================================================================
+\begin{frame}
+\frametitle{The Grouping Effect and Non-Linear Baselines}
+\framesubtitle{Theoretical bound under collinearity and comparison against tree / neural models}
+
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{panel}[Elastic Net Grouping Property Theorem]
+      For two standardized features $\mathbf{x}_i, \mathbf{x}_j$ with sample correlation $r$:
+      $$|\hat{w}_i - \hat{w}_j| \le \frac{\sqrt{2(1 - r)}}{\lambda (1 - \alpha)} \|\mathbf{y}\|_2$$
+      \begin{itemize}\itemsep=3pt
+        \item As correlation $r \to 1$, coefficient difference bound $|\hat{w}_i - \hat{w}_j| \to 0$.
+        \item Strongly correlated genes enter or leave the active set together.
+        \item Resolves Lasso's arbitrary feature dropping across biological pathways.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.48\textwidth}
+    \begin{panel}[Non-Linear Baseline Architectures]
+      \textbf{Tree Ensembles:}
+      \begin{itemize}\itemsep=2.5pt
+        \item \textbf{Random Forest}: 200 bagged trees, feature subsampling $m = \lfloor\sqrt{p}\rfloor \approx 31$.
+        \item \textbf{XGBoost}: Gradient boosting ($\eta = 0.10$, max depth 4, 100 rounds).
+      \end{itemize}
+      \vspace{3pt}
+      \textbf{Neural Networks:}
+      \begin{itemize}\itemsep=2.5pt
+        \item \textbf{PCA-MLP}: 434 PCs ($95\%$ variance) $\to 128 \to 64 \to 5$.
+        \item \textbf{Sparse NN}: Input group-lasso penalty $\lambda \sum \|\mathbf{W}^{(1)}_{:,j}\|_2$.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+\end{columns}
+
+\takeaway{Elastic Net guarantees coefficient grouping for correlated genes, whereas greedy tree splits choose arbitrarily.}
+\end{frame}
+
+% ==============================================================================
+% SECTION 03: EXPERIMENTAL DESIGN
+% ==============================================================================
+\sectiondivider{03}{Experimental Design}{Strict validation protocol, stability metrics, and stress tests}
+
+% ==============================================================================
+% SLIDE 11: EXPERIMENTAL PIPELINE (Horizontal Methodology Flowchart)
+% ==============================================================================
+\begin{frame}
+\frametitle{Experimental Pipeline: Zero-Leakage Validation}
+\framesubtitle{Strict nested evaluation protocol across 10 independent stratified splits}
+
+\vspace{0.05cm}
+\begin{center}
+\begin{tikzpicture}[
+  node distance=0.35cm,
+  box/.style={draw=linegrey, fill=lightgrey, text=charcoal, font=\tiny, align=center, inner sep=4pt, minimum height=1.3cm},
+  accentbox/.style={draw=teal, fill=white, text=charcoal, font=\tiny, align=center, inner sep=4pt, minimum height=1.3cm, line width=1.0pt},
+  navybox/.style={draw=navy, fill=lightgrey, text=navy, font=\tiny\bfseries, align=center, inner sep=4pt, minimum height=1.3cm, line width=0.9pt},
+  arr/.style={-{Stealth[scale=0.7]}, draw=mutedgrey, line width=0.9pt}
+]
+  \node[box, text width=2.1cm] (raw) {\textbf{Raw RNA-Seq}\\$n = 801$\\$p = 20,531$\\5 cohorts};
+  \node[navybox, right=of raw, text width=2.3cm] (split) {\textbf{10-Fold Outer Split}\\Stratified $80/20$\\$n_{\text{train}} = 640$\\$n_{\text{test}} = 161$};
+  \node[accentbox, right=of split, text width=2.4cm] (screen) {\textbf{In-Fold Prescreen}\\MAD Top 1,000\\$Z$-score standardization\\\textcolor{teal}{\textbf{No test leakage}}};
+  \node[box, right=of screen, text width=2.2cm] (tune) {\textbf{Inner 5-Fold CV}\\SAGA Solver / Grid\\Hyperparameter\\optimization};
+  \node[navybox, right=of tune, text width=2.2cm] (eval) {\textbf{Blind Evaluation}\\Macro-F1, Log-Loss\\Jaccard Stability\\$n$-scarcity test};
+
+  \draw[arr] (raw) -- (split);
+  \draw[arr] (split) -- (screen);
+  \draw[arr] (screen) -- (tune);
+  \draw[arr] (tune) -- (eval);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.05cm}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{panel}[Strict Test Set Isolation]
+      \scriptsize Feature screening and standardization parameters ($\mu, \sigma$) are computed solely on training folds; test folds remain completely blind until final evaluation.
+    \end{panel}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \begin{panel}[Repeated Outer Splits]
+      \scriptsize 10 independent random resamplings quantify performance variance, feature selection stability, and model robustness under varied sample draws.
+    \end{panel}
+  \end{column}
+\end{columns}
+
+\takeaway{Nested protocol ensures that neither feature screening nor parameter scaling leaks test set information.}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 12: MULTI-CRITERIA METRICS (Three-Column Explanatory)
+% ==============================================================================
+\begin{frame}
+\frametitle{Multi-Criteria Evaluation: Beyond Classification Accuracy}
+\framesubtitle{Evaluating discrimination, probabilistic calibration, and biomarker stability}
+
+\begin{columns}[T]
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Macro-F1 Score]
+      {\scriptsize $$\text{Macro-F1} = \frac{1}{K}\sum_{k=1}^5 \frac{2 P_k R_k}{P_k + R_k}$$}
+      \begin{itemize}\itemsep=1.5pt
+        \item Unweighted class mean.
+        \item Prevents BRCA ($n=300$) from masking COAD ($n=78$).
+      \end{itemize}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Multi-Class Log-Loss]
+      {\scriptsize $$\mathcal{L}_{\text{log}} = -\frac{1}{N}\sum_{i, k} y_{ik}\log(\hat{p}_{ik})$$}
+      \begin{itemize}\itemsep=1.5pt
+        \item Tests probability calibration.
+        \item Penalizes overconfident wrong assignments.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Selection Stability]
+      {\scriptsize $$D = \frac{2|S_a \cap S_b|}{|S_a| + |S_b|}, \; J = \frac{|S_a \cap S_b|}{|S_a \cup S_b|}$$}
+      \begin{itemize}\itemsep=1.5pt
+        \item Pairwise split overlap.
+        \item Quantifies biomarker reproducibility.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+\end{columns}
+
+\takeaway{In linearly separable settings, accuracy saturates; log-loss and stability expose genuine model quality.}
+\end{frame}
+
+% ==============================================================================
+% SECTION 04: RESULTS AND COMPARISON
+% ==============================================================================
+\sectiondivider{04}{Results and Comparison}{Macro-F1 saturation, probability calibration, and the Pareto frontier}
+
+% ==============================================================================
+% SLIDE 14: BENCHMARK BOXPLOTS (Two-Column Figure + Analysis)
+% ==============================================================================
+\begin{frame}
+\frametitle{Benchmark Performance Across 10 Repeated Splits}
+\framesubtitle{Macro-F1 saturation vs.\ prominent divergence in probabilistic log-loss}
+
+\begin{columns}[c]
+  \begin{column}{0.60\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.39\textheight,keepaspectratio]{figures/01_model_comparison_boxplots.png}
+  \end{column}
+
+  \begin{column}{0.38\textwidth}
+    {\condheading\bfseries\small\textcolor{navy}{Quantitative Breakdown}}\par\vspace{2pt}
+    \begin{itemize}\itemsep=2pt \scriptsize
+      \item \textbf{Macro-F1 Saturation}: All 8 models achieve mean Macro-F1 $\ge 0.993$. Accuracy alone cannot rank these architectures.
+      \item \textbf{Log-Loss Divergence}:
+        \begin{itemize}\itemsep=2pt
+          \item Linear models and PCA-MLP achieve $< 0.020$ log-loss (sharp calibration).
+          \item Random Forest exhibits \textbf{$0.081$ log-loss} due to probability softening from vote averaging.
+          \item Sparse NN yields \textbf{$0.063$ log-loss}.
         \end{itemize}
-      }}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% ==========================================
-% SLIDE 22: EXPLAINING THE TRADE-OFF
-% ==========================================
-\begin{frame}{Explaining the Complexity vs. Loss Trade-off}
-  \begin{centerblock}[0.76\linewidth]{\textbf{The Trade-off Spectrum}}
-    \begin{itemize}\itemsep=5pt
-      \item Dense models minimize log-loss ($0.004$) using all 1,000 features.
-      \item Lasso selects 89 features with log-loss $0.030$.
     \end{itemize}
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Elastic Net Balance}}
-    Retains $99.8\%$ F1 and low log-loss ($0.020$) with only 218 features.
-  \end{centerblock}
+  \end{column}
+\end{columns}
+
+\takeaway{Multi-class log-loss reveals calibration deficits in tree ensembles that are invisible in accuracy metrics.}
 \end{frame}
 
-% ==========================================
-% SLIDE 23: FEATURE STABILITY GRAPH SLIDE (2-COLUMN, FULL HEIGHT, NO BOX)
-% ==========================================
-\begin{frame}{Feature Selection Stability across Splits}
-  \begin{columns}[c]
-    \begin{column}{0.65\textwidth}
+% ==============================================================================
+% SLIDE 15: COMPREHENSIVE BENCHMARK TABLE (Large Comparison Table)
+% ==============================================================================
+\begin{frame}
+\frametitle{Comprehensive Model Comparison Table}
+\framesubtitle{Evaluation across discrimination, calibration, active sparsity, and runtime}
+
+\vspace{0.05cm}
+\centering
+\footnotesize
+\begin{tabular}{lccccc}
+  \toprule
+  \textbf{Model} & \textbf{Macro-F1} & \textbf{Log-Loss} & \textbf{Active Features} & \textbf{Fit Time (s)} & \textbf{Stability ($D$ / $J$)} \\
+  \midrule
+  \textbf{Softmax} & $0.998 \pm 0.003$ & $0.005 \pm 0.002$ & $1,000$ & $0.004$ & $1.000$ / $1.000$ \\
+  \textbf{Ridge ($L_2$)} & $0.998 \pm 0.003$ & $0.005 \pm 0.002$ & $1,000$ & $0.004$ & $1.000$ / $1.000$ \\
+  \textbf{Lasso ($L_1$)} & $0.995 \pm 0.006$ & $0.030 \pm 0.015$ & \textbf{89} & $4.44$ & $0.609$ / $0.443$ \\
+  \rowcolor{lightgrey}
+  \textbf{\textcolor{navy}{Elastic Net}} & \textbf{0.998} $\pm 0.003$ & $0.020 \pm 0.007$ & \textbf{218} & $3.65$ & \textbf{0.725} / \textbf{0.573} \\
+  \textbf{Random Forest} & $0.994 \pm 0.006$ & $0.081 \pm 0.010$ & $1,000$ & $0.13$ & $0.276$ / $0.160$ \\
+  \textbf{XGBoost} & $0.995 \pm 0.006$ & $0.028 \pm 0.009$ & $1,000$ & $2.18$ & $0.443$ / $0.285$ \\
+  \textbf{PCA-MLP} & $0.998 \pm 0.003$ & \textbf{0.004} $\pm 0.001$ & $434$ & $1.68$ & N/A \\
+  \textbf{Sparse NN} & $0.997 \pm 0.004$ & $0.063 \pm 0.015$ & $1,000$ & $1.25$ & N/A \\
+  \bottomrule
+\end{tabular}
+
+\vspace{0.15cm}
+\takeaway{Elastic Net matches the top F1 score ($0.998$) while eliminating 78\% of candidate genes, outperforming trees in stability and calibration.}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 16: PARETO FRONTIER (Two-Column Figure + Trade-off Analysis)
+% ==============================================================================
+\begin{frame}
+\frametitle{Active Feature Sparsity vs.\ Log-Loss: The Pareto Frontier}
+\framesubtitle{Evaluating the direct trade-off between model parsimony and probability calibration}
+
+\begin{columns}[c]
+  \begin{column}{0.57\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.39\textheight,keepaspectratio]{figures/05_pareto_frontier.png}
+  \end{column}
+
+  \begin{column}{0.41\textwidth}
+    {\condheading\bfseries\small\textcolor{navy}{Trade-off Spectrum}}\par\vspace{2pt}
+    \begin{itemize}\itemsep=2pt \scriptsize
+      \item \textbf{Dense Boundary}: Ridge and PCA-MLP achieve minimal log-loss ($0.004\text{--}0.005$) by retaining all features or 434 principal components.
+      \item \textbf{High Compression}: Lasso compresses to \textbf{89 active genes} with a modest log-loss trade-off ($0.030$).
+      \item \textbf{The Optimal Compromise}: \textbf{Elastic Net} achieves $0.020$ log-loss with \textbf{218 genes}, balancing parsimony and calibration.
+      \item \textbf{Tree Ensembles}: Fall far from the frontier due to softened probabilities.
+    \end{itemize}
+  \end{column}
+\end{columns}
+
+\takeaway{Elastic Net establishes the best compromise between biological interpretability and sharp test calibration.}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 17: FEATURE STABILITY (Two-Column Figure + Analysis)
+% ==============================================================================
+\begin{frame}
+\frametitle{Feature Selection Stability across Resampling Splits}
+\framesubtitle{Evaluating biomarker reproducibility under high pairwise collinearity}
+
+\begin{columns}[c]
+  \begin{column}{0.57\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.39\textheight,keepaspectratio]{figures/04_feature_stability_barplot.png}
+  \end{column}
+
+  \begin{column}{0.41\textwidth}
+    {\condheading\bfseries\small\textcolor{navy}{Stability Findings}}\par\vspace{2pt}
+    \begin{itemize}\itemsep=2pt \scriptsize
+      \item \textbf{Elastic Net Dominance}: Achieves top stability among sparse models (\textbf{Dice 0.725}, \textbf{Jaccard 0.573}) via $L_2$ grouping.
+      \item \textbf{Lasso Degradation}: Moderate stability ($D=0.609$, $J=0.443$); randomly selects 1 feature from collinear groups.
+      \item \textbf{Tree Split Collapse}: Random Forest ($J = 0.160$) and XGBoost ($J = 0.285$) show severe selection instability.
+      \item \textbf{Mechanism}: Collinear features offer nearly identical impurity drops, causing tree splits to fluctuate randomly.
+    \end{itemize}
+  \end{column}
+\end{columns}
+
+\takeaway{Biomarker discovery requires $L_2$ regularization; greedy tree splitters cannot stably select correlated genes.}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 18: SAMPLE EFFICIENCY STRESS TEST (Two-Column Figure + Analysis)
+% ==============================================================================
+\begin{frame}
+\frametitle{Sample Efficiency Stress Test: $n_{\text{train}} = 30 \to 640$}
+\framesubtitle{Simulating extreme clinical sample scarcity down to 6 patients per cancer cohort}
+
+\begin{columns}[c]
+  \begin{column}{0.57\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.39\textheight,keepaspectratio]{figures/02_n_efficiency_curves.png}
+  \end{column}
+
+  \begin{column}{0.41\textwidth}
+    {\condheading\bfseries\small\textcolor{navy}{Scarcity Analysis}}\par\vspace{2pt}
+    \begin{itemize}\itemsep=2pt \scriptsize
+      \item \textbf{Linear Resilience}: Regularized linear models (Ridge, Softmax, Elastic Net) remain remarkably robust ($\ge \mathbf{0.995}$ Macro-F1) even at $n_{\text{train}} = 30$.
+      \item \textbf{Tree Ensemble Drop}: XGBoost degrades to \textbf{$0.976 \pm 0.018$} (minimum fold score $0.954$). Random Forest drops to $0.985$.
+      \item \textbf{Inductive Bias}: Strong linear assumptions protect against small-sample overfitting; non-linear step boundaries overfit when sample density is low.
+    \end{itemize}
+  \end{column}
+\end{columns}
+
+\takeaway{Regularized linear models exhibit superior sample efficiency, retaining high performance even under extreme sample scarcity.}
+\end{frame}
+
+% ==============================================================================
+% SECTION 05: INTERPRETATION AND CONCLUSION
+% ==============================================================================
+\sectiondivider{05}{Interpretation and Conclusion}{Answers to research questions, limitations, and practical recommendations}
+
+% ==============================================================================
+% SLIDE 20: ANSWERS TO RESEARCH QUESTIONS (Three-Panel Structured Layout)
+% ==============================================================================
+\begin{frame}
+\frametitle{Answers to Core Research Questions}
+\framesubtitle{Synthesized conclusions from benchmark and stress-test experiments}
+
+\begin{columns}[T]
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Q1. Flexibility in $p \gg n$?]
+      \textbf{No Advantage.}
+      \begin{itemize}\itemsep=1.5pt \scriptsize
+        \item Linear separability means deep nets and boosting offer no accuracy gain over linear models.
+        \item Non-linear models inflate calibration error.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Q2. Collinearity Impact?]
+      \textbf{Destabilizes Trees \& Lasso.}
+      \begin{itemize}\itemsep=1.5pt \scriptsize
+        \item Lasso arbitrarily drops pathway co-regulators.
+        \item Trees suffer split instability ($J = 0.160$).
+        \item Elastic Net $L_2$ grouping stabilizes selection ($J = 0.573$).
+      \end{itemize}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Q3. Optimal Architecture?]
+      \textbf{Elastic Net.}
+      \begin{itemize}\itemsep=1.5pt \scriptsize
+        \item Matches $0.998$ F1 with 78\% fewer genes (218 active).
+        \item Balances calibration ($0.020$) and biomarker stability.
+        \item Robust under sample scarcity ($n=30$).
+      \end{itemize}
+    \end{panel}
+  \end{column}
+\end{columns}
+
+\takeaway{In high-dimensional transcriptomics, inductive bias and regularization dominate architectural complexity.}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 21: HONEST LIMITATIONS (Three-Column Editorial Layout)
+% ==============================================================================
+\begin{frame}
+\frametitle{Honest Limitations and Methodological Scope}
+\framesubtitle{Distinguishing benchmark findings from clinical translation requirements}
+
+\begin{columns}[T]
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Single-Source Cohort]
+      \begin{itemize}\itemsep=1.5pt \scriptsize
+        \item Single TCGA batch ($n = 801$).
+        \item Multi-center batch variations not assessed.
+        \item Requires external prospective cohort validation.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Primary vs.\ Fine Subtypes]
+      \begin{itemize}\itemsep=1.5pt \scriptsize
+        \item Primary tissue sites have large expression divergence.
+        \item Intra-organ subtypes (e.g.\ breast luminal A vs.\ B) present subtle non-linear boundaries.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+
+  \begin{column}{0.31\textwidth}
+    \begin{panel}[Clinical Translation]
+      \begin{itemize}\itemsep=1.5pt \scriptsize
+        \item 218 genes form a computational screen for diagnostic assays.
+        \item Candidates require biological assay validation before claiming causal biomarker status.
+      \end{itemize}
+    \end{panel}
+  \end{column}
+\end{columns}
+
+\takeaway{Findings demonstrate strong linear separability for primary cancer types, while subtle subtyping remains an open question.}
+\end{frame}
+
+% ==============================================================================
+% SLIDE 22: PRACTICAL RECOMMENDATIONS & CONCLUSION
+% ==============================================================================
+\begin{frame}
+\frametitle{Summary and Practical Recommendations}
+\framesubtitle{Key guidelines for practitioners analyzing high-dimensional RNA-Seq data}
+
+\begin{columns}[T]
+  \begin{column}{0.55\textwidth}
+    {\condheading\bfseries\small\textcolor{navy}{Core Recommendations for Practitioners}}\par\vspace{2pt}
+    \begin{itemize}\itemsep=2pt \scriptsize
+      \item \textbf{Default to Elastic Net}: Use Elastic Net ($\alpha \approx 0.5$) as primary baseline; it combines high accuracy, 78\% sparsity, and grouping stability.
+      \item \textbf{Avoid Unregularized Models}: Never fit standard OLS or LDA on $p \gg n$ data due to singular covariance.
+      \item \textbf{Evaluate Beyond Accuracy}: Rely on multi-class log-loss and stability metrics to detect calibration loss and biomarker instability.
+      \item \textbf{Exercise Caution with Trees}: Do not rely on tree split importance under high gene collinearity.
+    \end{itemize}
+  \end{column}
+
+  \begin{column}{0.42\textwidth}
+    \begin{panel}[Project Artifacts \& Code]
+      \begin{itemize}\itemsep=1.5pt \scriptsize
+        \item \textbf{Dataset}: 801 TCGA RNA-Seq samples ($K=5$).
+        \item \textbf{Pipeline}: 10-fold nested CV with zero test leakage.
+        \item \textbf{Report}: 10-page academic project paper with full derivations.
+      \end{itemize}
+      \vspace{2pt}
       \centering
-      \includegraphics[height=0.76\textheight, width=\linewidth, keepaspectratio]{figures/04_feature_stability_barplot.png}
-    \end{column}
-    \begin{column}{0.33\textwidth}
-      {\small \textbf{\textcolor{primary}{Selection Agreement}}}\\[0.25cm]
-      {\footnotesize \textcolor{darktext}{
-        \begin{itemize}\itemsep=6pt
-          \item \textbf{Elastic Net}: Top Jaccard index ($J = 0.57$) via $L_2$ grouping.
-          \item \textbf{Lasso}: Moderate stability ($J = 0.44$).
-          \item \textbf{Trees}: Severe instability ($J = 0.16$ for RF) under collinear genes.
-        \end{itemize}
-      }}
-    \end{column}
-  \end{columns}
-\end{frame}
+      {\condheading\bfseries\small\textcolor{navy}{Thank You}}\;\textbar{}\;{\scriptsize\textcolor{mutedgrey}{Questions \& Discussion}}
+    \end{panel}
+  \end{column}
+\end{columns}
 
-% ==========================================
-% SLIDE 24: EXPLAINING SELECTION STABILITY
-% ==========================================
-\begin{frame}{Explaining Selection Stability and Collinearity}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Jaccard Metric}}
-    $$J(S_a, S_b) = \frac{|S_a \cap S_b|}{|S_a \cup S_b|}$$
-    Measures feature agreement across data splits.
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.74\linewidth]{\textbf{Why Trees Fluctuate}}
-    \begin{itemize}\itemsep=5pt
-      \item Elastic Net ($J = 0.57$) stabilizes via $L_2$ grouping.
-      \item Trees ($J = 0.16$) fluctuate because collinear features have identical split gains.
-    \end{itemize}
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 25: SAMPLE EFFICIENCY GRAPH SLIDE (2-COLUMN, FULL HEIGHT, NO BOX)
-% ==========================================
-\begin{frame}{Sample Size Efficiency Stress Test}
-  \begin{columns}[c]
-    \begin{column}{0.65\textwidth}
-      \centering
-      \includegraphics[height=0.76\textheight, width=\linewidth, keepaspectratio]{figures/02_n_efficiency_curves.png}
-    \end{column}
-    \begin{column}{0.33\textwidth}
-      {\small \textbf{\textcolor{primary}{Sample Scarcity}}}\\[0.25cm]
-      {\footnotesize \textcolor{darktext}{
-        \begin{itemize}\itemsep=6pt
-          \item \textbf{Full Sample}: All models achieve $\ge 0.994$ at $n=640$.
-          \item \textbf{Scarcity ($n=32$)}: Linear models remain robust ($\ge 0.994$).
-          \item \textbf{Ensemble Drop}: Trees degrade to $0.971$ without sufficient data density.
-        \end{itemize}
-      }}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% ==========================================
-% SLIDE 26: EXPLAINING SAMPLE EFFICIENCY
-% ==========================================
-\begin{frame}{Explaining Sample Efficiency and Inductive Bias}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Small Sample Regime ($n = 32$)}}
-    With only 6 samples per class:
-    \begin{itemize}\itemsep=4pt
-      \item Linear models maintain Macro-F1 $\ge 0.994$.
-      \item Random Forest drops to $0.985$; XGBoost drops to $0.971$.
-    \end{itemize}
-  \end{centerblock}
-  
-  \vspace{0.1cm}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Inductive Bias}}
-    Linear hyperplanes prevent overfitting when data is scarce.
-  \end{centerblock}
-\end{frame}
-
-% ==========================================
-% SLIDE 27: SUMMARY & CONCLUSIONS
-% ==========================================
-\begin{frame}{Summary and Key Takeaways}
-  \begin{centerblock}[0.76\linewidth]{\textbf{Core Findings}}
-    \begin{itemize}\itemsep=5pt
-      \item In $p \gg n$, log-loss and stability reveal true model quality.
-      \item Elastic Net provides the best balance of sparsity, calibration, and stability.
-      \item Trees suffer from split instability under collinear features.
-    \end{itemize}
-  \end{centerblock}
-  
-  \vspace{0.3cm}
-  \begin{center}
-    {\large \textbf{\textcolor{primary}{Thank You}}}
-  \end{center}
+\takeaway{Regularized linear models provide the most reliable, calibrated, and reproducible foundation for high-dimensional cancer classification.}
 \end{frame}
 
 \end{document}
