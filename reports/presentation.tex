@@ -336,43 +336,85 @@
 \frametitle{Three Regularized Multinomial Classifiers}
 \framesubtitle{Penalty geometries under collinearity}
 
-\vspace{-0.05cm}
-\begin{columns}[T]
+\vspace{0.25cm}
+\begin{columns}[T, onlytextwidth]
 
-  \begin{column}{0.31\textwidth}
-    \centering
-    {\color{teal}\hrule height 2pt}\vspace{0.10cm}
-    {\small\bfseries\textcolor{navy}{Ridge ($L_2$)}}\par\vspace{0.06cm}
-    {\footnotesize $\mathcal{L}_{\text{CE}} + \tfrac{\lambda}{2}\sum_k \|\mathbf{w}_k\|_2^2$}\par\vspace{0.08cm}
-    {\color{linegrey}\hrule height 0.4pt}\vspace{0.10cm}
-    \begin{itemize}\itemsep=3pt\footnotesize
-      \item Dense: \textbf{1{,}000 genes}.
-      \item Best calibration ($0.005$).
-    \end{itemize}
+  % Ridge Box
+  \begin{column}{0.315\textwidth}
+    \begin{tikzpicture}
+      \node[
+        draw=teal!50,
+        fill=tealbg,
+        line width=0.7pt,
+        rounded corners=4pt,
+        inner sep=7pt,
+        minimum width=\linewidth,
+        text width=\linewidth-14pt,
+        minimum height=4.3cm,
+        anchor=north
+      ] at (0,0) {
+        \centering
+        {\small\bfseries\textcolor{teal!80!black}{Ridge ($L_2$)}}\par\vspace{0.08cm}
+        {\footnotesize $\mathcal{L}_{\text{CE}} + \tfrac{\lambda}{2}\sum_k \|\mathbf{w}_k\|_2^2$}\par\vspace{0.10cm}
+        {\color{teal!30}\hrule height 0.5pt}\vspace{0.12cm}
+        \begin{itemize}\itemsep=4pt\footnotesize
+          \item Dense: \textbf{1{,}000 genes}.
+          \item Best calibration ($0.005$).
+        \end{itemize}
+      };
+    \end{tikzpicture}
   \end{column}
 
-  \begin{column}{0.31\textwidth}
-    \centering
-    {\color{coral}\hrule height 2pt}\vspace{0.10cm}
-    {\small\bfseries\textcolor{navy}{Lasso ($L_1$)}}\par\vspace{0.06cm}
-    {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k \|\mathbf{w}_k\|_1$}\par\vspace{0.08cm}
-    {\color{linegrey}\hrule height 0.4pt}\vspace{0.10cm}
-    \begin{itemize}\itemsep=3pt\footnotesize
-      \item Sparse: \textbf{89 genes}.
-      \item Drops collinear genes.
-    \end{itemize}
+  % Lasso Box
+  \begin{column}{0.315\textwidth}
+    \begin{tikzpicture}
+      \node[
+        draw=coral!50,
+        fill=coralbg,
+        line width=0.7pt,
+        rounded corners=4pt,
+        inner sep=7pt,
+        minimum width=\linewidth,
+        text width=\linewidth-14pt,
+        minimum height=4.3cm,
+        anchor=north
+      ] at (0,0) {
+        \centering
+        {\small\bfseries\textcolor{coral!90!black}{Lasso ($L_1$)}}\par\vspace{0.08cm}
+        {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k \|\mathbf{w}_k\|_1$}\par\vspace{0.10cm}
+        {\color{coral!30}\hrule height 0.5pt}\vspace{0.12cm}
+        \begin{itemize}\itemsep=4pt\footnotesize
+          \item Sparse: \textbf{89 genes}.
+          \item Drops collinear genes.
+        \end{itemize}
+      };
+    \end{tikzpicture}
   \end{column}
 
-  \begin{column}{0.31\textwidth}
-    \centering
-    {\color{navy}\hrule height 2pt}\vspace{0.10cm}
-    {\small\bfseries\textcolor{navy}{Elastic Net ($L_1 + L_2$)}}\par\vspace{0.06cm}
-    {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k [\alpha\|\mathbf{w}\|_1 + \tfrac{1-\alpha}{2}\|\mathbf{w}\|_2^2]$}\par\vspace{0.08cm}
-    {\color{linegrey}\hrule height 0.4pt}\vspace{0.10cm}
-    \begin{itemize}\itemsep=3pt\footnotesize
-      \item Grouping: \textbf{218 genes}.
-      \item Stable feature selection.
-    \end{itemize}
+  % Elastic Net Box
+  \begin{column}{0.315\textwidth}
+    \begin{tikzpicture}
+      \node[
+        draw=navy!40,
+        fill=navy!5,
+        line width=0.7pt,
+        rounded corners=4pt,
+        inner sep=7pt,
+        minimum width=\linewidth,
+        text width=\linewidth-14pt,
+        minimum height=4.3cm,
+        anchor=north
+      ] at (0,0) {
+        \centering
+        {\small\bfseries\textcolor{navy}{Elastic Net ($L_1 + L_2$)}}\par\vspace{0.08cm}
+        {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k [\alpha\|\mathbf{w}\|_1 + \tfrac{1-\alpha}{2}\|\mathbf{w}\|_2^2]$}\par\vspace{0.10cm}
+        {\color{navy!20}\hrule height 0.5pt}\vspace{0.12cm}
+        \begin{itemize}\itemsep=4pt\footnotesize
+          \item Grouping: \textbf{218 genes}.
+          \item Stable feature selection.
+        \end{itemize}
+      };
+    \end{tikzpicture}
   \end{column}
 
 \end{columns}
