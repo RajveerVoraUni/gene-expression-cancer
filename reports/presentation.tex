@@ -170,21 +170,27 @@
 \framesubtitle{801 patients, 20{,}531 measured genes — a severely underdetermined system}
 
 \begin{columns}[c]
-  \begin{column}{0.48\textwidth}
+  \begin{column}{0.36\textwidth}
     \centering
     \begin{tikzpicture}
-      \draw[fill=tealbg, draw=teal, rounded corners=2pt] (0,0) rectangle (1.2,2.2);
-      \node[align=center, font=\footnotesize\bfseries, text=navy] at (0.6,1.1) {$n = 801$\\[2pt]\scriptsize patients};
+      % Baseline
+      \draw[linegrey, line width=0.8pt] (-0.1,0) -- (4.6,0);
 
-      \draw[fill=coralbg, draw=coral, rounded corners=2pt] (2.2,0) rectangle (3.4,4.2);
-      \node[align=center, font=\footnotesize\bfseries, text=charcoal] at (2.8,2.1) {\scriptsize$p = 20{,}531$\\[2pt]\scriptsize genes};
+      % Patients bar (n = 801)
+      \draw[fill=tealbg, draw=teal, line width=0.9pt, rounded corners=3.5pt] (0,0) rectangle (2.0,2.0);
+      \node[align=center, text=navy] at (1.0,1.0) {\small\textbf{$n = 801$}\\[3pt]\footnotesize patients};
 
-      \draw[<->, coral, thick] (0.6,2.35) -- (2.8,4.35)
-            node[midway, above, font=\scriptsize\bfseries, text=coral] {${\times}\,25$};
+      % Genes bar (p = 20,531)
+      \draw[fill=coralbg, draw=coral, line width=0.9pt, rounded corners=3.5pt] (2.5,0) rectangle (4.5,4.2);
+      \node[align=center, text=charcoal] at (3.5,2.1) {\small\textbf{$p = 20{,}531$}\\[3pt]\footnotesize genes};
+
+      % Ratio arrow from top of n bar to top-left of p bar
+      \draw[{Stealth[length=4.5pt]}-{Stealth[length=4.5pt]}, coral, thick] (1.0,2.15) to[bend left=16]
+            node[midway, above left=1pt, font=\footnotesize\bfseries, text=coral] {${\times}\,25.6$} (2.45,4.22);
     \end{tikzpicture}
   \end{column}
 
-  \begin{column}{0.50\textwidth}
+  \begin{column}{0.62\textwidth}
     {\small\bfseries\textcolor{navy}{Statistical bottlenecks in $p \gg n$:}}\par\vspace{0.10cm}
 
     \begin{itemize}\itemsep=6pt\footnotesize
@@ -194,7 +200,7 @@
     \end{itemize}
 
     \vspace{0.14cm}
-    \takeaway{Regularization is essential to prevent ill-posed estimation.}
+    \takeaway{Regularization is essential for well-posed estimation.}
   \end{column}
 \end{columns}
 \end{frame}
