@@ -107,18 +107,20 @@
   {\footnotesize\bfseries\textcolor{teal}{#1}}%
 }
 
-% Section-divider slide (no footer, full white)
-\newcommand{\sectiondivider}[3]{%
-  \begin{frame}[plain]
-    \vspace*{2.5cm}%
-    \hspace*{10mm}%
-    \begin{minipage}[t]{0.80\linewidth}
-      \sectionlabel{SECTION #1}\par\vspace{0.22cm}%
-      {\condheading\bfseries\fontsize{28}{33}\selectfont\textcolor{navy}{#2}}\par\vspace{0.22cm}%
-      {\color{teal}\hrule height 1.0pt width 0.22\linewidth}\par\vspace{0.22cm}%
-      {\normalsize\textcolor{mutedgrey}{#3}}%
-    \end{minipage}%
-  \end{frame}
+% Section-divider slide (dark navy background, centered number and title)
+\newcommand{\sectiondivider}[2]{%
+  {
+    \setbeamercolor{background canvas}{bg=navy}
+    \begin{frame}[plain]
+      \vspace*{0.68cm}
+      \vfill
+      \centering
+      {\normalsize\bfseries\textcolor{teal}{SECTION #1}}\par
+      \vspace{0.35cm}
+      {\fontsize{26}{32}\selectfont\bfseries\textcolor{white}{#2}}\par
+      \vfill
+    \end{frame}
+  }
 }
 
 % ─── stat-box: coloured metric card ───────────────────────
@@ -179,23 +181,20 @@
 
       \draw[<->, coral, thick] (0.6,2.35) -- (2.8,4.35)
             node[midway, above, font=\scriptsize\bfseries, text=coral] {${\times}\,25$};
-
-      \node[font=\scriptsize\color{teal}] at (0.6,-0.3) {observations};
-      \node[font=\scriptsize\color{coral}] at (2.8,-0.3) {predictors};
     \end{tikzpicture}
   \end{column}
 
   \begin{column}{0.50\textwidth}
-    {\small\bfseries\textcolor{navy}{Three statistical bottlenecks:}}\par\vspace{0.10cm}
+    {\small\bfseries\textcolor{navy}{Statistical bottlenecks in $p \gg n$:}}\par\vspace{0.10cm}
 
     \begin{itemize}\itemsep=4pt\footnotesize
-      \item \textbf{Singular covariance:} $\mathrm{rank}(\mathbf{S}) \le 800 \ll 20{,}531$; OLS and Fisher LDA fail.
-      \item \textbf{Separability:} separable data in $p \gg n$ cause MLE divergence ($\|\mathbf{w}\|_2 \to \infty$).
-      \item \textbf{Multicollinearity:} shared biological pathways ($|r| > 0.85$) destabilise feature selection.
+      \item \textbf{Singular covariance:} $\mathrm{rank}(\mathbf{S}) \le 800 \ll 20{,}531$; classical LDA fails.
+      \item \textbf{Separability:} causes MLE divergence ($\|\mathbf{w}\|_2 \to \infty$).
+      \item \textbf{Multicollinearity:} co-expressed genes ($|r| > 0.85$) destabilize selection.
     \end{itemize}
 
     \vspace{0.12cm}
-    \takeaway{Regularization is not optional — it is a mathematical necessity.}
+    \takeaway{Regularization is essential to prevent ill-posed estimation.}
   \end{column}
 \end{columns}
 \end{frame}
@@ -203,7 +202,7 @@
 % ============================================================
 % ─── SECTION 01: DATASET ──────────────────────────────────
 % ============================================================
-\sectiondivider{01}{Dataset and\\Exploratory Analysis}{TCGA RNA-Seq structure, variance screening, and inherent class separability}
+\sectiondivider{01}{Dataset and\\Exploratory Analysis}
 
 % ============================================================
 % ─── SLIDE 4: DATASET OVERVIEW ────────────────────────────
@@ -300,14 +299,14 @@ In-fold $Z$-standardization}
 % ============================================================
 % ─── SECTION 02: METHODOLOGY ──────────────────────────────
 % ============================================================
-\sectiondivider{02}{Statistical Methodology}{Regularized multinomial regression, tree ensembles, and neural network baselines}
+\sectiondivider{02}{Statistical Methodology}
 
 % ============================================================
 % ─── SLIDE 8: RIDGE / LASSO / ELASTIC NET ─────────────────
 % ============================================================
 \begin{frame}
 \frametitle{Three Regularized Multinomial Classifiers}
-\framesubtitle{Same cross-entropy loss $\mathcal{L}_{\text{CE}}$, different penalty geometries under collinearity}
+\framesubtitle{Penalty geometries under collinearity}
 
 \vspace{-0.05cm}
 \begin{columns}[T]
@@ -319,10 +318,8 @@ In-fold $Z$-standardization}
     {\footnotesize $\mathcal{L}_{\text{CE}} + \tfrac{\lambda}{2}\sum_k \|\mathbf{w}_k\|_2^2$}\par\vspace{0.08cm}
     {\color{linegrey}\hrule height 0.4pt}\vspace{0.10cm}
     \begin{itemize}\itemsep=3pt\footnotesize
-      \item Positive definite Hessian.
-      \item Smooth weight shrinkage.
-      \item Retains \textbf{all 1{,}000 genes}.
-      \item Top calibration ($0.005$).
+      \item Dense: \textbf{1{,}000 genes}.
+      \item Best calibration ($0.005$).
     \end{itemize}
   \end{column}
 
@@ -333,9 +330,8 @@ In-fold $Z$-standardization}
     {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k \|\mathbf{w}_k\|_1$}\par\vspace{0.08cm}
     {\color{linegrey}\hrule height 0.4pt}\vspace{0.10cm}
     \begin{itemize}\itemsep=3pt\footnotesize
-      \item Corner solutions (zeros).
-      \item High sparsity: \textbf{89 genes}.
-      \item Drops correlated genes arbitrarily.
+      \item Sparse: \textbf{89 genes}.
+      \item Drops collinear genes.
     \end{itemize}
   \end{column}
 
@@ -343,12 +339,11 @@ In-fold $Z$-standardization}
     \centering
     {\color{navy}\hrule height 2pt}\vspace{0.10cm}
     {\small\bfseries\textcolor{navy}{Elastic Net ($L_1 + L_2$)}}\par\vspace{0.06cm}
-    {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k\!\left[\alpha\|\mathbf{w}_k\|_1 + \tfrac{1-\alpha}{2}\|\mathbf{w}_k\|_2^2\right]$}\par\vspace{0.08cm}
+    {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k [\alpha\|\mathbf{w}\|_1 + \tfrac{1-\alpha}{2}\|\mathbf{w}\|_2^2]$}\par\vspace{0.08cm}
     {\color{linegrey}\hrule height 0.4pt}\vspace{0.10cm}
     \begin{itemize}\itemsep=3pt\footnotesize
-      \item Sparsity $+$ stability.
-      \item Selects \textbf{218 genes}.
-      \item \textbf{Grouping:} retains co-regulated genes.
+      \item Grouping: \textbf{218 genes}.
+      \item Stable feature selection.
     \end{itemize}
   \end{column}
 
@@ -360,7 +355,7 @@ In-fold $Z$-standardization}
 % ============================================================
 \begin{frame}
 \frametitle{Why Elastic Net Handles Collinearity Better}
-\framesubtitle{Grouping theorem vs.\ non-linear baselines}
+\framesubtitle{Theorem and non-linear baselines}
 
 \vspace{-0.15cm}
 \footnotesize
@@ -369,14 +364,13 @@ In-fold $Z$-standardization}
   \begin{column}{0.48\textwidth}
     {\small\bfseries\textcolor{navy}{Grouping Bound (Zou \& Hastie)}}
     \par\vspace{0.02cm}
-    For features with correlation $r$:
+    For correlated genes ($r$):
     {\footnotesize\[
       \bigl|\hat{w}_i - \hat{w}_j\bigr| \;\le\; \frac{\sqrt{2(1-r)}}{\lambda(1-\alpha)}\,\|\mathbf{y}\|_2
     \]}
     \begin{itemize}\itemsep=2pt\footnotesize
-      \item Equal weights as $r \to 1$.
-      \item Correlated genes selected jointly.
-      \item Prevents Lasso's omissions.
+      \item $\hat{w}_i \to \hat{w}_j$ as $r \to 1$.
+      \item Selects groups jointly.
     \end{itemize}
   \end{column}
 
@@ -384,22 +378,22 @@ In-fold $Z$-standardization}
     {\small\bfseries\textcolor{navy}{Non-Linear Baselines}}\par\vspace{0.02cm}
     {\color{linegrey}\hrule height 0.4pt}
     \begin{itemize}\itemsep=2pt\footnotesize
-      \item \textbf{Random Forest:} 200 trees, $m \approx 31$.
-      \item \textbf{XGBoost:} 100 rounds, depth 4.
-      \item \textbf{PCA-MLP:} 434 PCs ($95\%$ var.).
-      \item \textbf{Sparse NN:} group-lasso input penalty.
+      \item \textbf{Random Forest:} 200 trees.
+      \item \textbf{XGBoost:} depth 4.
+      \item \textbf{PCA-MLP:} 434 PCs.
+      \item \textbf{Sparse NN:} group-$L_1$.
     \end{itemize}
   \end{column}
 
 \end{columns}
 
-\takeaway{Trees choose among collinear genes arbitrarily; Elastic Net groups them.}
+\takeaway{Trees split arbitrarily; Elastic Net groups collinear genes.}
 \end{frame}
 
 % ============================================================
 % ─── SECTION 03: EXPERIMENTAL DESIGN ──────────────────────
 % ============================================================
-\sectiondivider{03}{Experimental Design}{Validation protocol, evaluation metrics, and stress tests}
+\sectiondivider{03}{Experimental Design}
 
 % ============================================================
 % ─── SLIDE 11: PIPELINE ───────────────────────────────────
@@ -408,9 +402,9 @@ In-fold $Z$-standardization}
 \frametitle{Zero-Leakage Evaluation Pipeline}
 \framesubtitle{10 repeated stratified splits with strictly within-fold feature prescreening}
 
-\vspace{0.05cm}
+\vspace{0.15cm}
 \begin{center}
-\scalebox{0.78}{
+\scalebox{0.82}{
 \begin{tikzpicture}[
   every node/.style={font=\small},
   box/.style={
@@ -419,27 +413,27 @@ In-fold $Z$-standardization}
     text=charcoal,
     align=center,
     inner sep=6pt,
-    minimum height=1.8cm
+    minimum height=1.6cm
   },
   accent/.style={box, draw=teal, fill=tealbg, text=navy},
   strong/.style={box, draw=navy, fill=white, text=navy, line width=1pt},
   arr/.style={-{Stealth[length=5pt]}, draw=mutedgrey, line width=1pt}
 ]
 
-\node[box, text width=2.6cm] (data)
-  {\textbf{TCGA RNA-Seq}\\\scriptsize $n=801$ patients\\$p=20{,}531$ genes\\5 cohorts};
+\node[box, text width=2.4cm] (data)
+  {\textbf{TCGA RNA-Seq}\\\scriptsize 801 patients\\20{,}531 genes};
 
-\node[strong, text width=2.9cm, right=0.35cm of data] (split)
-  {\textbf{Stratified Split $\times$10}\\\scriptsize 80\,\% train\;/\;20\,\% test\\$n_{\text{train}}=640$\\$n_{\text{test}}=161$};
+\node[strong, text width=2.5cm, right=0.30cm of data] (split)
+  {\textbf{Split $\times$10}\\\scriptsize 80\% train\;/\;20\% test\\$n=640$ / $161$};
 
-\node[accent, text width=2.9cm, right=0.35cm of split] (screen)
-  {\textbf{In-Fold Prescreen}\\\scriptsize MAD top 1{,}000\\$Z$-standardize\\\textbf{no test leakage}};
+\node[accent, text width=2.6cm, right=0.30cm of split] (screen)
+  {\textbf{In-Fold Prescreen}\\\scriptsize Top 1{,}000 MAD\\$Z$-standardize};
 
-\node[box, text width=2.6cm, right=0.35cm of screen] (tune)
-  {\textbf{Inner CV Tuning}\\\scriptsize 5-fold inner CV\\SAGA / Grid Search\\Hyperparameter opt.};
+\node[box, text width=2.5cm, right=0.30cm of screen] (tune)
+  {\textbf{CV Tuning}\\\scriptsize 5-fold inner CV\\Hyperparameter opt.};
 
-\node[strong, text width=2.6cm, right=0.35cm of tune] (eval)
-  {\textbf{Blind Evaluation}\\\scriptsize Macro-F1\\Log-loss\\Stability / $n$-test};
+\node[strong, text width=2.5cm, right=0.30cm of tune] (eval)
+  {\textbf{Evaluation}\\\scriptsize Macro-F1, log-loss\\Stability, $n$-efficiency};
 
 \draw[arr] (data) -- (split);
 \draw[arr] (split) -- (screen);
@@ -450,21 +444,8 @@ In-fold $Z$-standardization}
 } % end scalebox
 \end{center}
 
-\vspace{0.10cm}
-\begin{columns}[T]
-  \begin{column}{0.48\textwidth}
-    \insight[teal]{%
-      \textbf{Strict separation.}\enspace
-      MAD screening and $Z$-standardization are computed solely on the training fold.
-      Test data remain entirely blind until final scoring.}
-  \end{column}
-  \begin{column}{0.48\textwidth}
-    \insight[navy]{%
-      \textbf{Variance estimation.}\enspace
-      10 independent random resamplings quantify the variability of every metric,
-      not just its mean.}
-  \end{column}
-\end{columns}
+\vspace{0.40cm}
+\takeaway{Strict zero-leakage: feature prescreening and standardization are isolated within training folds.}
 \end{frame}
 
 % ============================================================
@@ -472,49 +453,48 @@ In-fold $Z$-standardization}
 % ============================================================
 \begin{frame}
 \frametitle{Why Three Metrics?}
-\framesubtitle{Macro-F1 (accuracy), log-loss (calibration), and stability (biomarkers)}
+\framesubtitle{Accuracy, probability calibration, and biomarker stability}
 
+\vspace{-0.05cm}
 \begin{columns}[T]
 
   \begin{column}{0.31\textwidth}
     {\color{teal}\hrule height 2pt}\vspace{0.08cm}
-    {\small\bfseries\textcolor{navy}{Macro-F1}}\par\vspace{0.02cm}
+    {\small\bfseries\textcolor{navy}{Macro-F1 (Accuracy)}}\par\vspace{0.02cm}
     {\footnotesize\[
       \tfrac{1}{5}\sum_{k=1}^{5}\tfrac{2P_k R_k}{P_k + R_k}
     \]}
     \scriptsize
-    Balanced mean across cohorts.
-    Robust to cohort size differences.
+    Harmonic mean across classes.
 
     \vspace{0.06cm}
-    \textcolor{coral}{\textbf{Limit:}} all $>0.993$; cannot assess calibration.
+    \textbf{Ceiling:} all models $>0.99$.
   \end{column}
 
   \begin{column}{0.31\textwidth}
     {\color{navy}\hrule height 2pt}\vspace{0.08cm}
-    {\small\bfseries\textcolor{navy}{Log-Loss}}\par\vspace{0.02cm}
+    {\small\bfseries\textcolor{navy}{Log-Loss (Calibration)}}\par\vspace{0.02cm}
     {\footnotesize\[
       -\tfrac{1}{N}\sum_{i,k} y_{ik}\log\hat{p}_{ik}
     \]}
     \scriptsize
-    Penalises overconfident errors.
-    Tests probability quality.
+    Penalizes overconfidence.
 
     \vspace{0.06cm}
-    \textbf{Primary metric} for model ranking.
+    \textbf{Decisive metric} for ranking.
   \end{column}
 
   \begin{column}{0.31\textwidth}
     {\color{coral}\hrule height 2pt}\vspace{0.08cm}
-    {\small\bfseries\textcolor{navy}{Stability}}\par\vspace{0.02cm}
+    {\small\bfseries\textcolor{navy}{Stability (Biomarkers)}}\par\vspace{0.02cm}
     {\footnotesize\[
-      D = \tfrac{2|S_a\cap S_b|}{|S_a|+|S_b|},\; J = \tfrac{|S_a\cap S_b|}{|S_a\cup S_b|}
+      J = \tfrac{|S_a\cap S_b|}{|S_a\cup S_b|}
     \]}
     \scriptsize
-    Gene set overlap across resampled training splits.
+    Gene overlap across splits.
 
     \vspace{0.06cm}
-    Key for reproducible biomarkers.
+    \textbf{Key} for clinical biomarkers.
   \end{column}
 
 \end{columns}
@@ -523,7 +503,7 @@ In-fold $Z$-standardization}
 % ============================================================
 % ─── SECTION 04: RESULTS ──────────────────────────────────
 % ============================================================
-\sectiondivider{04}{Results}{Benchmark accuracy, calibration, sparsity, and stability across all eight models}
+\sectiondivider{04}{Results}
 
 % ============================================================
 % ─── SLIDE 14: BOXPLOTS ───────────────────────────────────
@@ -557,7 +537,7 @@ In-fold $Z$-standardization}
 % ============================================================
 \begin{frame}
 \frametitle{Comprehensive Model Comparison}
-\framesubtitle{Key metrics: Macro-F1, log-loss, active features, fit time, and selection stability}
+\framesubtitle{10-split cross-validated test results}
 
 \centering
 \footnotesize
@@ -566,23 +546,23 @@ In-fold $Z$-standardization}
   \textbf{Model}
     & \textbf{Macro-F1}
     & \textbf{Log-Loss}
-    & \textbf{Active Genes}
-    & \textbf{Dice / Jaccard} \\
+    & \textbf{Genes}
+    & \textbf{Jaccard} \\
   \midrule
-  Softmax (baseline) & $0.998 \pm 0.003$ & $0.005$ & $1000$ & $1.00\;/\;1.00$ \\
-  Ridge ($L_2$)      & $0.998 \pm 0.003$ & $0.005$ & $1000$ & $1.00\;/\;1.00$ \\
-  Lasso ($L_1$)      & $0.995 \pm 0.006$ & $0.030$ & $\mathbf{89}$   & $0.61\;/\;0.44$ \\
+  Softmax    & $0.998$ & $0.005$ & $1000$ & $1.00$ \\
+  Ridge      & $0.998$ & $0.005$ & $1000$ & $1.00$ \\
+  Lasso      & $0.995$ & $0.030$ & $\mathbf{89}$   & $0.44$ \\
   \rowcolor{tealbg}
-  \textbf{Elastic Net} & $\mathbf{0.998 \pm 0.003}$ & $\mathbf{0.020}$ & $\mathbf{218}$ & $\mathbf{0.73\;/\;0.57}$ \\
-  Random Forest      & $0.994 \pm 0.006$ & $0.081$ & $1000$ & $0.28\;/\;0.16$ \\
-  XGBoost            & $0.995 \pm 0.006$ & $0.028$ & $1000$ & $0.44\;/\;0.29$ \\
-  PCA-MLP            & $0.998 \pm 0.003$ & $0.004$ & 434 PCs & --- \\
-  Sparse NN          & $0.997 \pm 0.004$ & $0.063$ & $1000$ & --- \\
+  \textbf{Elastic Net} & $\mathbf{0.998}$ & $\mathbf{0.020}$ & $\mathbf{218}$ & $\mathbf{0.57}$ \\
+  Random Forest & $0.994$ & $0.081$ & $1000$ & $0.16$ \\
+  XGBoost       & $0.995$ & $0.028$ & $1000$ & $0.29$ \\
+  PCA-MLP       & $0.998$ & $0.004$ & 434 & --- \\
+  Sparse NN     & $0.997$ & $0.063$ & $1000$ & --- \\
   \bottomrule
 \end{tabular}
 
 \vspace{0.18cm}
-\takeaway{Elastic Net matches the best F1, uses only 218 genes, and leads all sparse models in stability.}
+\takeaway{Elastic Net matches top F1 with 218 genes and leads sparse stability.}
 \end{frame}
 
 % ============================================================
@@ -590,7 +570,7 @@ In-fold $Z$-standardization}
 % ============================================================
 \begin{frame}
 \frametitle{Sparsity vs.\ Calibration: The Pareto Frontier}
-\framesubtitle{Fewer active genes means slightly higher log-loss — Elastic Net occupies the efficient frontier}
+\framesubtitle{Elastic Net achieves optimal balance between features and calibration}
 
 \begin{columns}[c]
   \begin{column}{0.54\textwidth}
@@ -600,14 +580,14 @@ In-fold $Z$-standardization}
 
   \begin{column}{0.44\textwidth}
     \begin{itemize}\itemsep=2pt\footnotesize
-      \item \textbf{Ridge / PCA-MLP:} 1000 genes / 434 PCs, log-loss $0.004$–$0.005$. Dense but calibrated.
-      \item \textbf{Lasso:} 89 genes, log-loss $0.030$. Highly sparse, slight calibration penalty.
-      \item \textbf{Elastic Net:} 218 genes, log-loss $0.020$. Sits on optimal frontier.
-      \item \textbf{Trees:} dense \emph{and} poorly calibrated ($0.081$). Off frontier.
+      \item \textbf{Ridge / PCA-MLP:} Dense (1000 genes / 434 PCs), log-loss $0.004$–$0.005$.
+      \item \textbf{Lasso:} Highly sparse (89 genes), log-loss $0.030$.
+      \item \textbf{Elastic Net:} Optimal trade-off (218 genes, log-loss $0.020$).
+      \item \textbf{Tree models:} Off frontier (log-loss $0.081$).
     \end{itemize}
 
     \vspace{0.04cm}
-    \takeaway{Elastic Net balances biological parsimony and probability calibration.}
+    \takeaway{Elastic Net occupies the optimal sparse Pareto frontier.}
   \end{column}
 \end{columns}
 \end{frame}
@@ -617,7 +597,7 @@ In-fold $Z$-standardization}
 % ============================================================
 \begin{frame}
 \frametitle{Feature Selection Stability}
-\framesubtitle{How consistently does each model select the same genes across different data splits?}
+\framesubtitle{Selection consistency across 10 independent data splits}
 
 \begin{columns}[c]
   \begin{column}{0.54\textwidth}
@@ -627,14 +607,14 @@ In-fold $Z$-standardization}
 
   \begin{column}{0.44\textwidth}
     \begin{itemize}\itemsep=2pt\footnotesize
-      \item \textbf{Elastic Net:} Dice $0.73$, Jaccard $0.57$. Highest stability among sparse models.
-      \item \textbf{Lasso:} Dice $0.61$, Jaccard $0.44$. Arbitrary collinear choices hurt stability.
-      \item \textbf{XGBoost:} Jaccard $0.29$. Greedy splitting is inconsistent.
-      \item \textbf{Random Forest:} Jaccard $\mathbf{0.16}$. Splits fluctuate with identical impurity gains.
+      \item \textbf{Elastic Net:} Jaccard $0.57$ (Dice $0.73$) — leads sparse models.
+      \item \textbf{Lasso:} Jaccard $0.44$ — collinear omission hurts stability.
+      \item \textbf{XGBoost:} Jaccard $0.29$ — greedy splits fluctuate.
+      \item \textbf{Random Forest:} Jaccard $\mathbf{0.16}$ — lowest consistency.
     \end{itemize}
 
     \vspace{0.04cm}
-    \takeaway{Biomarker discovery requires $L_2$ grouping; trees cannot stably rank collinear genes.}
+    \takeaway{$L_2$ grouping is essential for reproducible biomarker discovery.}
   \end{column}
 \end{columns}
 \end{frame}
@@ -643,8 +623,8 @@ In-fold $Z$-standardization}
 % ─── SLIDE 18: SAMPLE EFFICIENCY ─────────────────────────
 % ============================================================
 \begin{frame}
-\frametitle{Sample Efficiency: What Happens with Fewer Patients?}
-\framesubtitle{Macro-F1 as training set size drops from 640 to 30 (6 patients per class)}
+\frametitle{Sample Efficiency Under Data Scarcity}
+\framesubtitle{Macro-F1 as training size drops from 640 to 30}
 
 \begin{columns}[c]
   \begin{column}{0.54\textwidth}
@@ -654,9 +634,9 @@ In-fold $Z$-standardization}
 
   \begin{column}{0.44\textwidth}
     \begin{itemize}\itemsep=2pt\footnotesize
-      \item \textbf{Linear models} (Ridge, Elastic Net): maintain $\ge 0.995$ F1 even down to $n_{\text{train}}=30$.
-      \item \textbf{XGBoost} drops to $0.976 \pm 0.018$ (min $0.954$). Greedy splits overfit noise under scarcity.
-      \item \textbf{Random Forest} drops to $0.985$ at $n_{\text{train}}=30$.
+      \item \textbf{Ridge \& Elastic Net:} Maintain $F_1 \ge 0.995$ down to $n_{\text{train}}=30$.
+      \item \textbf{XGBoost:} Drops to $0.976$ under data scarcity.
+      \item \textbf{Random Forest:} Degrades to $0.985$ at $n=30$.
     \end{itemize}
 
     \vspace{0.04cm}
@@ -671,7 +651,7 @@ In-fold $Z$-standardization}
 % ============================================================
 % ─── SECTION 05: CONCLUSIONS ──────────────────────────────
 % ============================================================
-\sectiondivider{05}{Interpretation and\\Conclusions}{Research question answers, limitations, and practical guidance}
+\sectiondivider{05}{Interpretation and\\Conclusions}
 
 % ============================================================
 % ─── SLIDE 20: RESEARCH FINDINGS ──────────────────────────
@@ -687,7 +667,7 @@ In-fold $Z$-standardization}
     \end{column}
     \begin{column}{0.90\linewidth}
       {\footnotesize\bfseries\textcolor{navy}{Flexibility provides no advantage in RNA-Seq.}}\par
-      {\scriptsize\textcolor{charcoal}{Linear separability holds. Complex models yield no F1 gain and worse probability calibration.}}
+      {\scriptsize\textcolor{charcoal}{Linear separability holds. Complex models yield no F1 gain and worse calibration.}}
     \end{column}
   \end{columns}
 \end{beamercolorbox}
@@ -701,7 +681,7 @@ In-fold $Z$-standardization}
     \end{column}
     \begin{column}{0.90\linewidth}
       {\footnotesize\bfseries\textcolor{navy}{Collinearity destabilises Lasso and trees.}}\par
-      {\scriptsize\textcolor{charcoal}{Lasso drops genes arbitrarily; tree stability falls to $0.16$. Elastic Net grouping ensures stability ($0.57$).}}
+      {\scriptsize\textcolor{charcoal}{Lasso drops genes arbitrarily; tree stability drops to $0.16$. Elastic Net grouping ensures stability ($0.57$).}}
     \end{column}
   \end{columns}
 \end{beamercolorbox}
@@ -715,7 +695,7 @@ In-fold $Z$-standardization}
     \end{column}
     \begin{column}{0.90\linewidth}
       {\footnotesize\bfseries\textcolor{navy}{Elastic Net achieves optimal balance.}}\par
-      {\scriptsize\textcolor{charcoal}{Ties best F1 ($0.998$), selects 218 genes (78\% cut), beats Lasso in calibration ($0.020$), and leads in stability.}}
+      {\scriptsize\textcolor{charcoal}{Ties best F1 ($0.998$), selects 218 genes (78\% cut), and leads in sparse stability.}}
     \end{column}
   \end{columns}
 \end{beamercolorbox}
