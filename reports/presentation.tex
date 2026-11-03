@@ -351,94 +351,44 @@
 \sectiondivider{02}{Statistical Methodology}
 
 % ============================================================
-% ─── SLIDE 8: RIDGE / LASSO / ELASTIC NET ─────────────────
+% ─── SLIDE 8: REGULARIZATION STRATEGIES ─────────────────
 % ============================================================
 \begin{frame}
-\frametitle{Three Regularized Multinomial Classifiers}
-\framesubtitle{Penalty geometries under collinearity}
+\frametitle{Multinomial Logistic Regression \& Regularization}
+\framesubtitle{Softmax likelihood formulation and structured penalty functions}
 
-\vspace{0.25cm}
-\begin{columns}[T, onlytextwidth]
+\vspace{-0.05cm}
+{\small Model class probabilities using the softmax function:}
+\vspace{-0.18cm}
+\begin{equation*}
+  P(Y_i = k \mid x_i) \;=\; \frac{\exp(x_i^\top \beta_k)}{\sum_{j=1}^5 \exp(x_i^\top \beta_j)}
+\end{equation*}
 
-  % Ridge Box
-  \begin{column}{0.315\textwidth}
-    \begin{tikzpicture}
-      \node[
-        draw=teal!50,
-        fill=tealbg,
-        line width=0.7pt,
-        rounded corners=4pt,
-        inner sep=7pt,
-        minimum width=\linewidth,
-        text width=\linewidth-14pt,
-        minimum height=4.3cm,
-        anchor=north
-      ] at (0,0) {
-        \centering
-        {\small\bfseries\textcolor{teal!80!black}{Ridge ($L_2$)}}\par\vspace{0.08cm}
-        {\footnotesize $\mathcal{L}_{\text{CE}} + \tfrac{\lambda}{2}\sum_k \|\mathbf{w}_k\|_2^2$}\par\vspace{0.10cm}
-        {\color{teal!30}\hrule height 0.5pt}\vspace{0.12cm}
-        \begin{itemize}\itemsep=4pt\footnotesize
-          \item Dense: \textbf{1{,}000 genes}.
-          \item Best calibration ($0.005$).
-        \end{itemize}
-      };
-    \end{tikzpicture}
-  \end{column}
+\vspace{-0.10cm}
+{\small Estimate coefficients by minimizing multiclass cross-entropy with a regularization penalty:}
+\vspace{-0.15cm}
+\begin{equation*}
+  \setlength{\fboxsep}{6pt}%
+  \setlength{\fboxrule}{0.7pt}%
+  \fcolorbox{linegrey}{lightgrey}{$\displaystyle \mathcal{L}(B) = \mathcal{L}_{\text{CE}}(B) + \lambda P(B)$}
+\end{equation*}
 
-  % Lasso Box
-  \begin{column}{0.315\textwidth}
-    \begin{tikzpicture}
-      \node[
-        draw=coral!50,
-        fill=coralbg,
-        line width=0.7pt,
-        rounded corners=4pt,
-        inner sep=7pt,
-        minimum width=\linewidth,
-        text width=\linewidth-14pt,
-        minimum height=4.3cm,
-        anchor=north
-      ] at (0,0) {
-        \centering
-        {\small\bfseries\textcolor{coral!90!black}{Lasso ($L_1$)}}\par\vspace{0.08cm}
-        {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k \|\mathbf{w}_k\|_1$}\par\vspace{0.10cm}
-        {\color{coral!30}\hrule height 0.5pt}\vspace{0.12cm}
-        \begin{itemize}\itemsep=4pt\footnotesize
-          \item Sparse: \textbf{89 genes}.
-          \item Drops collinear genes.
-        \end{itemize}
-      };
-    \end{tikzpicture}
-  \end{column}
+\vspace{0.08cm}
+{\small\bfseries\textcolor{navy}{3. Regularization strategies}}
+\vspace{0.04cm}
 
-  % Elastic Net Box
-  \begin{column}{0.315\textwidth}
-    \begin{tikzpicture}
-      \node[
-        draw=navy!40,
-        fill=navy!5,
-        line width=0.7pt,
-        rounded corners=4pt,
-        inner sep=7pt,
-        minimum width=\linewidth,
-        text width=\linewidth-14pt,
-        minimum height=4.3cm,
-        anchor=north
-      ] at (0,0) {
-        \centering
-        {\small\bfseries\textcolor{navy}{Elastic Net ($L_1 + L_2$)}}\par\vspace{0.08cm}
-        {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k [\alpha\|\mathbf{w}\|_1 + \tfrac{1-\alpha}{2}\|\mathbf{w}\|_2^2]$}\par\vspace{0.10cm}
-        {\color{navy!20}\hrule height 0.5pt}\vspace{0.12cm}
-        \begin{itemize}\itemsep=4pt\footnotesize
-          \item Grouping: \textbf{218 genes}.
-          \item Stable feature selection.
-        \end{itemize}
-      };
-    \end{tikzpicture}
-  \end{column}
-
-\end{columns}
+\centering
+\small
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{p{2.6cm} p{3.8cm} p{6.0cm}}
+\toprule
+\textbf{Model} & \textbf{Penalty} & \textbf{Statistical effect} \\
+\midrule
+\textbf{Ridge} & $\frac{1}{2}\|B\|_F^2$ & Shrinks coefficients \\
+\textbf{Lasso} & $\|B\|_1$ & Produces sparse coefficients \\
+\textbf{Elastic Net} & $\alpha\|B\|_1 + \frac{1-\alpha}{2}\|B\|_F^2$ & Combines shrinkage and sparsity \\
+\bottomrule
+\end{tabular}
 \end{frame}
 
 % ============================================================
