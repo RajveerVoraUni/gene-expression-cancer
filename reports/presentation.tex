@@ -525,46 +525,91 @@
 \frametitle{Why Three Metrics?}
 \framesubtitle{Accuracy, probability calibration, and biomarker stability}
 
-\vspace{-0.05cm}
-\begin{columns}[T]
+\vspace{0.25cm}
+\begin{columns}[T, onlytextwidth]
 
-  \begin{column}{0.31\textwidth}
-    {\color{teal}\hrule height 2pt}\vspace{0.08cm}
-    {\small\bfseries\textcolor{navy}{Macro-F1 (Accuracy)}}\par\vspace{0.02cm}
-    {\footnotesize\[
-      \tfrac{1}{5}\sum_{k=1}^{5}\tfrac{2P_k R_k}{P_k + R_k}
-    \]}
-    \scriptsize
-    Harmonic mean across classes.
-
-    \vspace{0.06cm}
-    \textbf{Ceiling:} all models $>0.99$.
+  % Macro-F1 Box
+  \begin{column}{0.315\textwidth}
+    \begin{tikzpicture}
+      \node[
+        draw=teal!50,
+        fill=tealbg,
+        line width=0.7pt,
+        rounded corners=4pt,
+        inner sep=7pt,
+        minimum width=\linewidth,
+        text width=\linewidth-14pt,
+        minimum height=4.3cm,
+        anchor=north
+      ] at (0,0) {
+        \centering
+        {\small\bfseries\textcolor{teal!80!black}{Macro-F1 (Accuracy)}}\par\vspace{0.06cm}
+        {\footnotesize\[
+          \tfrac{1}{5}\sum_{k=1}^{5}\tfrac{2P_k R_k}{P_k + R_k}
+        \]}\vspace{0.02cm}
+        {\color{teal!30}\hrule height 0.5pt}\vspace{0.10cm}
+        \begin{itemize}\itemsep=3pt\footnotesize
+          \item Harmonic mean across classes.
+          \item \textbf{Ceiling:} all models $>0.99$.
+        \end{itemize}
+      };
+    \end{tikzpicture}
   \end{column}
 
-  \begin{column}{0.31\textwidth}
-    {\color{navy}\hrule height 2pt}\vspace{0.08cm}
-    {\small\bfseries\textcolor{navy}{Log-Loss (Calibration)}}\par\vspace{0.02cm}
-    {\footnotesize\[
-      -\tfrac{1}{N}\sum_{i,k} y_{ik}\log\hat{p}_{ik}
-    \]}
-    \scriptsize
-    Penalizes overconfidence.
-
-    \vspace{0.06cm}
-    \textbf{Decisive metric} for ranking.
+  % Log-Loss Box
+  \begin{column}{0.315\textwidth}
+    \begin{tikzpicture}
+      \node[
+        draw=navy!40,
+        fill=navy!5,
+        line width=0.7pt,
+        rounded corners=4pt,
+        inner sep=7pt,
+        minimum width=\linewidth,
+        text width=\linewidth-14pt,
+        minimum height=4.3cm,
+        anchor=north
+      ] at (0,0) {
+        \centering
+        {\small\bfseries\textcolor{navy}{Log-Loss (Calibration)}}\par\vspace{0.06cm}
+        {\footnotesize\[
+          -\tfrac{1}{N}\sum_{i,k} y_{ik}\log\hat{p}_{ik}
+        \]}\vspace{0.02cm}
+        {\color{navy!20}\hrule height 0.5pt}\vspace{0.10cm}
+        \begin{itemize}\itemsep=3pt\footnotesize
+          \item Penalizes overconfidence.
+          \item \textbf{Decisive metric} for ranking.
+        \end{itemize}
+      };
+    \end{tikzpicture}
   \end{column}
 
-  \begin{column}{0.31\textwidth}
-    {\color{coral}\hrule height 2pt}\vspace{0.08cm}
-    {\small\bfseries\textcolor{navy}{Stability (Biomarkers)}}\par\vspace{0.02cm}
-    {\footnotesize\[
-      J = \tfrac{|S_a\cap S_b|}{|S_a\cup S_b|}
-    \]}
-    \scriptsize
-    Gene overlap across splits.
-
-    \vspace{0.06cm}
-    \textbf{Key} for clinical biomarkers.
+  % Stability Box
+  \begin{column}{0.315\textwidth}
+    \begin{tikzpicture}
+      \node[
+        draw=coral!50,
+        fill=coralbg,
+        line width=0.7pt,
+        rounded corners=4pt,
+        inner sep=7pt,
+        minimum width=\linewidth,
+        text width=\linewidth-14pt,
+        minimum height=4.3cm,
+        anchor=north
+      ] at (0,0) {
+        \centering
+        {\small\bfseries\textcolor{coral!90!black}{Stability (Biomarkers)}}\par\vspace{0.06cm}
+        {\footnotesize\[
+          J = \tfrac{|S_a\cap S_b|}{|S_a\cup S_b|}
+        \]}\vspace{0.02cm}
+        {\color{coral!30}\hrule height 0.5pt}\vspace{0.10cm}
+        \begin{itemize}\itemsep=3pt\footnotesize
+          \item Gene overlap across splits.
+          \item \textbf{Key} for clinical biomarkers.
+        \end{itemize}
+      };
+    \end{tikzpicture}
   \end{column}
 
 \end{columns}
