@@ -219,32 +219,54 @@
 
 \begin{columns}[c]
   \begin{column}{0.48\textwidth}
-    % Stat boxes
-    \begin{columns}[T]
-      \begin{column}{0.48\textwidth}
-        \statbox[navy]{801}{samples}{Total patients}
-        \vspace{0.08cm}
-        \statbox[teal]{1{,}000}{genes}{MAD pre-screen}
-      \end{column}
-      \begin{column}{0.48\textwidth}
-        \statbox[navy]{5}{classes}{BRCA KIRC COAD LUAD PRAD}
-        \vspace{0.08cm}
-        \statbox[coral]{20{,}531}{genes}{Raw transcriptome}
-      \end{column}
-    \end{columns}
+    % Stat boxes: 2x2 perfect grid of equal-sized cards
+    \centering
+    \begin{tikzpicture}[
+      sbox/.style={
+        minimum width=3.05cm,
+        minimum height=1.55cm,
+        rounded corners=4pt,
+        align=center,
+        inner sep=3pt,
+        line width=0.6pt
+      }
+    ]
+      % Top row: Total patients (left) & 5 classes (right)
+      \node[sbox, fill=lightgrey, draw=linegrey] (b1) at (0, 0) {
+        {\bfseries\Large\textcolor{navy}{801}}\;{\small\textcolor{mutedgrey}{samples}}\\[3pt]
+        {\scriptsize\textcolor{mutedgrey}{Total patients}}
+      };
+      \node[sbox, fill=lightgrey, draw=linegrey] (b2) at (3.30, 0) {
+        {\bfseries\Large\textcolor{navy}{5}}\;{\small\textcolor{mutedgrey}{classes}}\\[2pt]
+        {\scriptsize\textcolor{mutedgrey}{BRCA KIRC COAD}}\\[1pt]
+        {\scriptsize\textcolor{mutedgrey}{LUAD PRAD}}
+      };
+
+      % Bottom row: 1,000 genes (left) & 20,531 genes (right)
+      \node[sbox, fill=tealbg, draw=teal!40] (b3) at (0, -1.80) {
+        {\bfseries\Large\textcolor{teal}{1{,}000}}\;{\small\textcolor{mutedgrey}{genes}}\\[3pt]
+        {\scriptsize\textcolor{mutedgrey}{MAD pre-screen}}
+      };
+      \node[sbox, fill=coralbg, draw=coral!40] (b4) at (3.30, -1.80) {
+        {\bfseries\Large\textcolor{coral}{20{,}531}}\;{\small\textcolor{mutedgrey}{genes}}\\[3pt]
+        {\scriptsize\textcolor{mutedgrey}{Raw transcriptome}}
+      };
+    \end{tikzpicture}
   \end{column}
 
   \begin{column}{0.50\textwidth}
     \centering
-    \includegraphics[width=\linewidth, height=0.52\textheight, keepaspectratio]{figures/01_class_balance.png}
+    \includegraphics[width=\linewidth, height=0.40\textheight, keepaspectratio]{figures/01_class_balance.png}
   \end{column}
 \end{columns}
 
-\vspace{0.18cm}
-{\footnotesize\textbf{\textcolor{navy}{Preprocessing:}}\enspace
-Log-transform $z_{ij}=\log_2(x_{ij}+1)$ \enspace$\blacktriangleright$\enspace
-Top-1{,}000 by in-fold MAD (zero leakage) \enspace$\blacktriangleright$\enspace
-In-fold $Z$-standardization}
+\vspace{0.16cm}
+{\small\bfseries\textcolor{navy}{Preprocessing pipeline:}}\par\vspace{0.06cm}
+\begin{itemize}\itemsep=2.5pt\footnotesize
+  \item \textbf{Log-transform:} $z_{ij}=\log_2(x_{ij}+1)$ stabilizes expression variance.
+  \item \textbf{Feature screening:} Top-1{,}000 genes by in-fold MAD (zero test leakage).
+  \item \textbf{Standardization:} In-fold $Z$-score scaling ($\mu=0,\,\sigma=1$) per feature.
+\end{itemize}
 \end{frame}
 
 % ============================================================
