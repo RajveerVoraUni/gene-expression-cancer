@@ -205,12 +205,12 @@
   \end{column}
 
   \begin{column}{0.50\textwidth}
-    {\small\bfseries\textcolor{navy}{Three immediate statistical consequences:}}\par\vspace{0.10cm}
+    {\small\bfseries\textcolor{navy}{Three statistical bottlenecks:}}\par\vspace{0.10cm}
 
     \begin{itemize}\itemsep=4pt\footnotesize
-      \item \textbf{Singular covariance:} Sample covariance $\mathbf{S} \in \mathbb{R}^{p \times p}$ has rank $\le 800 \ll 20{,}531$. Classical OLS and Fisher LDA cannot be inverted.
-      \item \textbf{Complete linear separability:} In $p \gg n$, data are linearly separable. Standard MLE diverges ($\|\mathbf{w}\|_2 \to \infty$).
-      \item \textbf{Strong multicollinearity:} Genes function in shared pathways; pairs show $|r| > 0.85$, destabilising feature selection.
+      \item \textbf{Singular covariance:} $\mathrm{rank}(\mathbf{S}) \le 800 \ll 20{,}531$; OLS and Fisher LDA fail.
+      \item \textbf{Separability:} separable data in $p \gg n$ cause MLE divergence ($\|\mathbf{w}\|_2 \to \infty$).
+      \item \textbf{Multicollinearity:} shared biological pathways ($|r| > 0.85$) destabilise feature selection.
     \end{itemize}
 
     \vspace{0.12cm}
@@ -231,36 +231,34 @@
 \frametitle{TCGA RNA-Seq Dataset}
 \framesubtitle{Five primary tumour types — balanced, log-transformed, pre-screened by variance}
 
-\begin{columns}[T]
+\begin{columns}[c]
   \begin{column}{0.48\textwidth}
     % Stat boxes
     \begin{columns}[T]
-      \begin{column}{0.47\textwidth}
+      \begin{column}{0.48\textwidth}
         \statbox[navy]{801}{samples}{Total patients}
-        \vspace{0.06cm}
-        \statbox[teal]{1{,}000}{genes}{After MAD pre-screen}
+        \vspace{0.08cm}
+        \statbox[teal]{1{,}000}{genes}{MAD pre-screen}
       \end{column}
-      \begin{column}{0.47\textwidth}
-        \statbox[navy]{5}{cancer types}{BRCA KIRC COAD LUAD PRAD}
-        \vspace{0.06cm}
-        \statbox[coral]{20{,}531}{raw genes}{Before filtering}
+      \begin{column}{0.48\textwidth}
+        \statbox[navy]{5}{classes}{BRCA KIRC COAD LUAD PRAD}
+        \vspace{0.08cm}
+        \statbox[coral]{20{,}531}{genes}{Raw transcriptome}
       \end{column}
     \end{columns}
-
-    \vspace{0.08cm}
-    {\footnotesize\textcolor{mutedgrey}{\textbf{Preprocessing pipeline:}}}\par\vspace{0.04cm}
-    \begin{itemize}\itemsep=1pt\footnotesize
-      \item Log-transform: $z_{ij} = \log_2(x_{ij}+1)$ to stabilize variance.
-      \item Keep top-1{,}000 genes by \textbf{in-fold MAD} (no label leakage).
-      \item $Z$-score standardize within each training fold.
-    \end{itemize}
   \end{column}
 
   \begin{column}{0.50\textwidth}
     \centering
-    \includegraphics[width=\linewidth, height=0.48\textheight, keepaspectratio]{figures/01_class_balance.png}
+    \includegraphics[width=\linewidth, height=0.52\textheight, keepaspectratio]{figures/01_class_balance.png}
   \end{column}
 \end{columns}
+
+\vspace{0.18cm}
+{\footnotesize\textbf{\textcolor{navy}{Preprocessing:}}\enspace
+Log-transform $z_{ij}=\log_2(x_{ij}+1)$ \enspace$\blacktriangleright$\enspace
+Top-1{,}000 by in-fold MAD (zero leakage) \enspace$\blacktriangleright$\enspace
+In-fold $Z$-standardization}
 \end{frame}
 
 % ============================================================
@@ -328,7 +326,7 @@
 % ============================================================
 \begin{frame}
 \frametitle{Three Regularized Multinomial Classifiers}
-\framesubtitle{Same cross-entropy loss, different penalty geometry — very different behaviour under collinearity}
+\framesubtitle{Same cross-entropy loss $\mathcal{L}_{\text{CE}}$, different penalty geometries under collinearity}
 
 \vspace{-0.05cm}
 \begin{columns}[T]
@@ -336,40 +334,40 @@
   \begin{column}{0.31\textwidth}
     \centering
     {\color{teal}\hrule height 2pt}\vspace{0.10cm}
-    {\small\bfseries\textcolor{navy}{Ridge ($L_2$)}}\par\vspace{0.10cm}
-    {\footnotesize $\mathcal{L}_{\text{CE}} + \dfrac{\lambda}{2}\sum_k \|\mathbf{w}_k\|_2^2$}\par\vspace{0.12cm}
-    {\color{linegrey}\hrule height 0.4pt}\vspace{0.12cm}
-    \begin{itemize}\itemsep=4pt\footnotesize
-      \item $\lambda\mathbf{I}$ makes Hessian strictly positive definite.
-      \item Shrinks all weights smoothly toward zero.
+    {\small\bfseries\textcolor{navy}{Ridge ($L_2$)}}\par\vspace{0.06cm}
+    {\footnotesize $\mathcal{L}_{\text{CE}} + \tfrac{\lambda}{2}\sum_k \|\mathbf{w}_k\|_2^2$}\par\vspace{0.08cm}
+    {\color{linegrey}\hrule height 0.4pt}\vspace{0.10cm}
+    \begin{itemize}\itemsep=3pt\footnotesize
+      \item Positive definite Hessian.
+      \item Smooth weight shrinkage.
       \item Retains \textbf{all 1{,}000 genes}.
-      \item Optimal probability calibration (log-loss $0.005$).
+      \item Top calibration ($0.005$).
     \end{itemize}
   \end{column}
 
   \begin{column}{0.31\textwidth}
     \centering
     {\color{coral}\hrule height 2pt}\vspace{0.10cm}
-    {\small\bfseries\textcolor{navy}{Lasso ($L_1$)}}\par\vspace{0.10cm}
-    {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k \|\mathbf{w}_k\|_1$}\par\vspace{0.12cm}
-    {\color{linegrey}\hrule height 0.4pt}\vspace{0.12cm}
-    \begin{itemize}\itemsep=4pt\footnotesize
-      \item Polyhedral $L_1$ ball creates corner solutions — exact zeros.
-      \item Reduces to \textbf{89 active genes}.
-      \item \textcolor{coral}{\textbf{Problem:}} arbitrarily picks one gene from each collinear cluster.
+    {\small\bfseries\textcolor{navy}{Lasso ($L_1$)}}\par\vspace{0.06cm}
+    {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k \|\mathbf{w}_k\|_1$}\par\vspace{0.08cm}
+    {\color{linegrey}\hrule height 0.4pt}\vspace{0.10cm}
+    \begin{itemize}\itemsep=3pt\footnotesize
+      \item Corner solutions (zeros).
+      \item High sparsity: \textbf{89 genes}.
+      \item Drops correlated genes arbitrarily.
     \end{itemize}
   \end{column}
 
   \begin{column}{0.31\textwidth}
     \centering
     {\color{navy}\hrule height 2pt}\vspace{0.10cm}
-    {\small\bfseries\textcolor{navy}{Elastic Net ($L_1 + L_2$)}}\par\vspace{0.10cm}
-    {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k\!\left[\alpha\|\mathbf{w}_k\|_1 + \tfrac{1-\alpha}{2}\|\mathbf{w}_k\|_2^2\right]$}\par\vspace{0.12cm}
-    {\color{linegrey}\hrule height 0.4pt}\vspace{0.12cm}
-    \begin{itemize}\itemsep=4pt\footnotesize
-      \item Combines sparsity ($L_1$) with stability ($L_2$).
-      \item Selects \textbf{218 active genes}, $\alpha=0.5$.
-      \item \textcolor{teal}{\textbf{Grouping property:}} co-regulated genes enter/leave together.
+    {\small\bfseries\textcolor{navy}{Elastic Net ($L_1 + L_2$)}}\par\vspace{0.06cm}
+    {\footnotesize $\mathcal{L}_{\text{CE}} + \lambda\sum_k\!\left[\alpha\|\mathbf{w}_k\|_1 + \tfrac{1-\alpha}{2}\|\mathbf{w}_k\|_2^2\right]$}\par\vspace{0.08cm}
+    {\color{linegrey}\hrule height 0.4pt}\vspace{0.10cm}
+    \begin{itemize}\itemsep=3pt\footnotesize
+      \item Sparsity $+$ stability.
+      \item Selects \textbf{218 genes}.
+      \item \textbf{Grouping:} retains co-regulated genes.
     \end{itemize}
   \end{column}
 
@@ -381,40 +379,40 @@
 % ============================================================
 \begin{frame}
 \frametitle{Why Elastic Net Handles Collinearity Better}
-\framesubtitle{A formal bound — and the non-linear baselines we compare against}
+\framesubtitle{Grouping theorem vs.\ non-linear baselines}
 
 \vspace{-0.15cm}
 \footnotesize
 \begin{columns}[T]
 
   \begin{column}{0.48\textwidth}
-    {\small\bfseries\textcolor{navy}{The Grouping Property (Zou \& Hastie 2005)}}
+    {\small\bfseries\textcolor{navy}{Grouping Bound (Zou \& Hastie)}}
     \par\vspace{0.02cm}
-    For features with sample correlation $r$:
+    For features with correlation $r$:
     {\footnotesize\[
       \bigl|\hat{w}_i - \hat{w}_j\bigr| \;\le\; \frac{\sqrt{2(1-r)}}{\lambda(1-\alpha)}\,\|\mathbf{y}\|_2
     \]}
-    \begin{itemize}\itemsep=1pt\footnotesize
-      \item As $r \to 1$, bound $\to 0$: correlated genes receive equal weights.
-      \item Correlated features enter/leave the active set \textbf{together}.
-      \item Resolves Lasso's arbitrary dropping of co-regulated genes.
+    \begin{itemize}\itemsep=2pt\footnotesize
+      \item Equal weights as $r \to 1$.
+      \item Correlated genes selected jointly.
+      \item Prevents Lasso's omissions.
     \end{itemize}
   \end{column}
 
   \begin{column}{0.48\textwidth}
     {\small\bfseries\textcolor{navy}{Non-Linear Baselines}}\par\vspace{0.02cm}
     {\color{linegrey}\hrule height 0.4pt}
-    \begin{itemize}\itemsep=1pt\footnotesize
-      \item \textbf{Random Forest:} 200 trees, $m=\lfloor\sqrt{p}\rfloor\approx31$ per split.
-      \item \textbf{XGBoost:} gradient boosting, $\eta=0.10$, max depth 4.
-      \item \textbf{PCA-MLP:} 434 PCs ($95\%$ var.), $434{\to}128{\to}64{\to}5$ MLP. Operates on PCs, not genes.
-      \item \textbf{Sparse NN:} input group-lasso penalty for feature selection.
+    \begin{itemize}\itemsep=2pt\footnotesize
+      \item \textbf{Random Forest:} 200 trees, $m \approx 31$.
+      \item \textbf{XGBoost:} 100 rounds, depth 4.
+      \item \textbf{PCA-MLP:} 434 PCs ($95\%$ var.).
+      \item \textbf{Sparse NN:} group-lasso input penalty.
     \end{itemize}
   \end{column}
 
 \end{columns}
 
-\takeaway{Trees choose among collinear genes arbitrarily; Elastic Net assigns them collectively.}
+\takeaway{Trees choose among collinear genes arbitrarily; Elastic Net groups them.}
 \end{frame}
 
 % ============================================================
@@ -493,7 +491,7 @@
 % ============================================================
 \begin{frame}
 \frametitle{Why Three Metrics?}
-\framesubtitle{Macro-F1 reveals accuracy; log-loss probes calibration; Dice/Jaccard evaluate biomarker stability}
+\framesubtitle{Macro-F1 (accuracy), log-loss (calibration), and stability (biomarkers)}
 
 \begin{columns}[T]
 
@@ -501,26 +499,28 @@
     {\color{teal}\hrule height 2pt}\vspace{0.08cm}
     {\small\bfseries\textcolor{navy}{Macro-F1}}\par\vspace{0.02cm}
     {\footnotesize\[
-      \frac{1}{5}\sum_{k=1}^{5}\frac{2P_k R_k}{P_k + R_k}
+      \tfrac{1}{5}\sum_{k=1}^{5}\tfrac{2P_k R_k}{P_k + R_k}
     \]}
     \scriptsize
-    Unweighted mean over all 5 cohorts. Robust to class imbalance (BRCA $n=300$; COAD $n=78$).
+    Balanced mean across cohorts.
+    Robust to cohort size differences.
 
     \vspace{0.06cm}
-    \textcolor{coral}{\textbf{Limitation:}} all models reach $>0.993$; cannot discriminate calibration.
+    \textcolor{coral}{\textbf{Limit:}} all $>0.993$; cannot assess calibration.
   \end{column}
 
   \begin{column}{0.31\textwidth}
     {\color{navy}\hrule height 2pt}\vspace{0.08cm}
     {\small\bfseries\textcolor{navy}{Log-Loss}}\par\vspace{0.02cm}
     {\footnotesize\[
-      -\frac{1}{N}\sum_{i,k} y_{ik}\log\hat{p}_{ik}
+      -\tfrac{1}{N}\sum_{i,k} y_{ik}\log\hat{p}_{ik}
     \]}
     \scriptsize
-    Heavily penalises confident misclassifications. Measures probability calibration, not just top-1 accuracy.
+    Penalises overconfident errors.
+    Tests probability quality.
 
     \vspace{0.06cm}
-    \textbf{Primary ranking metric} across all evaluated models.
+    \textbf{Primary metric} for model ranking.
   \end{column}
 
   \begin{column}{0.31\textwidth}
@@ -530,10 +530,10 @@
       D = \tfrac{2|S_a\cap S_b|}{|S_a|+|S_b|},\; J = \tfrac{|S_a\cap S_b|}{|S_a\cup S_b|}
     \]}
     \scriptsize
-    Pairwise agreement between active gene sets across independent training folds.
+    Gene set overlap across resampled training splits.
 
     \vspace{0.06cm}
-    Essential for biomarker reproducibility across clinical patient samples.
+    Key for reproducible biomarkers.
   \end{column}
 
 \end{columns}
@@ -705,8 +705,8 @@
       \centering{\condheading\bfseries\large\textcolor{teal}{Q1}}
     \end{column}
     \begin{column}{0.90\linewidth}
-      {\footnotesize\bfseries\textcolor{navy}{Flexibility does not help in $p \gg n$ transcriptomics.}}\par
-      {\scriptsize\textcolor{charcoal}{RNA-Seq data are linearly separable. Deep networks and boosting achieve no F1 advantage, yet produce worse calibration and lack interpretability.}}
+      {\footnotesize\bfseries\textcolor{navy}{Flexibility provides no advantage in RNA-Seq.}}\par
+      {\scriptsize\textcolor{charcoal}{Linear separability holds. Complex models yield no F1 gain and worse probability calibration.}}
     \end{column}
   \end{columns}
 \end{beamercolorbox}
@@ -719,8 +719,8 @@
       \centering{\condheading\bfseries\large\textcolor{coral}{Q2}}
     \end{column}
     \begin{column}{0.90\linewidth}
-      {\footnotesize\bfseries\textcolor{navy}{Collinearity destabilises Lasso and breaks tree feature selection.}}\par
-      {\scriptsize\textcolor{charcoal}{Lasso arbitrarily drops co-regulated genes. Random Forest drops to Jaccard $0.16$. Elastic Net's grouping property yields the most reproducible biomarkers ($0.57$).}}
+      {\footnotesize\bfseries\textcolor{navy}{Collinearity destabilises Lasso and trees.}}\par
+      {\scriptsize\textcolor{charcoal}{Lasso drops genes arbitrarily; tree stability falls to $0.16$. Elastic Net grouping ensures stability ($0.57$).}}
     \end{column}
   \end{columns}
 \end{beamercolorbox}
@@ -733,8 +733,8 @@
       \centering{\condheading\bfseries\large\textcolor{navy}{Q3}}
     \end{column}
     \begin{column}{0.90\linewidth}
-      {\footnotesize\bfseries\textcolor{navy}{Elastic Net achieves the best overall trade-off.}}\par
-      {\scriptsize\textcolor{charcoal}{Matches top F1 ($0.998$), uses only 218 genes (78\% reduction), improves log-loss over Lasso ($0.020$ vs $0.030$), and leads in stability.}}
+      {\footnotesize\bfseries\textcolor{navy}{Elastic Net achieves optimal balance.}}\par
+      {\scriptsize\textcolor{charcoal}{Ties best F1 ($0.998$), selects 218 genes (78\% cut), beats Lasso in calibration ($0.020$), and leads in stability.}}
     \end{column}
   \end{columns}
 \end{beamercolorbox}
@@ -751,30 +751,25 @@
 \vspace{-0.10cm}
 \begin{columns}[T]
   \begin{column}{0.48\textwidth}
-    {\small\bfseries\textcolor{navy}{What this study does not establish:}}\par\vspace{0.06cm}
+    {\small\bfseries\textcolor{navy}{Study Limitations:}}\par\vspace{0.06cm}
     \begin{itemize}\itemsep=3pt\footnotesize
-      \item \textbf{Single TCGA cohort:} $n=801$ from one platform; multi-centre batch effects were not assessed.
-      \item \textbf{Five coarse cancer types:} inter-tissue separability is large. May not generalise to intra-organ subtyping.
-      \item \textbf{No clinical validation:} our 218-gene set is a computational screen, not a diagnostic panel.
-      \item \textbf{Gene-level biology:} findings are predictive associations; individual genes need experimental assay validation.
+      \item \textbf{Single cohort:} $n=801$; batch effects unmeasured across centres.
+      \item \textbf{Inter-tissue task:} intra-organ subtypes remain unstudied.
+      \item \textbf{Predictive screen:} 218 genes form statistical candidates, not a diagnostic assay.
     \end{itemize}
   \end{column}
 
   \begin{column}{0.48\textwidth}
-    {\small\bfseries\textcolor{navy}{Where non-linear models might matter:}}\par\vspace{0.06cm}
+    {\small\bfseries\textcolor{navy}{Non-Linear Roles:}}\par\vspace{0.06cm}
     \begin{itemize}\itemsep=2pt\footnotesize
-      \item Subtle intra-organ subtyping (e.g.\ breast cancer subtypes).
-      \item Higher-order non-linear gene interactions.
-      \item Multi-modal integration (genomics + pathology images).
+      \item Subtle intra-tumour molecular subtyping.
+      \item Higher-order epistatic gene interactions.
+      \item Multi-modal data (genomics + pathology).
     \end{itemize}
 
-    \vspace{0.10cm}
-    {\small\bfseries\textcolor{navy}{Practical guidance:}}\par\vspace{0.06cm}
-    \begin{itemize}\itemsep=2pt\footnotesize
-      \item Evaluate beyond accuracy: log-loss and stability matter.
-      \item Default to Elastic Net for high-dimensional RNA-Seq.
-      \item Avoid tree feature importances under high collinearity.
-    \end{itemize}
+    \vspace{0.08cm}
+    {\small\bfseries\textcolor{navy}{Takeaway:}}\par\vspace{0.04cm}
+    Default to Elastic Net for high-dimensional transcriptomics.
   \end{column}
 \end{columns}
 \end{frame}
