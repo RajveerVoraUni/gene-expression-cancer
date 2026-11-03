@@ -26,6 +26,27 @@
 \definecolor{tealbg}{HTML}{EBF7F5}
 \definecolor{coralbg}{HTML}{FDF0F1}
 
+% 5-step Yellow-to-Red gradient for workflow/pipeline slides
+\definecolor{step1border}{RGB}{215, 155, 15}   % 1: Golden Yellow
+\definecolor{step1bg}{RGB}{255, 251, 235}
+\definecolor{step1text}{RGB}{135, 95, 0}
+
+\definecolor{step2border}{RGB}{235, 130, 25}   % 2: Warm Amber / Gold-Orange
+\definecolor{step2bg}{RGB}{255, 245, 230}
+\definecolor{step2text}{RGB}{160, 70, 0}
+
+\definecolor{step3border}{RGB}{230, 90, 30}    % 3: Vibrant Warm Orange
+\definecolor{step3bg}{RGB}{255, 239, 228}
+\definecolor{step3text}{RGB}{165, 45, 0}
+
+\definecolor{step4border}{RGB}{215, 55, 40}    % 4: Coral Red-Orange
+\definecolor{step4bg}{RGB}{254, 234, 230}
+\definecolor{step4text}{RGB}{155, 25, 15}
+
+\definecolor{step5border}{RGB}{185, 25, 35}    % 5: Crimson Red
+\definecolor{step5bg}{RGB}{253, 226, 228}
+\definecolor{step5text}{RGB}{135, 15, 20}
+
 % ============================================================
 % TYPOGRAPHY - Standard default Beamer sans font throughout
 % ============================================================
@@ -472,50 +493,68 @@
 \frametitle{Zero-Leakage Evaluation Pipeline}
 \framesubtitle{10 repeated stratified splits with strictly within-fold feature prescreening}
 
-\vspace{0.15cm}
+\vspace{0.25cm}
 \begin{center}
-\scalebox{0.82}{
 \begin{tikzpicture}[
-  every node/.style={font=\small},
   box/.style={
-    draw=linegrey, fill=lightgrey,
-    rounded corners=3pt,
+    draw=linegrey,
+    fill=lightgrey,
+    line width=0.6pt,
+    rounded corners=4pt,
     text=charcoal,
     align=center,
-    inner sep=6pt,
-    minimum height=1.6cm
+    inner sep=4.5pt,
+    minimum height=2.35cm,
+    text width=2.24cm
   },
-  accent/.style={box, draw=teal, fill=tealbg, text=navy},
-  strong/.style={box, draw=navy, fill=white, text=navy, line width=1pt},
-  arr/.style={-{Stealth[length=5pt]}, draw=mutedgrey, line width=1pt}
+  arr/.style={-{Stealth[length=4.5pt,width=3.5pt]}, draw=mutedgrey, line width=0.8pt}
 ]
 
-\node[box, text width=2.4cm] (data)
-  {\textbf{TCGA RNA-Seq}\\\scriptsize 801 patients\\20{,}531 genes};
+\node[box] (n1) at (0, 0) {
+  {\footnotesize\bfseries\textcolor{navy}{1. Raw Data}}\\[4pt]
+  \scriptsize 801 patients\\
+  20{,}531 genes\\
+  $\log_2(x + 1)$ counts
+};
 
-\node[strong, text width=2.5cm, right=0.30cm of data] (split)
-  {\textbf{Split $\times$10}\\\scriptsize 80\% train\;/\;20\% test\\$n=640$ / $161$};
+\node[box, right=0.24cm of n1] (n2) {
+  {\footnotesize\bfseries\textcolor{navy}{2. 10$\times$ Split}}\\[4pt]
+  \scriptsize Stratified 80/20\\
+  $n_{\text{train}} = 640$\\
+  $n_{\text{test}} = 161$
+};
 
-\node[accent, text width=2.6cm, right=0.30cm of split] (screen)
-  {\textbf{In-Fold Prescreen}\\\scriptsize Top 1{,}000 MAD\\$Z$-standardize};
+\node[box, right=0.24cm of n2] (n3) {
+  {\footnotesize\bfseries\textcolor{navy}{3. Prescreen}}\\[4pt]
+  \scriptsize Top 1{,}000 MAD\\
+  Within-fold only\\
+  $Z$-standardization
+};
 
-\node[box, text width=2.5cm, right=0.30cm of screen] (tune)
-  {\textbf{CV Tuning}\\\scriptsize 5-fold inner CV\\Hyperparameter opt.};
+\node[box, right=0.24cm of n3] (n4) {
+  {\footnotesize\bfseries\textcolor{navy}{4. Inner CV}}\\[4pt]
+  \scriptsize 5-fold inner CV\\
+  Hyperparameter opt.\\
+  Min log loss
+};
 
-\node[strong, text width=2.5cm, right=0.30cm of tune] (eval)
-  {\textbf{Evaluation}\\\scriptsize Macro-F1, log-loss\\Stability, $n$-efficiency};
+\node[box, right=0.24cm of n4] (n5) {
+  {\footnotesize\bfseries\textcolor{navy}{5. Evaluation}}\\[4pt]
+  \scriptsize Macro-F1 \& log-loss\\
+  Jaccard stability\\
+  Sample efficiency
+};
 
-\draw[arr] (data) -- (split);
-\draw[arr] (split) -- (screen);
-\draw[arr] (screen) -- (tune);
-\draw[arr] (tune) -- (eval);
+\draw[arr] (n1) -- (n2);
+\draw[arr] (n2) -- (n3);
+\draw[arr] (n3) -- (n4);
+\draw[arr] (n4) -- (n5);
 
 \end{tikzpicture}
-} % end scalebox
 \end{center}
 
-\vspace{0.40cm}
-\takeaway{Strict zero-leakage: feature prescreening and standardization are isolated within training folds.}
+\vspace{0.32cm}
+\takeaway{Strict zero-leakage: feature screening and standardization are isolated within training folds.}
 \end{frame}
 
 % ============================================================
