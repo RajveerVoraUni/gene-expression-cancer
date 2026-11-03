@@ -72,7 +72,7 @@
       \hfill%
       {\tiny\textcolor{mutedgrey}{Indian Statistical Institute}}%
       \hspace{6mm}%
-      {\scriptsize\bfseries\textcolor{navy}{\insertframenumber\,/\,\inserttotalframenumber}}%
+      {\scriptsize\textcolor{navy}{\insertframenumber\,/\,\inserttotalframenumber}}%
     \end{beamercolorbox}%
   \fi%
 }
@@ -271,14 +271,14 @@
 \framesubtitle{Unsupervised hierarchical clustering reveals tissue-specific expression blocks}
 
 \begin{columns}[c]
-  \begin{column}{0.62\textwidth}
+  \begin{column}{0.54\textwidth}
     \centering
-    \includegraphics[width=\linewidth, height=0.50\textheight, keepaspectratio]{figures/06_top_variable_feature_heatmap.png}
+    \includegraphics[width=\linewidth, height=0.62\textheight, keepaspectratio]{figures/06_top_variable_feature_heatmap.png}
   \end{column}
 
-  \begin{column}{0.36\textwidth}
+  \begin{column}{0.44\textwidth}
     {\small\bfseries\textcolor{navy}{Key observations:}}\par\vspace{0.08cm}
-    \begin{itemize}\itemsep=2pt\footnotesize
+    \begin{itemize}\itemsep=3pt\footnotesize
       \item Colours show standardised expression per gene; columns are patients.
       \item Cancer cohorts form \textbf{distinct blocks} without any labels.
       \item Row clusters reflect shared \textbf{gene modules} and pathways.
@@ -299,13 +299,13 @@
 \framesubtitle{Spectral projection of 1{,}000 variance-filtered genes onto the leading principal components}
 
 \begin{columns}[c]
-  \begin{column}{0.60\textwidth}
+  \begin{column}{0.54\textwidth}
     \centering
-    \includegraphics[width=\linewidth, height=0.55\textheight, keepaspectratio]{figures/05_pca_pc1_pc2.png}
+    \includegraphics[width=\linewidth, height=0.62\textheight, keepaspectratio]{figures/05_pca_pc1_pc2.png}
   \end{column}
 
-  \begin{column}{0.38\textwidth}
-    \begin{itemize}\itemsep=3pt\footnotesize
+  \begin{column}{0.44\textwidth}
+    \begin{itemize}\itemsep=4pt\footnotesize
       \item \textbf{PC1 (18.6\%):} Separates BRCA from KIRC.
       \item \textbf{PC2 (12.3\%):} Separates COAD and LUAD.
       \item \textbf{30.9\%} of total variation visible in 2D.
@@ -612,20 +612,20 @@
 \framesubtitle{Fewer active genes means slightly higher log-loss — Elastic Net occupies the efficient frontier}
 
 \begin{columns}[c]
-  \begin{column}{0.62\textwidth}
+  \begin{column}{0.54\textwidth}
     \centering
-    \includegraphics[width=\linewidth, height=0.45\textheight, keepaspectratio]{figures/05_pareto_frontier.png}
+    \includegraphics[width=\linewidth, height=0.58\textheight, keepaspectratio]{figures/05_pareto_frontier.png}
   \end{column}
 
-  \begin{column}{0.36\textwidth}
-    \begin{itemize}\itemsep=1pt\scriptsize
+  \begin{column}{0.44\textwidth}
+    \begin{itemize}\itemsep=2pt\footnotesize
       \item \textbf{Ridge / PCA-MLP:} 1000 genes / 434 PCs, log-loss $0.004$–$0.005$. Dense but calibrated.
       \item \textbf{Lasso:} 89 genes, log-loss $0.030$. Highly sparse, slight calibration penalty.
       \item \textbf{Elastic Net:} 218 genes, log-loss $0.020$. Sits on optimal frontier.
       \item \textbf{Trees:} dense \emph{and} poorly calibrated ($0.081$). Off frontier.
     \end{itemize}
 
-    \vspace{0.02cm}
+    \vspace{0.04cm}
     \takeaway{Elastic Net balances biological parsimony and probability calibration.}
   \end{column}
 \end{columns}
@@ -639,20 +639,20 @@
 \framesubtitle{How consistently does each model select the same genes across different data splits?}
 
 \begin{columns}[c]
-  \begin{column}{0.62\textwidth}
+  \begin{column}{0.54\textwidth}
     \centering
-    \includegraphics[width=\linewidth, height=0.45\textheight, keepaspectratio]{figures/04_feature_stability_barplot.png}
+    \includegraphics[width=\linewidth, height=0.58\textheight, keepaspectratio]{figures/04_feature_stability_barplot.png}
   \end{column}
 
-  \begin{column}{0.36\textwidth}
-    \begin{itemize}\itemsep=1pt\scriptsize
+  \begin{column}{0.44\textwidth}
+    \begin{itemize}\itemsep=2pt\footnotesize
       \item \textbf{Elastic Net:} Dice $0.73$, Jaccard $0.57$. Highest stability among sparse models.
       \item \textbf{Lasso:} Dice $0.61$, Jaccard $0.44$. Arbitrary collinear choices hurt stability.
       \item \textbf{XGBoost:} Jaccard $0.29$. Greedy splitting is inconsistent.
       \item \textbf{Random Forest:} Jaccard $\mathbf{0.16}$. Splits fluctuate with identical impurity gains.
     \end{itemize}
 
-    \vspace{0.02cm}
+    \vspace{0.04cm}
     \takeaway{Biomarker discovery requires $L_2$ grouping; trees cannot stably rank collinear genes.}
   \end{column}
 \end{columns}
@@ -666,12 +666,12 @@
 \framesubtitle{Macro-F1 as training set size drops from 640 to 30 (6 patients per class)}
 
 \begin{columns}[c]
-  \begin{column}{0.62\textwidth}
+  \begin{column}{0.54\textwidth}
     \centering
-    \includegraphics[width=\linewidth, height=0.50\textheight, keepaspectratio]{figures/02_n_efficiency_curves.png}
+    \includegraphics[width=\linewidth, height=0.58\textheight, keepaspectratio]{figures/02_n_efficiency_curves.png}
   \end{column}
 
-  \begin{column}{0.36\textwidth}
+  \begin{column}{0.44\textwidth}
     \begin{itemize}\itemsep=2pt\footnotesize
       \item \textbf{Linear models} (Ridge, Elastic Net): maintain $\ge 0.995$ F1 even down to $n_{\text{train}}=30$.
       \item \textbf{XGBoost} drops to $0.976 \pm 0.018$ (min $0.954$). Greedy splits overfit noise under scarcity.
