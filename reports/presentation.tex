@@ -50,7 +50,7 @@
 % FRAMETITLE
 % ============================================================
 \setbeamertemplate{frametitle}{%
-  \vspace{0.20cm}%
+  \vspace{0.60cm}%
   {\condheading\bfseries\Large\textcolor{navy}{\insertframetitle}}\par%
   \if\relax\detokenize\expandafter{\insertframesubtitle}\relax\else%
     \vspace{0.04cm}%
@@ -67,7 +67,7 @@
 \setbeamertemplate{footline}{%
   \ifnum\thepage>1%
     {\color{linegrey}\hrule height 0.4pt width\paperwidth}%
-    \begin{beamercolorbox}[wd=\paperwidth,ht=2.4ex,dp=0.9ex,leftskip=10mm,rightskip=10mm]{footline}%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=3.2ex,dp=1.8ex,leftskip=10mm,rightskip=10mm]{footline}%
       {\tiny\textcolor{mutedgrey}{Cancer RNA-Seq: Flexibility vs.\ Interpretability in $p \gg n$}}%
       \hfill%
       {\tiny\textcolor{mutedgrey}{Indian Statistical Institute}}%
@@ -551,12 +551,12 @@ In-fold $Z$-standardization}
 \frametitle{All Models Achieve High Accuracy — Log-Loss Tells the Real Story}
 \framesubtitle{Performance distributions across 10 repeated train/test splits}
 
-\vspace{-0.15cm}
+\vspace{-0.20cm}
 \begin{center}
-  \includegraphics[width=0.92\linewidth, height=0.50\textheight, keepaspectratio]{figures/01_model_comparison_boxplots.png}
+  \includegraphics[width=0.88\linewidth, height=0.44\textheight, keepaspectratio]{figures/01_model_comparison_boxplots.png}
 \end{center}
 
-\vspace{-0.10cm}
+\vspace{-0.15cm}
 \begin{columns}[T]
   \begin{column}{0.48\textwidth}
     \insight[teal]{%
