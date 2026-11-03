@@ -140,42 +140,23 @@
 {
 \setbeamertemplate{footline}{}
 \begin{frame}[plain]
-  \begin{tikzpicture}[remember picture, overlay]
-    % Left navy sidebar
-    \fill[navy] (current page.south west) rectangle
-      ([xshift=0.32\paperwidth] current page.north west);
-    % Teal accent bar
-    \fill[teal] ([xshift=0.32\paperwidth] current page.south west) rectangle
-      ([xshift=0.325\paperwidth] current page.north west);
-  \end{tikzpicture}
+  \vspace*{0.6cm}
+  {\footnotesize\bfseries\textcolor{teal}{INDIAN STATISTICAL INSTITUTE, KOLKATA}}
+  \hfill
+  {\footnotesize\textcolor{mutedgrey}{Regression Techniques \textbar\ November 2026}}\par
+  \vspace{0.30cm}
+  {\color{navy}\hrule height 1.8pt}\par
+  \vspace{0.60cm}
 
-  % Left column: section label and project context
-  \begin{columns}[c]
-    \begin{column}{0.30\textwidth}
-      \begin{center}
-        {\scriptsize\bfseries\textcolor{white}{INDIAN STATISTICAL\\INSTITUTE, KOLKATA}}\par\vspace{0.25cm}
-        {\color{teal}\hrule height 0.6pt}\par\vspace{0.25cm}
-        {\scriptsize\textcolor{white!70!navy}{Regression Techniques\\Course Project\\November 2026}}
-      \end{center}
-    \end{column}
+  {\fontsize{24}{29}\selectfont\bfseries\textcolor{navy}{Flexibility vs.\ Interpretability in}}\par\vspace{0.10cm}
+  {\fontsize{24}{29}\selectfont\bfseries\textcolor{navy}{High-Dimensional Cancer Classification}}\par\vspace{0.40cm}
 
-    % Right column: main title block
-    \begin{column}{0.66\textwidth}
-      \vspace*{0.35cm}
-      {\condheading\bfseries\fontsize{22}{27}\selectfont\textcolor{navy}{Flexibility vs.\ Interpretability in}\par
-       \vspace{0.06cm}
-       High-Dimensional Cancer}\par\vspace{0.06cm}
-      {\condheading\bfseries\fontsize{22}{27}\selectfont\textcolor{navy}{Classification}}\par\vspace{0.30cm}
+  {\normalsize\textcolor{mutedgrey}{Regularized Regression, Tree Ensembles, and Neural Networks on TCGA RNA-Seq Data ($p \gg n$)}}\par\vspace{0.55cm}
 
-      {\small\textcolor{mutedgrey}{Regularized Regression, Tree Ensembles, and Neural Networks\\
-      on TCGA RNA-Seq Data ($p \gg n$)}}\par\vspace{0.40cm}
+  {\color{linegrey}\hrule height 0.6pt}\par
+  \vspace{0.40cm}
 
-      {\color{teal}\hrule height 0.7pt width 0.35\linewidth}\par\vspace{0.35cm}
-
-      {\small\bfseries\textcolor{charcoal}{Rajveer Vora \quad\textbar\quad
-       Amartya Amritanshu \quad\textbar\quad P.\ Sanjith Reddy}}
-    \end{column}
-  \end{columns}
+  {\small\textbf{\textcolor{charcoal}{Rajveer Vora \quad\textbar\quad Amartya Amritanshu \quad\textbar\quad P.\ Sanjith Reddy}}}
 \end{frame}
 }
 
