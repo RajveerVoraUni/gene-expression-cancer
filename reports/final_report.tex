@@ -77,13 +77,13 @@ Since there are $p = 20{,}531$ features, the $20{,}531 \times 20{,}531$ covarian
 exact zero eigenvalues.
 
 \paragraph{Why this matters:}
-This rank deficiency explains mathematically why ordinary covariance inversion and classical multivariate techniques fail when $p \gg n$:
+This rank deficiency and the high-dimensional geometry explain mathematically why ordinary covariance inversion and unregularized techniques fail when $p \gg n$:
 \begin{enumerate}
     \item \textbf{Failure of Covariance Inversion:} Foundational classification techniques that rely on inverting the pooled within-class covariance matrix—most notably Fisher's Linear Discriminant Analysis (LDA) and Mahalanobis distance metrics—fail completely because $\det(\mathbf{S}) = 0$ and $\mathbf{S}^{-1}$ does not exist.
     \item \textbf{Underdetermined Normal Equations:} In ordinary least squares (OLS) regression or unconstrained linear models, the Gram matrix $\mathbf{X}^T \mathbf{X}$ is singular. The solution space contains a $(p - n + 1)$-dimensional null space, resulting in infinitely many coefficient vectors that interpolate the training data with zero training error.
-    \item \textbf{MLE Divergence under Linear Separability:} When high-dimensional data are linearly separable (as observed across distinct tumor tissue lineages), the unregularized maximum likelihood estimator (MLE) for multinomial logistic regression diverges to infinity ($\|\mathbf{w}\|_2 \to \infty$) because the cross-entropy loss reaches its infimum only as the weights scale without bound.
+    \item \textbf{Complete Separation and Non-Existence of the MLE:} When classes are linearly separable in high dimensions, there exist infinitely many separating hyperplanes that achieve perfect classification on the training observations. In unregularized logistic regression, the likelihood function continuously improves as the coefficient magnitudes grow without bound. Under complete separation, the maximum likelihood estimate (MLE) does not exist as a finite vector in $\mathbb{R}^p$.
 \end{enumerate}
-Consequently, regularization (such as isotropic $L_2$ shrinkage to condition the Hessian, or $L_1$ sparsity penalties to enforce parsimony) and variance-based feature screening are not merely empirical heuristics—they are mathematical necessities for well-posed estimation in this regime.
+This provides a direct theoretical motivation for using penalized estimators—such as Ridge ($L_2$), Lasso ($L_1$), and Elastic Net ($L_1 + L_2$)—which introduce convex penalty terms that guarantee the existence of a unique, finite minimizer and prevent numerical divergence under complete separation. In addition, variance-based screening acts as a practical dimension reduction step to tame dimensionality prior to model fitting.
 
 To investigate these issues systematically, our project addresses three main questions:
 \begin{itemize}

@@ -187,13 +187,13 @@
   \begin{column}{0.50\textwidth}
     {\small\bfseries\textcolor{navy}{Statistical bottlenecks in $p \gg n$:}}\par\vspace{0.10cm}
 
-    \begin{itemize}\itemsep=4pt\footnotesize
+    \begin{itemize}\itemsep=6pt\footnotesize
       \item \textbf{Singular covariance:} $\mathrm{rank}(\mathbf{S}) \le 800 \ll 20{,}531$; classical LDA fails.
-      \item \textbf{Separability:} causes MLE divergence ($\|\mathbf{w}\|_2 \to \infty$).
-      \item \textbf{Multicollinearity:} co-expressed genes ($|r| > 0.85$) destabilize selection.
+      \item \textbf{Severe multicollinearity:} co-expressed genes ($|r| > 0.85$) destabilize selection.
+      \item \textbf{High-variance estimation:} unconstrained models overfit noise without shrinkage.
     \end{itemize}
 
-    \vspace{0.12cm}
+    \vspace{0.14cm}
     \takeaway{Regularization is essential to prevent ill-posed estimation.}
   \end{column}
 \end{columns}
