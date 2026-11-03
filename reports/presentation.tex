@@ -3,7 +3,6 @@
 % ============================================================
 % PACKAGES
 % ============================================================
-\usepackage{fontspec}
 \usepackage{xcolor}
 \usepackage{colortbl}
 \usepackage{tikz}
@@ -28,16 +27,9 @@
 \definecolor{coralbg}{HTML}{FDF0F1}
 
 % ============================================================
-% TYPOGRAPHY
+% TYPOGRAPHY - Standard default Beamer sans font throughout
 % ============================================================
-\setsansfont{Helvetica Neue}[
-  BoldFont      = {Helvetica Neue Bold},
-  ItalicFont    = {Helvetica Neue Italic},
-  BoldItalicFont= {Helvetica Neue Bold Italic}
-]
-\newfontfamily\condheading{Avenir Next Condensed}[
-  BoldFont={Avenir Next Condensed Bold}
-]
+\newcommand{\condheading}{}
 
 % ============================================================
 % BEAMER BASE COLOURS
@@ -559,22 +551,22 @@
 \frametitle{All Models Achieve High Accuracy — Log-Loss Tells the Real Story}
 \framesubtitle{Performance distributions across 10 repeated train/test splits}
 
+\vspace{-0.15cm}
 \begin{center}
-  \includegraphics[width=0.94\linewidth, height=0.62\textheight, keepaspectratio]{figures/01_model_comparison_boxplots.png}
+  \includegraphics[width=0.92\linewidth, height=0.50\textheight, keepaspectratio]{figures/01_model_comparison_boxplots.png}
 \end{center}
 
-\vspace{0.02cm}
+\vspace{-0.10cm}
 \begin{columns}[T]
   \begin{column}{0.48\textwidth}
     \insight[teal]{%
       \textbf{F1 saturates} above $0.993$ for every model.
-      Accuracy alone is insufficient to distinguish architectures on this dataset.}
+      Accuracy alone cannot distinguish architectures on this data.}
   \end{column}
   \begin{column}{0.48\textwidth}
     \insight[coral]{%
       \textbf{Log-loss diverges sharply.}
-      Random Forest: $0.081$. Linear models and PCA-MLP: $< 0.020$.
-      The gap is roughly $\times 10$.}
+      Random Forest: $0.081$. Linear models and PCA-MLP: $< 0.020$ ($\approx 10\times$ difference).}
   \end{column}
 \end{columns}
 \end{frame}
