@@ -61,6 +61,30 @@ From a statistical learning perspective, RNA-Seq datasets present a classic high
     \item \textbf{Risk of Data Leakage:} High dimensional feature selection and standard scaling are vulnerable to subtle leakage. If variance filtering or normalization is performed on the whole dataset before train/test splitting, test information leaks into the training pipeline, leading to overly optimistic results.
 \end{enumerate}
 
+\subsection{Rank Deficiency of the Sample Covariance Matrix}
+To understand mathematically why classical multivariate statistical methods break down in this domain, consider the algebraic structure of the sample covariance matrix. Let $\mathbf{X} \in \mathbb{R}^{n \times p}$ denote the column-centered gene expression design matrix with $n = 801$ patient observations and $p = 20{,}531$ measured gene predictors. The sample covariance matrix is given by:
+\begin{equation}
+    \mathbf{S} = \frac{1}{n - 1} \mathbf{X}^T \mathbf{X} \in \mathbb{R}^{p \times p}.
+\end{equation}
+Because $\mathbf{S}$ is formed by the sum of at most $n - 1$ linearly independent centered observation vectors of dimension $p$, the algebraic rank of the sample covariance matrix is fundamentally bounded by the sample degrees of freedom:
+\begin{equation}
+    \mathrm{rank}(\mathbf{S}) \le \min(n - 1, p) = n - 1 = 800.
+\end{equation}
+Since there are $p = 20{,}531$ features, the $20{,}531 \times 20{,}531$ covariance matrix is severely singular and rank-deficient, possessing at least:
+\begin{equation}
+    p - (n - 1) = 20{,}531 - 800 = 19{,}731
+\end{equation}
+exact zero eigenvalues.
+
+\paragraph{Why this matters:}
+This rank deficiency explains mathematically why ordinary covariance inversion and classical multivariate techniques fail when $p \gg n$:
+\begin{enumerate}
+    \item \textbf{Failure of Covariance Inversion:} Foundational classification techniques that rely on inverting the pooled within-class covariance matrix—most notably Fisher's Linear Discriminant Analysis (LDA) and Mahalanobis distance metrics—fail completely because $\det(\mathbf{S}) = 0$ and $\mathbf{S}^{-1}$ does not exist.
+    \item \textbf{Underdetermined Normal Equations:} In ordinary least squares (OLS) regression or unconstrained linear models, the Gram matrix $\mathbf{X}^T \mathbf{X}$ is singular. The solution space contains a $(p - n + 1)$-dimensional null space, resulting in infinitely many coefficient vectors that interpolate the training data with zero training error.
+    \item \textbf{MLE Divergence under Linear Separability:} When high-dimensional data are linearly separable (as observed across distinct tumor tissue lineages), the unregularized maximum likelihood estimator (MLE) for multinomial logistic regression diverges to infinity ($\|\mathbf{w}\|_2 \to \infty$) because the cross-entropy loss reaches its infimum only as the weights scale without bound.
+\end{enumerate}
+Consequently, regularization (such as isotropic $L_2$ shrinkage to condition the Hessian, or $L_1$ sparsity penalties to enforce parsimony) and variance-based feature screening are not merely empirical heuristics—they are mathematical necessities for well-posed estimation in this regime.
+
 To investigate these issues systematically, our project addresses three main questions:
 \begin{itemize}
     \item \textbf{Q1 (Flexibility vs. Performance):} Do non-linear tree ensembles and deep neural networks provide measurable predictive improvements over regularized linear models in this high dimensional setting?
