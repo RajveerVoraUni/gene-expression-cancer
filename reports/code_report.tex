@@ -57,16 +57,16 @@
 \fancyhf{}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
-\fancyhead[L]{\footnotesize\textcolor{mutedgrey}{\textbf{Code Architecture \& Viva/Defense Guide}}}
+\fancyhead[L]{\footnotesize\textcolor{mutedgrey}{\textbf{Codebase Architecture \& Implementation Report}}}
 \fancyhead[R]{\footnotesize\textcolor{mutedgrey}{TCGA Cancer RNA-Seq ($p \gg n$)}}
 \fancyfoot[L]{\footnotesize\textcolor{mutedgrey}{Indian Statistical Institute, Kolkata}}
 \fancyfoot[C]{\footnotesize\textcolor{navy}{\textbf{\thepage}}}
 \fancyfoot[R]{\footnotesize\textcolor{mutedgrey}{Regression Techniques (2026)}}
 
 % -------------------------------------------------------------
-% CUSTOM VIVA / EXAMINER CALLOUT BOX
+% TECHNICAL NOTE / DESIGN RATIONALE CALLOUT BOX
 % -------------------------------------------------------------
-\newcommand{\vivabox}[2]{%
+\newcommand{\techbox}[2]{%
   \par\vspace{0.14cm}%
   \noindent
   \begin{tikzpicture}
@@ -80,7 +80,7 @@
       text width=\linewidth-20pt,
       anchor=north west
     ] (box) at (0,0) {
-      {\condheading\bfseries\normalsize\textcolor{navy}{Examiner Question: #1}}\par\vspace{0.08cm}
+      {\condheading\bfseries\normalsize\textcolor{navy}{#1}}\par\vspace{0.08cm}
       {\small\textcolor{charcoal}{#2}}
     };
     \fill[teal] (0,0) rectangle (0.10, -0.60);
@@ -96,8 +96,8 @@
 % -------------------------------------------------------------
 \begin{center}
   {\footnotesize\bfseries\textcolor{teal}{INDIAN STATISTICAL INSTITUTE, KOLKATA \quad\textbar\quad M.STAT / BSDS CURRICULUM}}\\[0.2cm]
-  {\condheading\bfseries\LARGE\textcolor{navy}{Code Architecture, Implementation Details, and Examiner Viva Guide}}\\[0.15cm]
-  {\normalsize\textcolor{mutedgrey}{Comprehensive Technical Walkthrough and Code Defense for High-Dimensional Cancer Classification ($p \gg n$)}}\\[0.25cm]
+  {\condheading\bfseries\LARGE\textcolor{navy}{Codebase Architecture and Technical Implementation Report}}\\[0.15cm]
+  {\normalsize\textcolor{mutedgrey}{A Comprehensive Technical Walkthrough and Engineering Reference for High-Dimensional Cancer Classification ($p \gg n$)}}\\[0.25cm]
   {\small\textbf{\textcolor{charcoal}{Rajveer Vora \quad\textbar\quad Amartya Amritanshu \quad\textbar\quad P.\ Sanjith Reddy}}}\\[0.1cm]
   {\footnotesize\textcolor{mutedgrey}{Course Project: Regression Techniques \quad\textbar\quad Repository: \url{https://github.com/RajveerVoraUni/gene-expression-cancer}}}\\[0.25cm]
   {\color{linegrey}\hrule height 0.8pt}
@@ -106,7 +106,7 @@
 \vspace{0.15cm}
 
 \begin{abstract}
-\noindent This document serves as the comprehensive implementation companion and oral defense (viva voce) reference for the research project \emph{``Flexibility versus Interpretability in High Dimensional Multiclass Cancer Classification from RNA-Seq Data ($p \gg n$)''}. It provides an exhaustive, code-level explanation of the statistical engineering, defensive pipelines, package selection rationale, algorithmic implementations, and optimization mathematics employed in our project. Each core module (\texttt{src/data\_loader.py}, \texttt{src/create\_splits.py}, \texttt{src/preprocessor.py}, \texttt{src/models.py}, \texttt{src/neural\_models.py}, \texttt{src/stability.py}, \texttt{src/evaluate.py}) is analyzed with annotated code blocks, algorithmic justifications, and targeted solutions to potential questions posed by an examining committee.
+\noindent This document serves as the comprehensive implementation companion and technical reference for the research project \emph{``Flexibility versus Interpretability in High Dimensional Multiclass Cancer Classification from RNA-Seq Data ($p \gg n$)''}. It provides an exhaustive, code-level explanation of the statistical engineering, defensive pipelines, package selection rationale, algorithmic implementations, and optimization mathematics employed in our project. Each core module (\texttt{src/data\_loader.py}, \texttt{src/create\_splits.py}, \texttt{src/preprocessor.py}, \texttt{src/models.py}, \texttt{src/neural\_models.py}, \texttt{src/stability.py}, \texttt{src/evaluate.py}) is analyzed with annotated code blocks, algorithmic justifications, and technical design notes.
 \end{abstract}
 
 \vspace{0.2cm}
@@ -120,7 +120,7 @@
 % =============================================================
 
 \subsection{Software Stack and Package Selection Rationale}
-An examiner will frequently inquire: \emph{``Which external packages did you rely on, and why were specific libraries chosen over standard built-ins or alternatives?''} Table~\ref{tab:packages} summarizes our technical stack and the exact justification for each dependency.
+When constructing high-dimensional statistical machine learning pipelines, selecting verified, performant software dependencies is essential for numerical stability, execution speed, and cross-platform reproducibility. Table~\ref{tab:packages} summarizes our technical stack and the architectural justification for each external dependency.
 
 \begin{table}[htbp]
 \centering
@@ -176,7 +176,7 @@ The repository is structured following modern scientific computing standards, se
 \-- reports/                            # LaTeX reports, Beamer presentation, and figures
 \end{lstlisting}
 
-\vivabox{How do you guarantee complete reproduction of all results?}{
+\techbox{Technical Note: Guaranteeing Deterministic End-to-End Reproduction}{
 We execute \texttt{python run\_all\_experiments.py}. This master script sets global seeds (\texttt{RANDOM\_STATE = 42}), generates the frozen split files on disk, and sequentially executes Steps 1 through 6, concluding with plot generation. Because the split indices are serialized to disk (\texttt{splits\_stratified\_10repeats.npz}), every model evaluates on the exact same train/test subsets regardless of execution order.
 }
 
@@ -228,11 +228,11 @@ def build_data_cache(force=False):
                         sample_ids=sample_ids_labels, classes=le.classes_)
 \end{lstlisting}
 
-\vivabox{Why convert the data to float32 instead of keeping double precision (float64)?}{
+\techbox{Design Rationale: Single Precision (\texttt{float32}) Memory Optimization}{
 Gene expression RNA-Seq counts are originally normalized real numbers. Converting $16.4 \times 10^6$ entries from 64-bit to 32-bit float halves the memory consumption from $131.6$\,MB to $65.8$\,MB with zero impact on numerical stability (standard float32 provides 7 decimal digits of precision, which far exceeds the biological measurement precision of Illumina HiSeq). Furthermore, PyTorch neural networks operate natively and much faster on 32-bit tensors.
 }
 
-\vivabox{How did you handle the categorical cancer type labels?}{
+\techbox{Implementation Detail: Explicit Deterministic Label Encoding}{
 We fitted an explicit \texttt{LabelEncoder} using the fixed class list \texttt{CLASS\_NAMES = ["BRCA", "COAD", "KIRC", "LUAD", "PRAD"]}. This ensures that integer mappings $\{0: \text{BRCA}, 1: \text{COAD}, 2: \text{KIRC}, 3: \text{LUAD}, 4: \text{PRAD}\}$ are completely deterministic across all runs, machines, and operating systems.
 }
 
@@ -279,7 +279,7 @@ def generate_frozen_splits():
                         n_train_grid=N_TRAIN_GRID, **n_efficiency_dict)
 \end{lstlisting}
 
-\vivabox{Why did you use Stratified Shuffle Split instead of standard K-Fold Cross Validation?}{
+\techbox{Methodological Decision: Stratified Shuffle Split vs Standard K-Fold CV}{
 In genomic multiclass classification with class imbalance (e.g., BRCA has 300 samples while COAD has only 78), repeated stratified shuffle splits ensure that: (1) each test fold strictly preserves the true population class proportion ($37.5\%$ BRCA, $9.7\%$ COAD, etc.), (2) test sets are completely independent across repeats, and (3) we can systematically vary the training sample size ($n \in \{30, 60, 120, 250, 640\}$) while keeping the test evaluation set exactly identical ($n_{\text{test}} = 161$) for fair sample-efficiency comparisons.
 }
 
@@ -355,7 +355,7 @@ class LeakageFreePreprocessor:
         return X_test_out
 \end{lstlisting}
 
-\vivabox{Why is variance or MAD screening considered unsupervised? Does it leak cancer class labels?}{
+\techbox{Statistical Rationale: Unsupervised Prescreening and Leakage Prevention}{
 Variance and Median Absolute Deviation (MAD) measure the total dispersion of gene expression across all training patients without inspecting the tumour type label $y_i$. It identifies genes that vary across the cohort (filtering out uninformative house-keeping genes with flat expression). Because cancer labels are never consulted, it cannot overfit to the label distribution. Moreover, because it is computed strictly within each training fold, zero information about test patient identities or distributions enters the model.
 }
 
@@ -413,7 +413,7 @@ def extract_active_linear_features(model: LogisticRegression, feature_names: np.
     return set(feature_names[is_active])
 \end{lstlisting}
 
-\vivabox{Why did you use the SAGA solver for Lasso and Elastic Net instead of L-BFGS or Liblinear?}{
+\techbox{Optimization Rationale: SAGA Solver Selection for Elastic Net}{
 L-BFGS is a quasi-Newton solver that requires objective functions to be twice continuously differentiable; it cannot optimize the non-smooth, non-differentiable $|B|_1$ penalty at zero. Liblinear supports $L_1$ but only via a one-vs-rest heuristic and does not support multinomial softmax cross-entropy. \textbf{SAGA} (Stochastic Average Gradient with Averaging) supports non-smooth proximal operators, true multinomial softmax likelihood, and simultaneous $L_1 + L_2$ penalties with linear convergence rates.
 }
 
@@ -446,7 +446,7 @@ def get_tree_model(model_name: str):
         )
 \end{lstlisting}
 
-\vivabox{How did you extract active features from tree ensembles for stability comparison?}{
+\techbox{Methodological Detail: Active Feature Extraction from Tree Ensembles}{
 Decision trees do not have zero/non-zero coefficients like sparse linear models. Instead, they compute Gini importance (mean decrease in impurity) or Gain. To compare feature stability fairly, we extracted the \textbf{top-$k = 50$ highest-importance features} from each trained ensemble across all 10 folds using \texttt{extract\_top\_k\_tree\_features}, matching the typical clinical gene-panel budget.
 }
 
@@ -497,7 +497,7 @@ class SparseGroupLassoMLPNet(nn.Module):
             self.fc1.weight.data.mul_(shrinkage)       # Zeros entire column if norm <= threshold
 \end{lstlisting}
 
-\vivabox{How do you extract active features from the Sparse Neural Network?}{
+\techbox{Algorithmic Rationale: Extracting Active Genes from Sparse Neural Networks}{
 We compute the $L_2$ norm of each column in the input weight matrix: $\|w_j\|_2 = \sqrt{\sum_{h=1}^{64} (W_{hj}^{(1)})^2}$. A gene is classified as active if and only if $\|w_j\|_2 > 10^{-4}$. Features whose input weights were zeroed by the proximal operator are completely excluded.
 }
 
@@ -530,7 +530,7 @@ def compute_stability_metrics(feature_sets: List[Set]) -> Dict[str, float]:
     }
 \end{lstlisting}
 
-\vivabox{Why is Lasso stability (0.740) substantially lower than Elastic Net stability (0.773)?}{
+\techbox{Statistical Insight: Mathematical Mechanism for Elastic Net Feature Stability}{
 Due to extreme gene co-expression ($|r| > 0.85$ among pathway members), the $L_1$ penalty of Lasso selects one gene at random from a correlated cluster and drives the rest to zero. Minor patient sampling fluctuations between folds alter which correlated gene is picked, causing fold-to-fold instability. Elastic Net's strictly convex $L_2$ term enforces the \textbf{grouping property} (Zou \& Hastie, 2005), guaranteeing that collinear genes receive nearly equal coefficients ($|\hat{\beta}_i - \hat{\beta}_j| \le \frac{\sqrt{2(1-r)}}{\lambda(1-\alpha)}\|y\|_2$), thereby preserving consistent gene selection.
 }
 
@@ -567,29 +567,29 @@ def evaluate_predictions(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndar
     return {"accuracy": float(acc), "macro_f1": float(macro_f1), "log_loss": float(loss)}
 \end{lstlisting}
 
-\vivabox{Why did Random Forest exhibit a 4x worse log-loss (0.081) than regularized linear models (0.020)?}{
+\techbox{Evaluation Insight: Probability Calibration in Decision Trees vs Logistic Regression}{
 Random Forest estimates probabilities by taking the empirical fraction of trees voting for each class ($P = \frac{1}{B} \sum_{b=1}^{200} I(T_b(x) = k)$). Because decision trees split greedily on orthogonal axes and leaves are pure, tree voting frequencies are poorly calibrated, frequently producing overconfident probabilities ($1.0$ or $0.0$) on out-of-distribution gene patterns. Regularized multinomial logistic regression, by contrast, optimizes the smooth cross-entropy loss directly with parameter shrinkage, resulting in exceptionally well-calibrated posterior probabilities.
 }
 
 % =============================================================
-\section{Top 15 Technical Viva Voce Questions and Model Answers}
+\section{Frequently Asked Questions and Methodological Explanations}
 % =============================================================
 
-\noindent Here are the 15 most rigorous questions an examining committee at Indian Statistical Institute may pose regarding the codebase, together with exact technical answers:
+\noindent Below are fifteen technical deep-dive questions and detailed explanations addressing core algorithmic choices, mathematical properties, and empirical observations across the codebase:
 
-\vivabox{1. Why did classical Linear Discriminant Analysis (LDA) fail on this dataset?}{
+\techbox{Q1: Why does classical Linear Discriminant Analysis (LDA) fail on this dataset?}{
 In our dataset, $p = 20{,}531$ (or $1{,}000$ after prescreening) while $n_{\text{train}} = 640$. The sample covariance matrix $\mathbf{S} \in \mathbb{R}^{p \times p}$ has rank at most $n_{\text{train}} - K = 635 \ll p$. Consequently, $\mathbf{S}$ is strictly singular (determinant zero), and its inverse $\mathbf{S}^{-1}$ does not exist. Classical LDA requires inverting $\mathbf{S}$ to compute the discriminant function $w_k = \mathbf{S}^{-1} \mu_k$. Without $L_2$ regularization (as in Ridge or penalized discriminant analysis), LDA is mathematically undefined.
 }
 
-\vivabox{2. How does the SAGA solver handle both L1 and L2 penalties in multinomial logistic regression?}{
+\techbox{Q2: How does the SAGA solver handle both L1 and L2 penalties in multinomial logistic regression?}{
 SAGA maintains an average of historic gradients for all $N$ data points, updating one sample's gradient per step while adjusting for gradient variance. To handle the non-differentiable $L_1$ penalty, it applies a proximal thresholding operator ($\operatorname{soft\_threshold}(w, \eta \lambda_1) = \operatorname{sign}(w)\max(|w| - \eta \lambda_1, 0)$) immediately after taking the stochastic gradient step with respect to the smooth cross-entropy and $L_2$ terms.
 }
 
-\vivabox{3. Why did you choose a within-fold prescreening cutoff of p = 1000 genes?}{
+\techbox{Q3: Why was a within-fold prescreening cutoff of p = 1,000 genes chosen?}{
 In \texttt{experiments/run\_p\_grid.py}, we evaluated model performance across $p \in \{50, 100, 500, 1000, 5000, 20531\}$. At $p = 50$, models underfitted; at $p \ge 1000$, Macro-F1 plateaued at $0.998$ while computational training time for SAGA scaled linearly with $p$. Thus, $p = 1000$ represents the optimal trade-off between statistical sufficiency and computational speed.
 }
 
-\vivabox{4. What is the mathematical condition for Elastic Net to group collinear features?}{
+\techbox{Q4: What is the mathematical condition for Elastic Net to group collinear features?}{
 Given two standardized correlated features $x_i, x_j$ with empirical correlation $r = x_i^\top x_j$, Zou \& Hastie (2005) proved that the difference between their estimated Elastic Net coefficients satisfies:
 \[
 |\hat{\beta}_i - \hat{\beta}_j| \le \frac{\sqrt{2(1-r)}}{\lambda(1-\alpha)} \|y\|_2
@@ -597,54 +597,92 @@ Given two standardized correlated features $x_i, x_j$ with empirical correlation
 As $r \to 1$, the upper bound approaches zero, guaranteeing that highly correlated genes receive identical coefficient trajectories. Lasso ($\alpha = 1$) has denominator zero and provides no such grouping bound.
 }
 
-\vivabox{5. Why does XGBoost with tree\_method='hist' outperform standard tree construction?}{
+\techbox{Q5: Why does XGBoost with tree\_method='hist' outperform standard tree construction?}{
 Standard exact greedy tree construction sorts all 640 training samples for all 1,000 features at every tree node, requiring $\mathcal{O}(p \cdot n \log n)$ operations. \texttt{tree\_method="hist"} builds a discrete 256-bin histogram of feature values once at the beginning of training, reducing split finding to $\mathcal{O}(p \cdot 256)$, achieving an $8\times$ speedup without any measurable degradation in Macro-F1.
 }
 
-\vivabox{6. How do you prove that your PCA-MLP model did not suffer from data leakage?}{
+\techbox{Q6: How is data leakage provably prevented in the PCA-MLP pipeline?}{
 In \texttt{src/preprocessor.py}, the \texttt{PCA(n\_components=0.95)} object is fitted exclusively on $X_{\text{train}}$. The eigenvectors (loadings) $V_k \in \mathbb{R}^{1000 \times 434}$ are computed strictly from the covariance of training samples. When transforming $X_{\text{test}}$, we execute $X_{\text{test\_pca}} = X_{\text{test\_scaled}} \cdot V_k$. The test samples never contribute to the singular value decomposition.
 }
 
-\vivabox{7. What happens if a gene has zero variance in a training fold?}{
+\techbox{Q7: What happens if a gene exhibits zero variance in a training fold?}{
 In \texttt{LeakageFreePreprocessor}, we include the safety check \texttt{variances > 1e-12}. Any invariant or constant gene across the training fold is automatically pruned prior to top-$p$ sorting, avoiding division-by-zero errors during subsequent standard scaling ($\sigma_j = 0$).
 }
 
-\vivabox{8. Why did you use Adam rather than SGD for training the Sparse Group-Lasso network?}{
+\techbox{Q8: Why was Adam selected rather than SGD for training the Sparse Group-Lasso network?}{
 RNA-Seq expression values exhibit diverse dynamic ranges across genes. The Adam optimizer maintains individual adaptive learning rates for each parameter based on first and second gradient moments ($m_t / \sqrt{v_t} + \epsilon$), ensuring stable convergence on high-dimensional genomic topologies where standard SGD often oscillates or gets trapped in plateaus.
 }
 
-\vivabox{9. How did you verify that your custom PyTorch proximal operator was executing properly?}{
+\techbox{Q9: How was the custom PyTorch proximal operator verified for mathematical correctness?}{
 In \texttt{src/neural\_models.py}, we implemented \texttt{extract\_active\_nn\_features}, which inspects the first-layer weight matrix \texttt{fc1.weight.data}. We verified that without the proximal step ($\lambda_{\text{group}} = 0$), $100\%$ of the 1,000 input genes had non-zero column norms ($\|w_j\|_2 > 0$). When $\lambda_{\text{group}} = 0.005$ was applied, exactly 450--550 columns collapsed to absolute machine zero ($0.0$), confirming exact block-coordinate sparsity.
 }
 
-\vivabox{10. What is the clinical significance of the Pareto frontier in this project?}{
+\techbox{Q10: What is the clinical significance of the Pareto frontier in this study?}{
 In oncology diagnostics, deploying a 1,000-gene sequencing panel is prohibitively expensive and prone to technical noise. A clinical PCR assay requires minimal genes. Our Pareto frontier (\texttt{notebooks/02\_model\_synthesis\_and\_pareto.ipynb}) plotted Biomarker Sparsity ($p_{\text{active}}$) versus Multi-Class Log-Loss. Elastic Net established the dominant frontier point: eliminating $78\%$ of candidate genes ($218$ retained) while tying the global minimum log-loss ($0.020$) and top Macro-F1 ($0.998$).
 }
 
-\vivabox{11. Why is accuracy alone an insufficient evaluation metric for this study?}{
+\techbox{Q11: Why is accuracy alone an insufficient evaluation metric for this comparison?}{
 Across all 8 models evaluated, test accuracy ranged between $0.995$ and $0.998$ (only 1 or 2 misclassified patients out of 161). Under accuracy alone, all models appear identical. However, multiclass log-loss revealed massive discrepancies: tree models exhibited $0.081$ log-loss due to uncalibrated overconfident probabilities, while Elastic Net achieved $0.020$. Log-loss penalizes probabilistic overconfidence, which is critical when clinical decisions depend on predicted risk probabilities.
 }
 
-\vivabox{12. How was the sample-efficiency experiment engineered to avoid test set size fluctuations?}{
+\techbox{Q12: How was the sample-efficiency experiment engineered to avoid test set size fluctuations?}{
 In \texttt{src/create\_splits.py}, the test fold was frozen at $n_{\text{test}} = 161$ for all experiments. To evaluate performance under data scarcity ($n_{\text{train}} \in \{30, 60, 120, 250, 640\}$), we performed nested stratified sampling \textbf{inside} the 640 training samples. This ensured that regardless of whether a model was trained on 30 samples or 640 samples, its test set was identical in size and class distribution.
 }
 
-\vivabox{13. Why did regularized linear models maintain high performance at n = 30 while decision trees degraded sharply?}{
+\techbox{Q13: Why did regularized linear models maintain high performance at n = 30 while decision trees degraded sharply?}{
 At $n = 30$ ($6$ patients per cancer class), high-dimensional gene space is virtually empty. Decision trees partition space via orthogonal axis-aligned splits; with only 6 points per class, trees overfit idiosyncratic sample variations, resulting in poor generalization ($< 0.965$ F1). In contrast, regularized linear models construct smooth hyperplanes constrained by $L_1/L_2$ shrinkage, preserving linear separability without overfitting noise.
 }
 
-\vivabox{14. What is the significance of the recurrent biomarker analysis in \texttt{results/recurrent\_biomarker\_genes.csv}?}{
+\techbox{Q14: What is the significance of the recurrent biomarker analysis in \texttt{results/recurrent\_biomarker\_genes.csv}?}{
 A gene selected in only 1 of 10 folds is likely a split-specific statistical artifact. In \texttt{stability.py}, we tracked the selection frequency of each gene across all 10 independent splits. Elastic Net selected a core subset of 162 genes in \textbf{10 out of 10 folds} ($100\%$ consistency). These recurrent genes represent robust, biologically reproducible cancer biomarkers suitable for experimental laboratory validation.
 }
 
-\vivabox{15. How can this codebase be extended to new cancer datasets or single-cell RNA-Seq data?}{
+\techbox{Q15: How can this codebase be extended to new cancer datasets or single-cell RNA-Seq data?}{
 Due to modular encapsulation, adapting to a new dataset requires only: (1) placing new raw expression and label matrices in a designated folder, (2) updating \texttt{CLASS\_NAMES} and sample counts in \texttt{src/config.py}, and (3) re-running \texttt{run\_all\_experiments.py}. The pipeline handles all preprocessing, caching, cross-validation, stability analysis, and figure generation automatically.
 }
 
 % =============================================================
-\section{Conclusion and Summary for the Examiner}
+\section{Conclusion and Code Quality Summary}
 % =============================================================
-The implementation of this project adheres to the highest standards of reproducible computational science and high-dimensional statistics. By integrating multi-threaded C++ ingestion, frozen stratified cross-validation, strictly in-fold preprocessing, mathematically grounded proximal optimization in PyTorch, and combinatorial stability tracking, the codebase guarantees that all scientific findings presented in our report and defense are fully verifiable, mathematically sound, and free of data leakage.
+The implementation of this project adheres to the highest standards of reproducible computational science and high-dimensional statistics. By integrating multi-threaded C++ ingestion, frozen stratified cross-validation, strictly in-fold preprocessing, mathematically grounded proximal optimization in PyTorch, and combinatorial stability tracking, the codebase guarantees that all scientific findings presented in this repository are fully verifiable, mathematically sound, and free of data leakage.
+
+\subsection{Architectural Verification and Benchmark Summary}
+Table~\ref{tab:code_summary} synthesizes the core modules, their exact algorithmic guarantees, defensive safeguards, and empirical roles across the evaluation pipeline.
+
+\vspace{0.15cm}
+\noindent
+\begin{minipage}{\linewidth}
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{p{2.4cm} p{3.2cm} p{5.0cm} p{4.8cm}}
+\toprule
+\textbf{Module} & \textbf{Source File} & \textbf{Key Algorithmic Guarantee} & \textbf{Defensive Safeguard / Verification} \\
+\midrule
+Data Ingestion & \texttt{src/data\_loader.py} & C++ SIMD parsing ($< 1$\,s), compressed float32 serialization & Strict assertions on dimension ($801 \times 20{,}531$), NaN/Inf rejection, deterministic LabelEncoder. \\
+Cross-Validation & \texttt{src/create\_splits.py} & 10 frozen stratified outer splits, nested sample-efficiency subsets & Fixed seed ($42$); evaluation partitions serialized to disk to guarantee identical train/test pairs across all models. \\
+Preprocessing & \texttt{src/preprocessor.py} & Strictly in-fold feature screening, scaling, and PCA projections & Zero-leakage contract: test features never participate in variance ranking, scaling parameters, or PCA loadings. \\
+Linear Models & \texttt{src/models.py} & Multinomial logistic regression with Ridge, Lasso, and Elastic Net & SAGA proximal coordinate solver ensuring global convergence under non-smooth $L_1$ and $L_1+L_2$ penalties. \\
+Tree Ensembles & \texttt{src/models.py} & Random Forest ($200$ trees) and XGBoost with histogram binning & Random feature subspacing ($m = \sqrt{p}$) and discrete 256-bin discretization for sub-linear complexity. \\
+Deep Learning & \texttt{src/neural\_models.py} & PCA-MLP (434 PCs) and Sparse Group-Lasso Neural Network & Custom PyTorch closed-form proximal column shrinkage driving uninformative gene weight vectors to exact machine zero. \\
+Stability Metric & \texttt{src/stability.py} & Combinatorial $\binom{10}{2} = 45$ pairwise Jaccard and Dice-S\o{}rensen & Unbiased overlap tracking; recurrence filter isolating core biomarkers selected in $100\%$ of splits. \\
+Evaluation & \texttt{src/evaluate.py} & Macro-averaged F1 and posterior log-loss calibration & Defensive probability clipping to $[\varepsilon, 1-\varepsilon]$ ($\varepsilon = 10^{-15}$) preventing $-\infty$ numerical overflow. \\
+\bottomrule
+\end{tabular}
+\par\vspace{0.12cm}
+\refstepcounter{table}\label{tab:code_summary}
+{\footnotesize \textbf{Table \thetable:} Comprehensive architectural summary of the modular Python codebase.}
+\end{minipage}
+
+\vspace{0.25cm}
+\subsection{Replication Checklist for Open-Source Users}
+To reproduce the complete benchmark and all figures from a clean repository clone:
+\begin{enumerate}
+    \item \textbf{Environment Setup:} Install pinned dependencies via \texttt{pip install -r requirements.txt}.
+    \item \textbf{Data Placement:} Verify that \texttt{data.csv} and \texttt{labels.csv} are located in the repository root.
+    \item \textbf{Master Pipeline Execution:} Run \texttt{python run\_all\_experiments.py}. This sequentially executes data caching, split freezing, benchmarking across all 8 model families, sample-efficiency curves, biomarker stability, and report generation.
+    \item \textbf{Interactive Exploration:} Open \texttt{notebooks/02\_model\_synthesis\_and\_pareto.ipynb} to interactively inspect Pareto frontier curves, confusion matrices, and recurrent gene tables.
+\end{enumerate}
 
 \vspace{0.4cm}
 \noindent{\color{linegrey}\hrule height 0.6pt}
